@@ -123,7 +123,7 @@ sample of its boundary. Discharging at −20 kW ran at 380 V, −52.6 A.
 | **Household load limit** | The charger backs off so the site stays inside the envelope |
 | **One-minute notice: Minimum System Load and Lack of Reserve** | Soak up surplus or stop and discharge, delivered before the event starts |
 | **Local network congestion** | The charging limit falls with the local constraint |
-| **Price change** | The Amber price moves the setpoint, travels with the profile as an OCPP 2.1 price schedule, and shows at the station ([design](design/dynamic-pricing.md)) |
+| **Price change** | An OpenADR 3.1 price signal moves the setpoint, travels with the profile as an OCPP 2.1 price schedule, and shows at the station ([design](design/dynamic-pricing.md)) |
 
 → [Running order, timings and fall-backs](demo/DEMO.md)
 

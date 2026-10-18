@@ -50,7 +50,7 @@ plugged into the venue LAN. Stations connect with Security Profile 1
 3. Run the agreed test cases. Record supported and unsupported features,
    message traces and the transaction evidence (TransactionEvents and
    MeterValues through the read-only discovery endpoint).
-   If the station runs OCPP 2.1, also send the Amber tariff
+   If the station runs OCPP 2.1, also send the dynamic tariff
    (`citrine_ha.lab_default_tariff` with `station_id` set to the vendor's
    identity; needs `price_commands_enabled: true`) and record the reply:
    `Accepted`, `Rejected`, `TooManyElements`, `ConditionNotSupported` or a

@@ -30,7 +30,7 @@ Cactus CSIP-AUS server ──SEP2/CSIP-AUS──► Open Dynamic Export ──MQ
 | 4 | 8 | **Export limit with V2G discharge** | Export mode on; discharge target clipped by the CSIP-AUS export limit (`opModExpLimW`/`opModGenLimW`) and released | Built; Cactus ALL-22 attempted 17 Oct, rerun pending |
 | 5 | 6 | **Short-notice events (1 minute)** | A control with 60 s notice, modelling Minimum System Load (raise charging / soak) and Lack of Reserve (stop charging, discharge): the next profile carries it before it starts | Rehearse: schedule-ahead path proven in LOA-11 |
 | 6 | 4 | **Local congestion** | Site load rises; the charger's limit falls so site import stays inside the envelope | Gap: the bridge does not yet subtract other site load (Cactus ALT-LOA-13) |
-| 7 | 4 | **Price signal** | Amber price moves the setpoint (A); the same OCPP 2.1 profile carries the Amber forecast as a price schedule (B); the station shows the price now and next (C) | Building ([design](../design/dynamic-pricing.md)) |
+| 7 | 4 | **Price signal** | OpenADR price event (scripted, including a one-minute-notice spike) moves the setpoint (A); the same OCPP 2.1 profile carries the OpenADR forecast as a price schedule (B); the station shows the price now and next (C) | Building ([design](../design/dynamic-pricing.md)) |
 | 8 | 5 | **Questions** | Evidence pages, timing against draft AS 5438 (≤5 s, ≤30 s, ≤15 s) | Ready |
 
 ## Fall-backs

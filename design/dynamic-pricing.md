@@ -1,40 +1,122 @@
-# Design note: dynamic electricity prices over OCPP 2.1
+# Design note: dynamic electricity prices, OpenADR 3 to OCPP 2.1
 
-**Status:** built, in review, October 2026: [purcell-lab/ha-addons#78](https://github.com/purcell-lab/ha-addons/pull/78) (CitrineOS App 0.7.0, EVerest Apps 0.1.5 / 0.1.11) and [purcell-lab/CitrineOS-HA-Integration#10](https://github.com/purcell-lab/CitrineOS-HA-Integration/pull/10) (0.6.0). **Scope:** the Home Assistant lab stack (Amber Electric →
-Home Assistant → CitrineOS → EVerest) and the CSMS-under-test slots at the OCA Plugfest.
+**Status, October 2026.**
+- OCPP side **built, in review**:
+  - [purcell-lab/ha-addons#78](https://github.com/purcell-lab/ha-addons/pull/78): CitrineOS App 0.7.0, EVerest Apps 0.1.5 / 0.1.11.
+  - [purcell-lab/CitrineOS-HA-Integration#10](https://github.com/purcell-lab/CitrineOS-HA-Integration/pull/10): integration 0.6.0.
+- OpenADR price source: **designed, not yet built**.
+
+**Scope:** the Home Assistant lab stack, and the CSMS-under-test slots at the OCA Plugfest. The
+chain is OpenADR 3.1 VTN → Home Assistant (VEN + EEMS) → CitrineOS → EVerest.
 
 ## Summary
 
-OCPP 2.1 has two ways to carry a price to a charging station: **tariffs** (functional block I,
-`SetDefaultTariff`) for billing and cost display, and **price schedules** on a charging profile
-(`absolutePriceSchedule`, `priceLevelSchedule`) for the station or EV to plan with. Neither tells the
-station what power to use. In this stack the **household EEMS decides the power** from the price
-and the network envelope, and sends it as an OCPP 2.1 `CentralSetpoint` profile; the price travels
-alongside it so the station and the driver can see why.
+The household energy management system (EEMS) takes its **price signal from an OpenADR 3.1 server
+(VTN)**, the open standard for price and flexibility signals, and its **network envelope from
+CSIP-AUS**. It decides the power and sends it to the charging station as an OCPP 2.1 profile. The
+price travels to the station alongside the power, so the station and the driver can see why. Three
+open standards make up one chain:
 
-We build four paths:
+```
+OpenADR 3.1 VTN ──PRICE / EXPORT_PRICE events──► Home Assistant (VEN + EEMS) ◄──CSIP-AUS (DOE)── DNSP
+                                                      │
+                                                      ▼  OCPP 2.1
+                                          CitrineOS (CSMS) ──► charging station ──ISO 15118-20──► EV
+```
+
+OCPP 2.1 has two ways to carry a price to a charging station:
+- **Tariffs** (functional block I, `SetDefaultTariff`), for billing and cost display.
+- **Price schedules** on a charging profile (`absolutePriceSchedule`, `priceLevelSchedule`), for the
+  station or the EV to plan with.
+
+Neither tells the station what power to use. That stays with the EEMS.
 
 | | Path | OCPP message | What it proves |
 |---|---|---|---|
-| **A** | Price drives power | `SetChargingProfile` TxProfile, `CentralSetpoint` | The charger (and V2G discharge) follows the Amber price, through the same OCPP path as the CSIP-AUS envelope |
+| **A** | Price drives power | `SetChargingProfile` TxProfile, `CentralSetpoint` | The charger, including V2G discharge, follows the OpenADR price through the same OCPP path as the CSIP-AUS envelope |
 | **B** | Price travels with the profile | Same profile, plus `chargingSchedule.absolutePriceSchedule` | The forecast reaches the station in standard OCPP 2.1 form, alongside the setpoint it explains |
 | **C** | Price shown at the station | `CostUpdated` with the OCA California Pricing extension | The station shows the price now and the next price, live, during the session |
-| **D** | Tariff conformance | `SetDefaultTariff` (OCPP 2.1 block I) | Which Plugfest stations accept an OCPP 2.1 tariff with Amber prices in AUD |
+| **D** | Tariff conformance | `SetDefaultTariff` (OCPP 2.1 block I) | Which Plugfest stations accept an OCPP 2.1 tariff built from the OpenADR prices, in AUD |
 
-## Source: Amber Electric in Home Assistant
+## Price source: OpenADR 3.1
 
-Two Amber integrations on the household (main) Home Assistant expose the same data. The Green, which
-runs CitrineOS and the CitrineOS-HA integration, needs the same sensors: either the Amber Electric
-integration installed on the Green (its own API token) or the main system's sensors mirrored to it.
-Sensors seen on the main system, 19 October 2026:
+### Why OpenADR
 
-- `sensor.amber_general_price` / `sensor.amber_feed_in_price`: the current import and feed-in price
-  in $/kWh including GST.
-- `sensor.amber_general_forecast` / `sensor.amber_feed_in_forecast` (`forecasts` attribute), or the
-  Amber Express sensors (`detailedForecast` attribute): **48 intervals, about 20 hours ahead**, the
-  first hour in 5-minute intervals and then 30-minute intervals. Each interval has `per_kwh`,
-  `start_time`, `end_time`, `spot_per_kwh`, `descriptor` and `spike_status`. Feed-in values are
-  positive (paid to the customer). Prices can be negative.
+- **Source-neutral.** The EEMS takes a standard signal, not one retailer's API. Any OpenADR VTN can
+  drive the chain: a retailer, an aggregator, a network, or our own lab VTN.
+- **Built for prices.** OpenADR 3 events carry `PRICE` and `EXPORT_PRICE` payloads over time
+  intervals, with currency and units in the program. "Continuous Pricing VEN" is one of the OpenADR
+  3 certification profiles.
+- **In production for EV charging.** In the Netherlands, three DSOs and eight CPOs run grid-aware
+  charging on the open-source openleadr-rs, and EVerest is reported to be integrating it.
+- **One message model for all event types.** The same events can carry short-notice events
+  (Minimum System Load and Lack of Reserve price spikes) for the demonstration, using the same
+  interval model.
+
+### Message model
+
+A **program** declares what it sends: for example "Household dynamic tariff", with payload
+descriptors `PRICE` and `EXPORT_PRICE`, currency `AUD`, units `KWH`. Each **event** carries an
+`intervalPeriod` (start and duration) and a list of **intervals**. Each interval holds payloads:
+
+```json
+{
+  "programID": "household-tariff",
+  "eventName": "forecast-2026-10-23T14:00",
+  "payloadDescriptors": [
+    {"payloadType": "PRICE", "units": "KWH", "currency": "AUD"},
+    {"payloadType": "EXPORT_PRICE", "units": "KWH", "currency": "AUD"}
+  ],
+  "intervalPeriod": {"start": "2026-10-23T04:00:00Z", "duration": "PT30M"},
+  "intervals": [
+    {"id": 0, "payloads": [{"type": "PRICE", "values": [0.225]}, {"type": "EXPORT_PRICE", "values": [0.08]}]},
+    {"id": 1, "payloads": [{"type": "PRICE", "values": [0.202]}, {"type": "EXPORT_PRICE", "values": [0.07]}]}
+  ]
+}
+```
+
+- **Values** are $/kWh including GST, the retail convention. The program description records this,
+  because OpenADR has no tax field.
+- **Export price** is positive when the customer is paid. Negative prices are allowed.
+- **Intervals** follow on from the event's start. A 5-minute interval is a separate event with
+  duration `PT5M`.
+- **Short-notice events** (a Minimum System Load or Lack of Reserve price spike) are new events with a
+  start one minute ahead. The VEN polls often enough to pick them up before they start.
+
+### VTN: where the prices come from
+
+- **Lab and Plugfest:** an openleadr-rs VTN packaged as a Home Assistant App on the Green.
+  - openleadr-rs is Rust, Apache-2.0/MIT, from LF Energy. It implements OpenADR 3.1 and passes 166 of
+    168 OpenADR Alliance tests.
+  - Version 0.2 and later implement 3.1, which is not backward compatible with 3.0.
+  - It stores programs and events in Postgres.
+- **A publisher feeds the VTN:**
+  - At home: from Amber Electric. The Amber forecast (48 intervals, about 20 hours, 5- then
+    30-minute) becomes one OpenADR event per interval run.
+  - At the Plugfest: from a scripted scenario file, so the demonstration works with no internet and
+    can raise one-minute-notice price events on cue.
+- **Later:** any third-party OpenADR 3.1 VTN (a retailer or aggregator) replaces our own, with no
+  change downstream.
+
+### VEN: Home Assistant
+
+- A VEN in the CitrineOS-HA integration, or a small separate integration, polls the VTN `GET /events`
+  for the program.
+  - It authenticates with OAuth2 client credentials.
+  - It polls, rather than receiving webhooks, because a home VEN usually cannot accept incoming
+    connections; openleadr-rs does not support webhooks yet anyway.
+- It exposes `sensor.openadr_price` and `sensor.openadr_export_price`. The state is the current price.
+  A `forecasts` attribute holds the intervals in the same normalised shape the pricing code already
+  reads: `per_kwh`, `start_time`, `end_time`, `duration`.
+- So the OCPP builders for B, C and D need no change: they take OpenADR intervals exactly as they
+  take Amber intervals today.
+- The VEN reports back to the VTN (OpenADR reports): the price it applied and the charger's power.
+  That closes the loop for the price source.
+
+### Amber's new role
+
+Amber stays as one feed into the lab VTN and as a fallback price source while the VTN is offline.
+The integration code keeps both readers. It is no longer the interface the EEMS depends on.
 
 ## What each component supports
 
@@ -49,17 +131,51 @@ Sensors seen on the main system, 19 October 2026:
 The gaps are on the station side. That is why path D is a Plugfest test: vendor stations may
 implement OCPP 2.1 tariffs that the open-source reference does not yet.
 
+## Upstream status (EVerest, checked 19 October 2026)
+
+- **OCPP 2.1 tariffs are still not implemented on everest-core main** (16 October 2026).
+  - `SetDefaultTariff`, `ChangeTransactionTariff`, `GetTariffs` and `ClearTariffs` are in the
+    not-implemented list in `lib/everest/ocpp/lib/ocpp/v2/charge_point.cpp`.
+  - libocpp was folded into everest-core and its own repository was archived on 27 April 2026.
+  - No issue or pull request proposes implementing these messages.
+- **ISO 15118-20 sends no real price to the EV.** Main now sends a placeholder `PriceLevelSchedule`
+  with zero price levels, because some testers reject a schedule exchange with no price schedule.
+  The code comment says "The actual tariff is unknown here".
+- **Recent pricing work is all California Pricing and cost display:**
+  - tariff-message fallback handling ([#1989](https://github.com/EVerest/everest-core/pull/1989));
+  - tariff messages on the consumer APIs ([#1922](https://github.com/EVerest/everest-core/pull/1922));
+  - `default_price` publishing ([#2000](https://github.com/EVerest/everest-core/pull/2000));
+  - a session-cost consumer API ([#1596](https://github.com/EVerest/everest-core/pull/1596));
+  - DisplayCostAndPrice write rules ([#2077](https://github.com/EVerest/everest-core/pull/2077));
+  - meter tariff-text limits ([#2542](https://github.com/EVerest/everest-core/pull/2542)).
+- **[EVerest #1199](https://github.com/EVerest/everest-core/issues/1199)** asks for OCPP charging
+  schedules, with price data, to be handed to ISO 15118 EVs.
+  - It is open, in the backlog, and has no pull request.
+  - A maintainer confirmed it is "still relevant" (12 November 2025) and sketched new callbacks
+    between the OCPP and ISO 15118 libraries.
+- **[EVerest #2527](https://github.com/EVerest/everest-core/pull/2527)** lets the station tell the EV
+  at runtime that the charge is free (`FreeService`).
+  - It is open, approved on 14 October 2026, and labelled `include-in-release`.
+- **The older libocpp California Pricing issues** (#373–#378, #706) are closed. None cover OCPP 2.1
+  tariffs.
+- **Implication:** path C follows where upstream is investing. Path D will keep getting
+  `NotImplemented` from EVerest, so it is a real differentiator when tested against vendor stations.
+  Upgrading EVerest would not add tariff support.
+
 ## Path A: price drives power (exists)
 
 The Home Assistant bridge already turns limits into OCPP 2.1 `CentralSetpoint` periods for the next
-600 s (`citrine_ha.lab_schedule`). A price rule (for example, charge when import is cheap, discharge
-when the feed-in price spikes) changes the setpoint; the CSIP-AUS envelope still caps it. This is the
-only path in which the price changes what the charger does.
+600 s (`citrine_ha.lab_schedule`).
+- A price rule changes the setpoint: for example, charge when the OpenADR import price is low, and
+  discharge when the export price spikes.
+- The CSIP-AUS envelope still caps the setpoint.
+- This is the only path in which the price changes what the charger does.
 
 ## Path B: price schedule on the profile
 
-Each `lab_schedule` call can name a price sensor (`price_entity`). The integration converts the
-Amber import forecast into an `absolutePriceSchedule` on the same OCPP 2.1 profile:
+Each `lab_schedule` call can name a price sensor (`price_entity`, now `sensor.openadr_price`). The
+integration converts the import forecast into an `absolutePriceSchedule` on the same OCPP 2.1
+profile:
 
 ```json
 "absolutePriceSchedule": {
@@ -77,11 +193,11 @@ Amber import forecast into an `absolutePriceSchedule` on the same OCPP 2.1 profi
 }
 ```
 
-- One price rule stack per Amber interval, in $/kWh with three decimals (0.1 c/kWh).
+- One price rule stack per interval, in $/kWh to three decimals (0.1 c/kWh).
 - The gateway accepts at most 288 stacks and 48 hours, in AUD only.
-- `priceLevelSchedule` (ordinal levels, no currency) is also accepted for stations that prefer it.
+- `priceLevelSchedule` (ordinal levels, no currency) is also accepted, for stations that prefer it.
 - The EVerest status page shows the schedule as received. EVerest does not act on it.
-- There is no export price in a price schedule; the export price travels in C and D.
+- A price schedule has no export price. The export price travels in C and D.
 
 ## Path C: price at the station (California Pricing)
 
@@ -96,34 +212,39 @@ California Pricing extension:
     "vendorId": "org.openchargealliance.costmsg",
     "chargingPrice": {"kWhPrice": 0.225},
     "nextPeriod": {"atTime": "2026-10-23T04:00:00Z", "chargingPrice": {"kWhPrice": 0.202}},
-    "priceText": "Amber 22.5 c/kWh now, 20.2 c/kWh from 14:00"
+    "priceText": "22.5 c/kWh now, 20.2 c/kWh from 14:00"
   }
 }
 ```
 
-- An automation calls it whenever the Amber price changes.
-- The EVerest Apps enable the Tariff and Cost features (currency AUD) and California Pricing, and
-  show the latest price on the status page.
-- CitrineOS's own 60-second `CostUpdated` (from its zero-price lab tariff) is switched off when
-  price commands are enabled, so it does not overwrite the Amber price.
+- An automation calls it whenever the current OpenADR interval changes.
+- The EVerest Apps:
+  - enable the Tariff and Cost features in AUD;
+  - turn on California Pricing;
+  - show the latest price on the status page.
+- CitrineOS's own 60-second `CostUpdated` comes from its zero-price lab tariff. It is switched off
+  when price commands are enabled, so it does not overwrite the OpenADR price.
 - Limits: one price now and one next, import only, during a transaction.
 
 ## Path D: OCPP 2.1 tariff to vendor stations
 
-`citrine_ha.lab_default_tariff` sends `SetDefaultTariff` with the Amber forecast as an OCPP 2.1
+`citrine_ha.lab_default_tariff` sends `SetDefaultTariff` with the OpenADR forecast as an OCPP 2.1
 `TariffType`:
 
-- `currency` AUD; `energy.prices[]`, one entry per interval, with `startTimeOfDay`/`endTimeOfDay`
-  and `validFromDate`/`validToDate` in local time (an interval that crosses midnight is split).
-- `priceKwh` excludes GST (Amber price ÷ 1.1); `taxRates` `[{type: "GST", tax: 10}]`.
-- Export (discharge) prices are entries with negative `minPower`/`maxPower` conditions, which OCPP 2.1
-  uses for reverse energy flow; `priceKwh` is the negative feed-in price (the station pays the driver).
+- `currency` is AUD. `energy.prices[]` has one entry per interval, with
+  `startTimeOfDay`/`endTimeOfDay` and `validFromDate`/`validToDate` in local time. An interval that
+  crosses midnight is split.
+- `priceKwh` excludes GST (the OpenADR price ÷ 1.1); `taxRates` is `[{type: "GST", tax: 10}]`.
+- Export (discharge) prices come from `EXPORT_PRICE`.
+  - They are entries with negative `minPower`/`maxPower` conditions, which is how OCPP 2.1 expresses
+    reverse energy flow.
+  - `priceKwh` is the negative export price, meaning the station pays the driver.
 - At most 96 price entries per tariff.
 - The station's reply is recorded verbatim: `Accepted`, `Rejected`, `TooManyElements`,
   `ConditionNotSupported`, or a CALLERROR such as `NotImplemented`.
 
 D may target the command station or any provisioned Plugfest station that is online on OCPP 2.1.
-It is information, not control, so it is allowed for vendor stations; power commands to vendor
+It is information, not control, so it is allowed for vendor stations. Power commands to vendor
 stations stay disabled.
 
 ## Safety and limits
@@ -131,31 +252,72 @@ stations stay disabled.
 - Everything is off by default: `price_commands_enabled: false` on the CitrineOS App.
 - The gateway validates every price message: AUD only, −5 to 20 $/kWh, bounded sizes, only the
   listed fields. Power validation of setpoint profiles is unchanged.
-- C needs the command station's active transaction; D needs a provisioned, online OCPP 2.1 station.
+- C needs the command station's active transaction. D needs a provisioned, online OCPP 2.1 station.
 - The CitrineOS-HA integration reads the new `price_commands` policy separately, so older clients
   keep working.
+- The OpenADR VEN only reads prices. A lost VTN connection keeps the last forecast until it expires,
+  then falls back to Amber, or to no price. The CSIP-AUS envelope and the station's own limits are
+  unaffected.
 
 ## Evidence
 
 | Path | Evidence |
 |---|---|
+| Source | VTN event list and VEN reports; the price sensor tracks the VTN intervals |
 | A | Meter follows the setpoint (as in the [V2G TxProfile result](../results/2026-10-17-v2g-txprofile/README.md)) |
 | B | Profile `Accepted`; status page and `GetChargingProfiles` show the price schedule |
 | C | `CostUpdated` frame in the station log; status page shows price now and next |
 | D | Station reply per station, recorded in the slot notes |
 
+## Build plan for the OpenADR source
+
+1. **`openadr_vtn` App (ha-addons).**
+   - openleadr-rs VTN plus its Postgres, LAN-only, disconnected by default.
+   - A publisher fed from the Amber sensors or from a scenario file.
+2. **OpenADR VEN (CitrineOS-HA integration or its own integration).**
+   - Configured with the VTN URL, client credentials and program.
+   - Polls `/events` and exposes the two price sensors in the normalised forecast shape.
+   - Sends a report each interval.
+3. **CI.** The stack test starts the VTN and publishes a program and event. The VEN reads it, and
+   the existing B, C and D checks run on the OpenADR prices.
+4. **Demonstration.** A scenario file for Friday with a normal day, a one-minute-notice Minimum System
+   Load price drop, and a Lack of Reserve export price spike.
+
 ## Open questions
 
+- **CSIP-AUS pricing.** In Australia, network prices may arrive through CSIP-AUS instead.
+  - Ausgrid's Project Edith sends dynamic network prices and envelopes over CSIP-AUS, and moves to an
+    on-market tariff from July 2026.
+  - The DER Integration API Technical Working Group has an activity to add retailer and network
+    pricing to CSIP-AUS.
+  - The VEN abstraction should allow a CSIP-AUS price source as well.
+- **OpenADR 3.0 and 3.1.** openleadr-rs 0.2 and later implement 3.1 only, which is not
+  backward-compatible. A third-party VTN on 3.0 would need an older client.
 - **ISO 15118-20 scheduled mode.** Passing price schedules to the EV needs scheduled mode and
-  price-schedule support in the station's ISO 15118-20 stack; neither is in EVerest 2025.10.0.
+  price-schedule support in the station's ISO 15118-20 stack; neither is in EVerest (see Upstream
+  status).
 - **CitrineOS cost calculation.** CitrineOS saves an accepted `SetDefaultTariff` with a zero flat
   price and does not link it to a connector, so its own cost figures ignore the pushed prices.
-- **Tariff updates.** OCPP 2.1 tariffs are rule sets, not rolling forecasts; each re-forecast is a
-  new `tariffId`. `ChangeTransactionTariff` (for running sessions) needs a CitrineOS endpoint.
+- **Tariff updates.** OCPP 2.1 tariffs are rule sets, not rolling forecasts, so each re-forecast is a
+  new `tariffId`. `ChangeTransactionTariff`, for running sessions, needs a CitrineOS endpoint.
 
 ## References
 
-- OCPP 2.1 JSON schemas (`SetDefaultTariffRequest`, `ChargingScheduleType`, `CostUpdatedRequest`)
-- OCA *What's new in OCPP 2.1*
-- libocpp v0.30.3 `charge_point.cpp`, `functional_blocks/tariff_and_cost.cpp`
-- CitrineOS v2.0.1 `set-default-tariff-endpoint.ts`, `cost-calculator.ts`
+- **OpenADR**
+  - [OpenADR 3 introduction and certification](https://www.openadr.org/openadr-3-0)
+  - [openleadr-rs](https://github.com/OpenLEADR/openleadr-rs), OpenADR 3.1 VTN and VEN in Rust
+    (LF Energy); `openleadr-wire/src/event.rs` lists the event payload types (`PRICE`,
+    `EXPORT_PRICE`, `IMPORT_CAPACITY_LIMIT`, …)
+  - [LF Energy OpenLEADR](https://lfenergy.org/projects/openleadr/)
+  - [Tweede golf: openleadr-rs for real-world demand response](https://tweedegolf.nl/en/blog/162/rust-meets-the-grid-building-openleadr-rs-for-real-world-demand-response/)
+- **OCPP**
+  - OCPP 2.1 JSON schemas (`SetDefaultTariffRequest`, `ChargingScheduleType`, `CostUpdatedRequest`)
+  - [OCA: What's new in OCPP 2.1](https://openchargealliance.org/wp-content/uploads/2024/03/Whats-New-OCPP-2.1.pdf)
+- **EVerest**
+  - libocpp v0.30.3 `charge_point.cpp` and `functional_blocks/tariff_and_cost.cpp`
+  - everest-core main `lib/everest/ocpp` and `lib/everest/iso15118/src/iso15118/d20/state/schedule_exchange.cpp`
+  - [EVerest #1199](https://github.com/EVerest/everest-core/issues/1199) and [#2527](https://github.com/EVerest/everest-core/pull/2527)
+  - [libocpp pricing issues (archived)](https://github.com/EVerest/libocpp/issues?q=tariff+OR+price+OR+cost)
+- **CitrineOS:** v2.0.1 `set-default-tariff-endpoint.ts` and `cost-calculator.ts`
+- **CSIP-AUS pricing:** [Ausgrid submission (Project Edith)](https://www.aemo.com.au/-/media/files/initiatives/der/2024/submissions/ausgrid.pdf?la=en)
+  and [CIGRE C6-11978 (2026)](https://www.e-cigre.org/publications/detail/c6-11978-2026-managing-distribution-networks-and-enabling-der-participation-through-dynamic-network-pricing-in-australia-project-edith.html)
