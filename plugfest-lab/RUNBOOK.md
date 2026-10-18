@@ -50,6 +50,11 @@ plugged into the venue LAN. Stations connect with Security Profile 1
 3. Run the agreed test cases. Record supported and unsupported features,
    message traces and the transaction evidence (TransactionEvents and
    MeterValues through the read-only discovery endpoint).
+   If the station runs OCPP 2.1, also send the Amber tariff
+   (`citrine_ha.lab_default_tariff` with `station_id` set to the vendor's
+   identity; needs `price_commands_enabled: true`) and record the reply:
+   `Accepted`, `Rejected`, `TooManyElements`, `ConditionNotSupported` or a
+   CALLERROR. See [dynamic pricing](../design/dynamic-pricing.md#path-d-ocpp-21-tariff-to-vendor-stations).
 4. After the slot: clear the `8083/tcp` host port and restart the server
    App. Remove the vendor's entry from `plugfest_stations` if it will not
    return; on restart its password is revoked in the database.

@@ -123,7 +123,7 @@ sample of its boundary. Discharging at −20 kW ran at 380 V, −52.6 A.
 | **Household load limit** | The charger backs off so the site stays inside the envelope |
 | **One-minute notice: Minimum System Load and Lack of Reserve** | Soak up surplus or stop and discharge, delivered before the event starts |
 | **Local network congestion** | The charging limit falls with the local constraint |
-| **Price change** | The plan moves with the AEMO spot price through the same OCPP path |
+| **Price change** | The Amber price moves the setpoint, travels with the profile as an OCPP 2.1 price schedule, and shows at the station ([design](design/dynamic-pricing.md)) |
 
 → [Running order, timings and fall-backs](demo/DEMO.md)
 
@@ -171,6 +171,7 @@ SEP2 → OCPP 2.1, end to end, with timing evidence against the draft function m
 | [`infographic/`](infographic/) | One-page infographic: PDF, PNG, SVG source |
 | [`proposal/`](proposal/README.md) | The July 2026 proposal and what has been built since |
 | [`demo/`](demo/DEMO.md) | Demonstration script, scenarios and fall-backs |
+| [`design/`](design/dynamic-pricing.md) | Design notes: dynamic electricity prices over OCPP 2.1 |
 | [`results/`](results/) | Dated test results with raw data |
 | [`cactus/`](cactus/README.md) | Cactus CSIP-AUS test reports, charts and raw controls |
 | [`plugfest-lab/`](plugfest-lab/README.md) | CSMS-under-test runbook, setup, acceptance plan, lab records |
