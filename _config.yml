@@ -1,0 +1,37 @@
+# GitHub Pages: publishes README.md as the landing page, without the file list.
+title: "CSIP-AUS to OCPP 2.1: OCA Plugfest Australia 2026"
+description: >-
+  A home energy management system turns CSIP-AUS dynamic operating envelopes into
+  OCPP 2.1 bidirectional charging profiles. Open standards, open source, end to end.
+repo_url: https://github.com/purcell-lab/ocpp-plugfest
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  parse_block_html: true
+  hard_wrap: false
+
+plugins:
+  - jekyll-relative-links
+  - jekyll-readme-index
+  - jekyll-optional-front-matter
+  - jekyll-default-layout
+  - jekyll-titles-from-headings
+
+relative_links:
+  enabled: true
+  collections: false
+
+defaults:
+  - scope: { path: "" }
+    values: { layout: default }
+
+exclude:
+  - "**/*.py"
+  - "infographic/render.js"
+  - "infographic/preview/"
+  - "plugfest-lab/data/"
+  - "cactus/**/data/"
+  - Gemfile
+  - Gemfile.lock
+  - vendor/

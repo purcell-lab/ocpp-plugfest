@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% if page.url == "/" %}{{ site.title }}{% else %}{{ page.title | default: site.title }} · OCPP Plugfest{% endif %}</title>
+<meta name="description" content="{{ site.description | strip }}">
+<meta property="og:title" content="{{ site.title }}">
+<meta property="og:description" content="{{ site.description | strip }}">
+<meta property="og:image" content="{{ '/infographic/plugfest-infographic.png' | absolute_url }}">
+<link rel="icon" href="{{ '/infographic/crest120.png' | relative_url }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0f6e6e; --teal-d: #0a4f4f; --gold: #d2a55c; --gold-t: #8a6420;
+  --cream: #fff6e5; --paper: #fffcf6; --ink: #1b1b1b; --grey: #5a5a5a; --rule: #e7dcc6;
+  --bg: var(--paper); --fg: var(--ink); --muted: var(--grey); --card: #ffffff; --link: var(--teal);
+  --code: #f6efe0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1717; --fg: #ece6da; --muted: #a9b3b0; --card: #152222; --rule: #2a3b3b;
+    --link: #6cc4c0; --code: #1b2a2a; --gold-t: #d2a55c;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 16px/1.6 Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+.topbar {
+  position: sticky; top: 0; z-index: 10; background: var(--teal-d); color: var(--cream);
+  border-bottom: 3px solid var(--gold);
+}
+.topbar .in {
+  max-width: 1100px; margin: 0 auto; padding: 10px 16px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.topbar a { color: var(--cream); text-decoration: none; font-weight: 600; font-size: 14px; }
+.topbar a:hover { color: var(--gold); }
+.topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; margin-right: auto; }
+.topbar img { width: 30px; height: 30px; }
+.topbar .gh {
+  border: 1px solid rgba(255,246,229,.4); border-radius: 999px; padding: 4px 12px;
+}
+main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+h1, h2, h3 { line-height: 1.25; letter-spacing: -.01em; }
+h2 {
+  font-size: 28px; font-weight: 800; margin: 48px 0 16px; padding-bottom: 8px;
+  border-bottom: 3px solid var(--gold);
+}
+h3 { font-size: 20px; font-weight: 700; margin: 28px 0 10px; }
+a { color: var(--link); }
+img { max-width: 100%; height: auto; }
+main > p > img, main img[src$=".svg"] { border-radius: 16px; }
+hr { border: 0; height: 0; margin: 40px 0 0; }
+table {
+  border-collapse: collapse; width: 100%; margin: 16px 0; background: var(--card);
+  border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px var(--rule);
+  display: block; overflow-x: auto;
+}
+th, td { padding: 10px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; text-align: left; }
+th { background: var(--teal); color: var(--cream); font-weight: 700; }
+tr:last-child td { border-bottom: 0; }
+code { background: var(--code); padding: .1em .35em; border-radius: 5px; font-size: .9em; }
+pre { background: var(--code); padding: 14px; border-radius: 10px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+blockquote { margin: 16px 0; padding: 4px 18px; border-left: 4px solid var(--rule); color: var(--muted); }
+.callout {
+  margin: 20px 0; padding: 14px 18px; border-radius: 12px; background: var(--card);
+  border-left: 6px solid var(--teal); box-shadow: 0 0 0 1px var(--rule); color: var(--fg);
+}
+.callout .label { font-weight: 800; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--teal); }
+.callout.important { border-left-color: var(--gold); }
+.callout.important .label { color: var(--gold-t); }
+.callout p { margin: 6px 0; }
+.mermaid { background: var(--card); border-radius: 12px; padding: 16px; box-shadow: 0 0 0 1px var(--rule); text-align: center; }
+[align="center"] { text-align: center; }
+footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px 16px 40px; border-top: 1px solid var(--rule); }
+@media (max-width: 640px) {
+  h2 { font-size: 23px; }
+  .topbar .nav { display: none; }
+}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <a class="brand" href="{{ '/' | relative_url }}"><img src="{{ '/infographic/crest120.png' | relative_url }}" alt="">OCPP Plugfest · CSIP-AUS → OCPP 2.1</a>
+  <span class="nav">
+    <a href="{{ '/demo/DEMO.html' | relative_url }}">Demo</a> &nbsp;
+    <a href="{{ '/infographic/plugfest-infographic.pdf' | relative_url }}">Infographic</a> &nbsp;
+    <a href="{{ '/cactus/' | relative_url }}">Cactus</a> &nbsp;
+    <a href="{{ '/plugfest-lab/' | relative_url }}">CSMS lab</a>
+  </span>
+  <a class="gh" href="{{ site.repo_url }}">GitHub ↗</a>
+</div></header>
+<main>
+{{ content }}
+</main>
+<footer>Open standards, open source, reproducible evidence · <a href="{{ site.repo_url }}">{{ site.repo_url | remove: "https://" }}</a></footer>
+<script>
+(function () {
+  var repo = {{ site.repo_url | jsonify }};
+  var base = {{ site.baseurl | jsonify }} || "";
+  var pagePath = {{ page.path | jsonify }};
+  var dir = pagePath.indexOf("/") >= 0 ? pagePath.replace(/[^/]*$/, "") : "";
+
+  // GitHub alerts: > [!NOTE] / > [!IMPORTANT] etc.
+  document.querySelectorAll("blockquote").forEach(function (bq) {
+    var p = bq.querySelector("p");
+    if (!p) return;
+    var m = p.innerHTML.match(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*(<br\s*\/?>)?/i);
+    if (!m) return;
+    p.innerHTML = p.innerHTML.slice(m[0].length);
+    var div = document.createElement("div");
+    div.className = "callout " + m[1].toLowerCase();
+    div.innerHTML = '<div class="label">' + m[1].charAt(0) + m[1].slice(1).toLowerCase() + "</div>" + bq.innerHTML;
+    bq.replaceWith(div);
+  });
+
+  // GitHub-style heading anchors keep a leading "-" for emoji headings.
+  document.querySelectorAll('a[href^="#-"]').forEach(function (a) {
+    var id = a.getAttribute("href").slice(2);
+    if (document.getElementById(id)) a.setAttribute("href", "#" + id);
+  });
+
+  // Folders without a page, and source/data files, open on GitHub.
+  document.querySelectorAll("main a[href]").forEach(function (a) {
+    var h = a.getAttribute("href");
+    if (/^([a-z]+:|#|\/\/)/i.test(h)) return;
+    var bare = h.split("#")[0];
+    var isDir = /\/$/.test(bare) && !/^(cactus|plugfest-lab|infographic|proposal)\/$/.test(dir + bare);
+    var isSrc = /\.(py|js|json|csv|xml|txt)$/i.test(bare);
+    if (!isDir && !isSrc) return;
+    var parts = (dir + bare).split("/"), out = [];
+    parts.forEach(function (s) { if (s === "..") out.pop(); else if (s !== ".") out.push(s); });
+    a.setAttribute("href", repo + (isDir ? "/tree/main/" : "/blob/main/") + out.join("/"));
+  });
+
+  // Mermaid diagrams.
+  var blocks = document.querySelectorAll("pre code.language-mermaid");
+  if (blocks.length) {
+    blocks.forEach(function (c) {
+      var d = document.createElement("div");
+      d.className = "mermaid";
+      d.textContent = c.textContent;
+      c.parentNode.replaceWith(d);
+    });
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js";
+    s.onload = function () {
+      var dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      mermaid.initialize({ startOnLoad: false, theme: "base", themeVariables: {
+        primaryColor: dark ? "#152222" : "#fff6e5", primaryBorderColor: "#0f6e6e",
+        primaryTextColor: dark ? "#ece6da" : "#1b1b1b", lineColor: "#d2a55c",
+        noteBkgColor: dark ? "#1b2a2a" : "#f3e2c0", noteTextColor: dark ? "#ece6da" : "#1b1b1b",
+        actorBkg: "#0f6e6e", actorTextColor: "#fff6e5", actorBorder: "#0a4f4f",
+        signalColor: dark ? "#ece6da" : "#1b1b1b", signalTextColor: dark ? "#ece6da" : "#1b1b1b",
+        fontFamily: "Inter, Segoe UI, Helvetica, Arial, sans-serif" } });
+      mermaid.run();
+    };
+    document.body.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
