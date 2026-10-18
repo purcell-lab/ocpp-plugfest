@@ -23,7 +23,10 @@ We build four paths:
 
 ## Source: Amber Electric in Home Assistant
 
-Two integrations on the lab Home Assistant expose the same data:
+Two Amber integrations on the household (main) Home Assistant expose the same data. The Green, which
+runs CitrineOS and the CitrineOS-HA integration, needs the same sensors: either the Amber Electric
+integration installed on the Green (its own API token) or the main system's sensors mirrored to it.
+Sensors seen on the main system, 19 October 2026:
 
 - `sensor.amber_general_price` / `sensor.amber_feed_in_price`: the current import and feed-in price
   in $/kWh including GST.
