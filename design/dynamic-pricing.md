@@ -1,6 +1,6 @@
 # Design note: dynamic electricity prices over OCPP 2.1
 
-**Status:** being built, October 2026. **Scope:** the Home Assistant lab stack (Amber Electric →
+**Status:** built, in review, October 2026: [purcell-lab/ha-addons#78](https://github.com/purcell-lab/ha-addons/pull/78) (CitrineOS App 0.7.0, EVerest Apps 0.1.5 / 0.1.11) and [purcell-lab/CitrineOS-HA-Integration#10](https://github.com/purcell-lab/CitrineOS-HA-Integration/pull/10) (0.6.0). **Scope:** the Home Assistant lab stack (Amber Electric →
 Home Assistant → CitrineOS → EVerest) and the CSMS-under-test slots at the OCA Plugfest.
 
 ## Summary
