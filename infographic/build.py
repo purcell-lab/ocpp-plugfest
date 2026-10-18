@@ -138,7 +138,7 @@ CHAIN = [
     ("envelope", "Open Dynamic", "Export (ODE)", "CSIP-AUS client", "dynamic envelopes"),
     ("home", "Home Assistant", "EEMS", "Home Assistant Green", "bridge + CitrineOS-HA"),
     ("server", "CitrineOS", "CSMS", "OCPP 2.1 / 2.0.1 / 1.6", "open-source CSMS"),
-    ("charger", "EVerest", "Charging station", "validates profiles", "DC bidirectional"),
+    ("charger", "EVerest →", "Plugfest stations", "charging stations", "validate profiles"),
     ("ev", "Electric vehicle", "V2G", "ISO 15118-20 EV", "charge + · discharge −"),
 ]
 LINKS = [
@@ -516,7 +516,7 @@ def hero():
     o.append(T(56, 196, "bidirectional charging profile", 52, 800, "#ffffff", "start", 'letter-spacing="-1.4"'))
     o.append(T(56, 246, "open, standard, end to end.", 38, 800, GOLD, "start", 'letter-spacing="-1"'))
     # mini chain
-    labels = ["CSIP-AUS server", "ODE", "Home Assistant", "CitrineOS", "EVerest", "EV"]
+    labels = ["CSIP-AUS server", "ODE", "Home Assistant", "CitrineOS", "EVerest → Plugfest stations", "EV"]
     protos = ["SEP2", "MQTT", "REST", "OCPP 2.1", "ISO 15118-20"]
     y = 318
     n = 6
@@ -543,7 +543,7 @@ def flow():
     W, H = 1280, 390
     o = [svg_open(W, H, "End-to-end chain with protocol labels",
                   "Network operator CSIP-AUS server (Cactus) via SEP2/CSIP-AUS to Open Dynamic Export, via MQTT to Home Assistant EEMS, "
-                  "via REST to CitrineOS CSMS, via OCPP 2.1 SetChargingProfile to EVerest, via ISO 15118-20 DC_BPT to the EV.")]
+                  "via REST to CitrineOS CSMS, via OCPP 2.1 SetChargingProfile to EVerest, then the Plugfest charging stations, via ISO 15118-20 DC_BPT to the EV.")]
     o.append(defs(*[c[0] for c in CHAIN]))
     o.append(panel(W, H))
     M = 36

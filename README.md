@@ -30,7 +30,7 @@
 
 ## 🔗 The end-to-end chain
 
-<img src="assets/flow.svg" alt="CSIP-AUS server to ODE to Home Assistant to CitrineOS to EVerest to EV, with the protocol on each link" width="100%">
+<img src="assets/flow.svg" alt="CSIP-AUS server to ODE to Home Assistant to CitrineOS to EVerest, then the Plugfest charging stations, to EV, with the protocol on each link" width="100%">
 
 | | Hop | Protocol | What happens |
 |:-:|---|---|---|
