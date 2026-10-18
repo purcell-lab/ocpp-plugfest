@@ -38,7 +38,7 @@
 | 📡 | **CSIP-AUS client** | MQTT | **Open Dynamic Export** (certified CSIP-AUS client) publishes the live limit and the upcoming controls. |
 | 🏠 | **EEMS** | REST | **Home Assistant** turns the envelope into a charging plan: the current limit plus the next 600 s of controls, sent ahead of time. |
 | 🖥️ | **CSMS** | **OCPP 2.1** `SetChargingProfile` | **CitrineOS** sends a TxProfile with `operationMode: CentralSetpoint`, `setpoint`, `limit` and `dischargeLimit` in watts. |
-| 🔌 | **Charging station** | **ISO 15118-20 DC_BPT** | **EVerest** validates and accepts the profile, then charges or discharges the EV to the setpoint. |
+| 🔌 | **Charging station** | **ISO 15118-20 DC_BPT** | The station validates and accepts the profile, then charges or discharges the EV to the setpoint. Before the Plugfest: **EVerest**. At the Plugfest: [vendor stations](#-the-charging-stations). |
 | 🚗 | **EV** | | Bidirectional: + charging, − discharging (V2G). |
 
 > [!NOTE]
@@ -52,7 +52,7 @@ sequenceDiagram
     participant ODE as 📡 Open Dynamic Export
     participant HA as 🏠 Home Assistant (EEMS)
     participant CSMS as 🖥️ CitrineOS (CSMS)
-    participant CS as 🔌 EVerest (charging station)
+    participant CS as 🔌 Charging station (EVerest, then Plugfest vendors)
     DNSP->>ODE: DERControl: opModImpLimW / opModExpLimW, start, duration
     ODE->>HA: MQTT limits + scheduled controls
     HA->>CSMS: lab_schedule: profile periods for the next 600 s
@@ -61,6 +61,31 @@ sequenceDiagram
     CS-->>CSMS: TransactionEvent MeterValues every 5 s
     Note over CS: Each control takes effect at its start time,<br/>even if the link drops in between
 ```
+
+---
+
+## 🔌 The charging stations
+
+**Before the Plugfest, EVerest is the reference charging station.** Open-source EVerest simulators,
+one AC and one DC V2G with ISO 15118-20 DC_BPT, proved the whole chain end to end: every result in
+[Proven this week](#-proven-this-week) is on EVerest. **At the Plugfest, the same CitrineOS CSMS
+meets real vendor stations**, one slot each.
+
+| Stage | Charging station | Type | Connection |
+|:-:|---|---|---|
+| 🧪 **Pre‑Plugfest** | **EVerest AC** simulator | OCPP 2.1 (2.0.1 fallback), AC charging | Home lab |
+| 🧪 **Pre‑Plugfest** | **EVerest DC V2G** simulator | OCPP 2.1, ISO 15118-20 DC_BPT, ±25 kW | Home lab |
+| 🎯 Slot 1 | **OCTT (DNV)** | OCPP conformance test tool acting as a station | Venue LAN |
+| 🔌 Slot 2 | **EVX Australia** | Charging station | Venue LAN |
+| 🔌 Slot 5 | **EVSE** | Charging station | Venue LAN |
+| 🔌 Slot 6 | **Trialog** | Charging station | Venue LAN |
+| 🌐 Slot 7 | **AS Jade** | Charging station (online) | Remote: connection path to be agreed |
+| 🔌 Slot 10 | **Starcharge** | Charging station | Venue LAN |
+
+In each slot the station connects to CitrineOS (OCPP 2.1, 2.0.1 or 1.6, Security Profile 1, its own
+password). We run boot, authorisation, transactions and meter values, then the OCPP 2.1 charging
+profiles the demonstration sends, and record what each station supports.
+➡️ [Slot runbook](plugfest-lab/RUNBOOK.md) · [Acceptance plan](plugfest-lab/ACCEPTANCE.md)
 
 ---
 
@@ -123,7 +148,7 @@ SEP2 → OCPP 2.1, end to end, with timing evidence against the draft function m
 | 📡 | **Open Dynamic Export** | CSIP-AUS client | [longzheng/open-dynamic-export](https://github.com/longzheng/open-dynamic-export) |
 | 🏠 | **Home Assistant** on a Home Assistant Green | EEMS, bridge, dashboards | [home-assistant.io](https://www.home-assistant.io/) |
 | 🖥️ | **CitrineOS** | CSMS: OCPP 2.1 / 2.0.1 / 1.6 | [citrineos/citrineos-core](https://github.com/citrineos/citrineos-core) |
-| 🔌 | **EVerest** | Charging station: AC and DC V2G (ISO 15118-20) | [EVerest/everest-core](https://github.com/EVerest/everest-core) |
+| 🔌 | **EVerest** | Pre-Plugfest reference charging station: AC and DC V2G (ISO 15118-20) | [EVerest/everest-core](https://github.com/EVerest/everest-core) |
 | 🧩 | **Home Assistant Apps** | CitrineOS, EVerest simulators, ODE, MicroOCPP, packaged | [purcell-lab/ha-addons](https://github.com/purcell-lab/ha-addons) |
 | 🔗 | **CitrineOS-HA integration** | Home Assistant ↔ CSMS commands and telemetry | [purcell-lab/CitrineOS-HA-Integration](https://github.com/purcell-lab/CitrineOS-HA-Integration) |
 | 🧪 | **Cactus** | CSIP-AUS conformance test harness | [ANU BSGIP](https://cactus.cecs.anu.edu.au/) |
@@ -134,7 +159,7 @@ SEP2 → OCPP 2.1, end to end, with timing evidence against the draft function m
 
 | 🎬 **Demonstration** | 🖥️ **CSMS under test** |
 |---|---|
-| CSIP-AUS envelope → OCPP 2.1 bidirectional profile, live, Friday afternoon. | CitrineOS on the Green, Security Profile 1 on the venue LAN, one provisioned password per station. Slots with OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
+| CSIP-AUS envelope → OCPP 2.1 bidirectional profile, live, Friday afternoon. CitrineOS on the Green, Security Profile 1 on the venue LAN, one provisioned password per station. [Six vendor slots](#-the-charging-stations): OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
 | [Demo script](demo/DEMO.md) · [Infographic](infographic/plugfest-infographic.pdf) | [Runbook](plugfest-lab/RUNBOOK.md) · [Lab records](plugfest-lab/README.md) · [Acceptance plan](plugfest-lab/ACCEPTANCE.md) · [Setup](plugfest-lab/SETUP.md) |
 
 ---
