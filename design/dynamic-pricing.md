@@ -4,7 +4,8 @@
 - OCPP side **built, in review**:
   - [purcell-lab/ha-addons#78](https://github.com/purcell-lab/ha-addons/pull/78): CitrineOS App 0.7.0, EVerest Apps 0.1.5 / 0.1.11.
   - [purcell-lab/CitrineOS-HA-Integration#10](https://github.com/purcell-lab/CitrineOS-HA-Integration/pull/10): integration 0.6.0.
-- OpenADR price source: **designed, not yet built**.
+- OpenADR price source: **in service** (purcell-lab VTN and the `openadr3_ven` VEN), with the
+  adapter in CitrineOS-HA-Integration#10.
 
 **Scope:** the Home Assistant lab stack, and the CSMS-under-test slots at the OCA Plugfest. The
 chain is OpenADR 3.1 VTN → Home Assistant (VEN + EEMS) → CitrineOS → EVerest.
@@ -53,70 +54,71 @@ Neither tells the station what power to use. That stays with the EEMS.
   (Minimum System Load and Lack of Reserve price spikes) for the demonstration, using the same
   interval model.
 
-### Message model
+### In service: the purcell-lab Australian VTN and the Home Assistant VEN
 
-A **program** declares what it sends: for example "Household dynamic tariff", with payload
-descriptors `PRICE` and `EXPORT_PRICE`, currency `AUD`, units `KWH`. Each **event** carries an
-`intervalPeriod` (start and duration) and a list of **intervals**. Each interval holds payloads:
+Both halves already run:
+
+- **VTN:** an openleadr VTN at `https://openleadr-vtn-au.fly.dev`.
+  - Programs and events are per NEM region and network tariff, for example `AU-QLD1-ENERGEX-6900`,
+    `AU-NSW1-ESSENTIAL-BLNT3AL` and the raw regional reference price (`AU-QLD1-RRP`).
+  - Prices are set through the [nem_pd7day](https://github.com/purcell-lab/nem_pd7day) integration
+    (AEMO 7-day pre-dispatch plus the network tariff).
+  - Each event carries about 7 days of intervals: 5-minute near now, 30-minute after.
+- **VEN:** the `openadr3_ven` Home Assistant integration.
+  - It creates `…_price`, `…_export_price` and `…_rrp` sensors per event. The state is the current
+    interval. Attributes hold the next value, the daily minimum, maximum and average, and the row count.
+  - The full forecast comes from its `openadr3_ven.get_forecast` service, not from attributes, to stay
+    under the recorder's 16 KB limit. Each row is `{datetime, value, interval_minutes}`.
+
+An event as served (abridged):
 
 ```json
 {
-  "programID": "household-tariff",
-  "eventName": "forecast-2026-10-23T14:00",
+  "programID": "6523d6f3-…",
+  "eventName": "AU-QLD1-ENERGEX-6900",
   "payloadDescriptors": [
     {"payloadType": "PRICE", "units": "KWH", "currency": "AUD"},
-    {"payloadType": "EXPORT_PRICE", "units": "KWH", "currency": "AUD"}
+    {"payloadType": "EXPORT_PRICE", "units": "KWH", "currency": "AUD"},
+    {"payloadType": "RRP", "units": "KWH", "currency": "AUD"}
   ],
-  "intervalPeriod": {"start": "2026-10-23T04:00:00Z", "duration": "PT30M"},
+  "intervalPeriod": {"start": "2026-10-18T23:25:45+00:00", "duration": "P0Y0M0DT0H10080M0S"},
   "intervals": [
-    {"id": 0, "payloads": [{"type": "PRICE", "values": [0.225]}, {"type": "EXPORT_PRICE", "values": [0.08]}]},
-    {"id": 1, "payloads": [{"type": "PRICE", "values": [0.202]}, {"type": "EXPORT_PRICE", "values": [0.07]}]}
+    {"id": 0, "intervalPeriod": {"start": "2026-10-18T23:25:00+00:00", "duration": "P0Y0M0DT0H5M0S"},
+     "payloads": [{"type": "PRICE", "values": [0.209758]}, {"type": "EXPORT_PRICE", "values": [0.095519]},
+                  {"type": "RRP", "values": [0.095519]}]},
+    {"id": 1, "intervalPeriod": {"start": "2026-10-18T23:30:00+00:00", "duration": "P0Y0M0DT0H30M0S"},
+     "payloads": [{"type": "PRICE", "values": [0.383078]}, {"type": "EXPORT_PRICE", "values": [0.239819]},
+                  {"type": "RRP", "values": [0.239819]}]}
   ]
 }
 ```
 
-- **Values** are $/kWh including GST, the retail convention. The program description records this,
-  because OpenADR has no tax field.
-- **Export price** is positive when the customer is paid. Negative prices are allowed.
-- **Intervals** follow on from the event's start. A 5-minute interval is a separate event with
-  duration `PT5M`.
-- **Short-notice events** (a Minimum System Load or Lack of Reserve price spike) are new events with a
-  start one minute ahead. The VEN polls often enough to pick them up before they start.
+- **Values** are AUD/kWh including GST. `EXPORT_PRICE` is positive when the customer is paid. Negative
+  prices are allowed.
+- **Each interval has its own period,** so 5- and 30-minute intervals sit in one event.
+- **`RRP`** is a private payload type: the wholesale regional reference price, for information.
 
-### VTN: where the prices come from
+### From the VEN to OCPP: the adapter (built)
 
-- **Lab and Plugfest:** an openleadr-rs VTN packaged as a Home Assistant App on the Green.
-  - openleadr-rs is Rust, Apache-2.0/MIT, from LF Energy. It implements OpenADR 3.1 and passes 166 of
-    168 OpenADR Alliance tests.
-  - Version 0.2 and later implement 3.1, which is not backward compatible with 3.0.
-  - It stores programs and events in Postgres.
-- **A publisher feeds the VTN:**
-  - At home: from Amber Electric. The Amber forecast (48 intervals, about 20 hours, 5- then
-    30-minute) becomes one OpenADR event per interval run.
-  - At the Plugfest: from a scripted scenario file, so the demonstration works with no internet and
-    can raise one-minute-notice price events on cue.
-- **Later:** any third-party OpenADR 3.1 VTN (a retailer or aggregator) replaces our own, with no
-  change downstream.
+The CitrineOS-HA integration
+([purcell-lab/CitrineOS-HA-Integration#10](https://github.com/purcell-lab/CitrineOS-HA-Integration/pull/10))
+treats any price sensor with a `payload_type` attribute as an OpenADR VEN sensor:
+- It calls `openadr3_ven.get_forecast` for the next 48 hours.
+- It converts the rows into the same intervals that the price schedule (B), `CostUpdated` (C) and
+  tariff (D) builders already use.
+- Messages then name the source: the price text reads "OpenADR 35.5 c/kWh now, 38.3 c/kWh from
+  09:30", and the tariff ID is `openadr-YYYYMMDD-HHMM`.
+- Amber sensors still work, as a fallback.
 
-### VEN: Home Assistant
+For the services:
+- `price_entity` is the `…_price` sensor of the chosen event.
+- `export_price_entity` is its `…_export_price` sensor (path D).
 
-- A VEN in the CitrineOS-HA integration, or a small separate integration, polls the VTN `GET /events`
-  for the program.
-  - It authenticates with OAuth2 client credentials.
-  - It polls, rather than receiving webhooks, because a home VEN usually cannot accept incoming
-    connections; openleadr-rs does not support webhooks yet anyway.
-- It exposes `sensor.openadr_price` and `sensor.openadr_export_price`. The state is the current price.
-  A `forecasts` attribute holds the intervals in the same normalised shape the pricing code already
-  reads: `per_kwh`, `start_time`, `end_time`, `duration`.
-- So the OCPP builders for B, C and D need no change: they take OpenADR intervals exactly as they
-  take Amber intervals today.
-- The VEN reports back to the VTN (OpenADR reports): the price it applied and the charger's power.
-  That closes the loop for the price source.
+### Short-notice events
 
-### Amber's new role
-
-Amber stays as one feed into the lab VTN and as a fallback price source while the VTN is offline.
-The integration code keeps both readers. It is no longer the interface the EEMS depends on.
+A one-minute-notice Minimum System Load price drop, or a Lack of Reserve export price spike, is a
+change to the VTN's prices, made through nem_pd7day. The VEN picks it up on its next poll. The next
+Home Assistant price update then carries it to the charger through paths A to D.
 
 ## What each component supports
 
@@ -269,19 +271,18 @@ stations stay disabled.
 | C | `CostUpdated` frame in the station log; status page shows price now and next |
 | D | Station reply per station, recorded in the slot notes |
 
-## Build plan for the OpenADR source
+## Remaining steps
 
-1. **`openadr_vtn` App (ha-addons).**
-   - openleadr-rs VTN plus its Postgres, LAN-only, disconnected by default.
-   - A publisher fed from the Amber sensors or from a scenario file.
-2. **OpenADR VEN (CitrineOS-HA integration or its own integration).**
-   - Configured with the VTN URL, client credentials and program.
-   - Polls `/events` and exposes the two price sensors in the normalised forecast shape.
-   - Sends a report each interval.
-3. **CI.** The stack test starts the VTN and publishes a program and event. The VEN reads it, and
-   the existing B, C and D checks run on the OpenADR prices.
-4. **Demonstration.** A scenario file for Friday with a normal day, a one-minute-notice Minimum System
-   Load price drop, and a Lack of Reserve export price spike.
+1. **VEN on the Green.** Install `openadr3_ven` on the Green, pointed at the same VTN and events,
+   because the CitrineOS-HA integration runs there.
+2. **Venue connectivity.** The VTN is internet-hosted, so the Green needs internet at the Plugfest.
+   If it has none, the fallback is a recorded forecast replayed into the same price sensors.
+3. **Automations.** On each change of the `…_price` sensor:
+   - call `lab_cost_update` (C);
+   - call `lab_default_tariff` for vendor slots (D);
+   - add `price_entity` to the bridge's `lab_schedule` calls (B).
+4. **Demonstration.** Script the Friday price changes in nem_pd7day: a normal day, a one-minute-notice
+   Minimum System Load price drop, and a Lack of Reserve export price spike.
 
 ## Open questions
 
@@ -292,7 +293,7 @@ stations stay disabled.
     pricing to CSIP-AUS.
   - The VEN abstraction should allow a CSIP-AUS price source as well.
 - **OpenADR 3.0 and 3.1.** openleadr-rs 0.2 and later implement 3.1 only, which is not
-  backward-compatible. A third-party VTN on 3.0 would need an older client.
+  backward-compatible with 3.0. Confirm which version the VTN serves before connecting third-party VENs.
 - **ISO 15118-20 scheduled mode.** Passing price schedules to the EV needs scheduled mode and
   price-schedule support in the station's ISO 15118-20 stack; neither is in EVerest (see Upstream
   status).
