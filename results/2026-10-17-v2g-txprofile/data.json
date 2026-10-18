@@ -1,0 +1,339 @@
+{
+ "test": "OCPP 2.1 TxProfile, CentralSetpoint, on the EVerest DC V2G simulator (ISO 15118-20 DC_BPT)",
+ "date": "2026-10-17",
+ "station": "SIM-EV-EVEREST-V2G-03",
+ "chain": "citrine_ha.lab_schedule -> CitrineOS Isolated Lab 0.6.2 (OCPP 2.1) -> EVerest DC V2G Test Charger 0.1.9",
+ "profile": {
+  "chargingProfilePurpose": "TxProfile",
+  "chargingProfileKind": "Absolute",
+  "stackLevel": 1,
+  "id": 9001,
+  "chargingSchedule": [
+   {
+    "chargingRateUnit": "W",
+    "duration": 330,
+    "startSchedule": "2026-10-17T20:01:04.158Z",
+    "chargingSchedulePeriod": [
+     {
+      "startPeriod": 0,
+      "limit": 25000,
+      "dischargeLimit": -25000,
+      "setpoint": 20000,
+      "operationMode": "CentralSetpoint"
+     },
+     {
+      "startPeriod": 60,
+      "limit": 25000,
+      "dischargeLimit": -25000,
+      "setpoint": -20000,
+      "operationMode": "CentralSetpoint"
+     },
+     {
+      "startPeriod": 120,
+      "limit": 25000,
+      "dischargeLimit": -25000,
+      "setpoint": 6000,
+      "operationMode": "CentralSetpoint"
+     },
+     {
+      "startPeriod": 180,
+      "limit": 25000,
+      "dischargeLimit": -25000,
+      "setpoint": -5000,
+      "operationMode": "CentralSetpoint"
+     },
+     {
+      "startPeriod": 240,
+      "limit": 25000,
+      "dischargeLimit": -25000,
+      "setpoint": 0,
+      "operationMode": "CentralSetpoint"
+     }
+    ]
+   }
+  ]
+ },
+ "station_reply": "Accepted",
+ "csms_meter_values": {
+  "source": "CitrineOS MeterValues (TransactionEvent), Power.Active.Import, 5 s sampling",
+  "samples": [
+   {
+    "utc": "2026-10-17T20:01:03Z",
+    "power_active_import_w": 25000
+   },
+   {
+    "utc": "2026-10-17T20:01:08Z",
+    "power_active_import_w": 25000
+   },
+   {
+    "utc": "2026-10-17T20:01:13Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:19Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:24Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:29Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:33Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:38Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:43Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:48Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:53Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:01:58Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:02:03Z",
+    "power_active_import_w": 20000
+   },
+   {
+    "utc": "2026-10-17T20:02:08Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:13Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:18Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:24Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:29Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:34Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:39Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:44Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:49Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:53Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:02:58Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:03:03Z",
+    "power_active_import_w": -20000
+   },
+   {
+    "utc": "2026-10-17T20:03:08Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:13Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:18Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:23Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:28Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:34Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:39Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:44Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:49Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:54Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:03:59Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:04:03Z",
+    "power_active_import_w": 6000
+   },
+   {
+    "utc": "2026-10-17T20:04:08Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:13Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:18Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:23Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:28Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:33Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:38Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:43Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:48Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:53Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:04:59Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:05:04Z",
+    "power_active_import_w": -5000
+   },
+   {
+    "utc": "2026-10-17T20:05:09Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:14Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:19Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:24Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:29Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:33Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:38Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:43Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:48Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:53Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:05:58Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:06:03Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:06:08Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:06:14Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:06:19Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:06:24Z",
+    "power_active_import_w": 0
+   },
+   {
+    "utc": "2026-10-17T20:06:28Z",
+    "power_active_import_w": 0
+   }
+  ]
+ },
+ "ha_step_changes_utc": {
+  "20000": "20:01:15.4",
+  "-20000": "20:02:10.4",
+  "6000": "20:03:10.4",
+  "-5000": "20:04:10.4",
+  "0": "20:05:10.5"
+ },
+ "discharge_operating_point": {
+  "power_w": -20000,
+  "dc_voltage_v": 380.0,
+  "dc_current_a": -52.63
+ },
+ "result": "Every step matched exactly (+20, -20, +6, -5, 0 kW); each change appeared within one 5 s meter sample of its period boundary."
+}
