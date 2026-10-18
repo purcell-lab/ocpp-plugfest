@@ -14,7 +14,7 @@ Contents:
 7. [Build process](#7-build-process)
 8. [Publish process](#8-publish-process)
 9. [Local tests](#9-local-tests)
-10. [Rebuild checklist](purcell-lab/ha-addons#10-rebuild-checklist)
+10. [Rebuild checklist](#10-rebuild-checklist)
 
 Secrets aren't recorded here. Generate every token and password fresh, and
 keep them outside the repository. The values used in the 16 October test

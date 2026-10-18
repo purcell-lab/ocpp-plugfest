@@ -2,7 +2,7 @@
 
 Status: source consolidation authorised; activation remains blocked. This is an
 acceptance target, not a declaration of live capability. See
-[the full implementation/build/test handover](citrine-everest-handover.md).
+[the full implementation/build/test handover](https://github.com/purcell-lab/ha-addons/blob/main/docs/citrine-everest-handover.md).
 
 The native CitrineOS/EVerest run verified +6/-5/+3 kW, both energy registers and
 explicit stop/closure, but **0 W left measured power at +3 kW**. CI now records
