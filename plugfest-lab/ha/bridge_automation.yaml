@@ -27,6 +27,8 @@ actions:
       {%- set m = trigger.payload_json if trigger.payload_json is mapping else {} -%}
       {%- set nowts = now().timestamp() -%}
       {%- set cap = 25000 -%}
+      {#- Export ceilings are not clipped to the charger's 25 kW: the solar share comes off the real ceiling first (a 70 kW ceiling with 4 kW of solar still leaves the full 25 kW), and the discharge is capped after. -#}
+      {%- set xcap = 100000 -%}
       {#- Export mode (input_boolean.lab_v2g_export) discharges the V2G EV at the lab target, clipped by the discharge headroom (ODE's export ceiling, opModExpLimW/opModGenLimW, less the solar export). Off: import mode, charging at the site headroom. -#}
       {%- set xmode = is_state('input_boolean.lab_v2g_export', 'on') -%}
       {%- set target = ((states('input_number.lab_v2g_discharge_target') | float(0) / 10) | round(0) | int * 10) if xmode else 0 -%}
@@ -52,7 +54,7 @@ actions:
       {%- set wgra = cap * 0.1667 / 60 -%}
       {%- set cv = [cap] + ([lim.opModImpLimW] if lim.get('opModImpLimW') is number else []) + ([lim.opModLoadLimW] if lim.get('opModLoadLimW') is number else []) -%}
       {%- set cur = 0 if off else ((([cv | min, 0] | max) / 10) | round(0) | int * 10) -%}
-      {%- set xv = [cap] + ([lim.opModExpLimW] if lim.get('opModExpLimW') is number else []) + ([lim.opModGenLimW] if lim.get('opModGenLimW') is number else []) -%}
+      {%- set xv = [xcap] + ([lim.opModExpLimW] if lim.get('opModExpLimW') is number else []) + ([lim.opModGenLimW] if lim.get('opModGenLimW') is number else []) -%}
       {%- set cur_x = 0 if off else ((([xv | min, 0] | max) / 10) | round(0) | int * 10) -%}
       {%- set sch = m.get('schedules', {}) -%}
       {%- set ns = namespace(ctl=[], pts=[]) -%}
@@ -95,7 +97,7 @@ actions:
         {%- set xs = act | selectattr('x') | map(attribute='v') | list -%}
         {%- set stop = act | selectattr('c') | selectattr('v', 'eq', 0) | list | count > 0 -%}
         {%- set v = 0 if stop else (((([cap] + ws) | min if ws else [cap, dflt] | min) / 10) | round(0) | int * 10) -%}
-        {%- set vx = 0 if stop else (((([cap] + xs) | min if xs else [cap, dflt_x] | min) / 10) | round(0) | int * 10) -%}
+        {%- set vx = 0 if stop else (((([xcap] + xs) | min if xs else [xcap, dflt_x] | min) / 10) | round(0) | int * 10) -%}
         {%- set vxr = vx -%}
         {%- set vx = vx if xmode else out.last_x -%}
         {%- set r = treq[((b - t0) / tstep + 0.001) | int] if tlive and b >= t0 and b < tend else none -%}

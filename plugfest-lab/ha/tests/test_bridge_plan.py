@@ -174,6 +174,16 @@ class ExportMode(unittest.TestCase):
         self.assertEqual(rows(plan)[0], (0, 0, 4500, 0))
         self.assertEqual(plan["discharge"], 0)
 
+    def test_solar_comes_off_the_real_ceiling_not_the_charger_cap(self):
+        # 70 kW export ceiling (GEN-11 DERC 1), 4,301 W of solar: 70,000 - (4,516 - 950) leaves far
+        # more than the charger's 25 kW, so the EV discharges the full 25 kW target, not 25,000 - 3,566.
+        big = {"limit": {"opModImpLimW": 0, "opModExpLimW": 70000, "opModConnect": True, "opModEnergize": True},
+               "schedules": {}}
+        plan = render(big, site(solar=4301, export_mode=True, target=25000))
+        self.assertEqual(rows(plan)[0][1], -25000)
+        self.assertEqual(rows(plan)[0][3], -25000)
+        self.assertEqual(plan["cur_x"], 70000)
+
     def test_target_below_headroom_is_kept(self):
         plan = render(payload(), site(solar=0, export_mode=True, target=3000))
         self.assertEqual(rows(plan)[0], (0, -3000, 4500, -5450))

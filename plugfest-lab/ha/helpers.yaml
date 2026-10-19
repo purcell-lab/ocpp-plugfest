@@ -75,7 +75,7 @@ input_number:
   lab_v2g_default_export_limit:
     name: Lab V2G default export limit
     min: 0
-    max: 25000
+    max: 100000
     step: 10
     mode: box
     unit_of_measurement: W
