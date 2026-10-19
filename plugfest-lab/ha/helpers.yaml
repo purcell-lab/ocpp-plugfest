@@ -1,0 +1,9 @@
+# UI-created helper (Settings > Devices & services > Helpers > Text), shown here in YAML form for reference.
+# Format while a test runs: "start_ts|step_s|W,W,..."; empty otherwise.
+input_text:
+  lab_v2g_test_steps:
+    name: Lab V2G test steps
+    icon: mdi:stairs
+    min: 0
+    max: 255
+    mode: text
