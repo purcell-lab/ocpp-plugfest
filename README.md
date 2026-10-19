@@ -119,6 +119,16 @@ became 0 W, because solar already filled the export limit. The charger followed 
 step exactly, and the site stayed inside both limits while the profile was in force.
 → [Full result, dispatch rule and the no-profile gap](results/2026-10-19-v2g-network-constrained/README.md)
 
+### At night, through the bridge, with house load credited
+
+<img src="results/2026-10-19-v2g-night-house-load/v2g-night-chart.svg" alt="Requested, dispatched and measured EV power, and site grid power against the 18 kW CSIP-AUS limits" width="100%">
+
+The same request at night, under **18 kW import and 18 kW export** limits, sent by the ODE
+schedule bridge itself. A profile was in force from the transaction start to the stop, so there
+was no 25 kW gap. The −20 kW step was clamped to **−18,950 W**: the export limit plus the 1 kW
+house load the EV also supplies. The site exported 17.95 kW, inside the limit.
+→ [Full result and dispatch](results/2026-10-19-v2g-night-house-load/README.md)
+
 ### CSIP-AUS envelopes on the Cactus test harness
 
 | Procedure | Charger | Result | Report |

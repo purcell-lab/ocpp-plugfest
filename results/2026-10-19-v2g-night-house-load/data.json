@@ -1,0 +1,139 @@
+{
+  "test": "Night-time V2G TxProfile through the ODE schedule bridge: discharge headroom credits the house load",
+  "date": "2026-10-19",
+  "timezone": "AEDT (UTC+11), Canberra; all times below are local",
+  "station": "SIM-EV-EVEREST-V2G-03 (EVerest DC V2G Test Charger 0.1.12, ISO 15118-20 DC_BPT, 25 kW both ways)",
+  "csms": "CitrineOS Isolated Lab 0.7.1 (CitrineOS v2.0.1) on the Green, CitrineOS-HA integration 0.6.1",
+  "bridge": "automation.lab_ode_schedule_to_ac_everest_prototype_v2 as in plugfest-lab/ha/bridge_automation.yaml at commit ef0ca44, left running for the whole test",
+  "transaction_id": "b78cd793-42bc-4b8b-85b0-805e1bf24e5b",
+  "network_constraint": {
+    "source": "Cactus CSIP-AUS run 75143 (ALL-25-EXT), DERC2 via Open Dynamic Export",
+    "opModExpLimW": 18000,
+    "opModImpLimW": 18000,
+    "active_since": "19:45:34"
+  },
+  "site_model": {
+    "house_load_w": 1000,
+    "cactus_test_load_w": 0,
+    "pv_w": 0,
+    "pv": "Open-Meteo Solar Forecast for a 10 kW system (3.6 kWp east, 6.4 kWp west, 10 kW inverter) at the Green's home location; 0 W at night",
+    "note": "Site values are computed from the model's mean values at the CSMS-measured EV power, before the +/-5% random variation; the live site meter is published on MQTT every 10 s and is not recorded in Home Assistant."
+  },
+  "dispatch": {
+    "rule": "Each requested setpoint is clamped to the site headroom of its period. Charge headroom = import limit + 0.95 x solar - 1.05 x house load. Discharge headroom = export limit - (1.05 x solar - 0.95 x house load): solar has priority on export, and house load the solar does not cover absorbs discharge too.",
+    "charge_headroom_w": 16950,
+    "discharge_headroom_w": 18950,
+    "discharge_headroom_before_change_w": 18000
+  },
+  "profile": {
+    "id": 9001,
+    "first_test_send": "20:56:19",
+    "test_start": "20:56:29",
+    "step_s": 60,
+    "operationMode": "CentralSetpoint",
+    "chargingRateUnit": "W",
+    "price_schedule": "OpenADR NSW1 Essential import price (absolutePriceSchedule), unchanged by the test",
+    "steps": [
+      {
+        "start": "20:56:29",
+        "requested_w": 20000,
+        "dispatched_w": 16950
+      },
+      {
+        "start": "20:57:29",
+        "requested_w": -20000,
+        "dispatched_w": -18950
+      },
+      {
+        "start": "20:58:29",
+        "requested_w": 6000,
+        "dispatched_w": 6000
+      },
+      {
+        "start": "20:59:29",
+        "requested_w": -5000,
+        "dispatched_w": -5000
+      },
+      {
+        "start": "21:00:29",
+        "requested_w": 0,
+        "dispatched_w": 0
+      }
+    ],
+    "after_test": {
+      "start": "21:01:29",
+      "dispatched_w": 16950,
+      "note": "import mode: charge at the site headroom"
+    }
+  },
+  "bridge_sends": [
+    "20:56:12",
+    "20:56:19",
+    "20:56:29",
+    "20:57:29",
+    "20:58:29",
+    "20:59:29",
+    "21:00:29",
+    "21:01:29"
+  ],
+  "csms_measured_ev_power_w": [
+    [
+      "20:56:11",
+      0
+    ],
+    [
+      "20:56:35",
+      1800
+    ],
+    [
+      "20:56:40",
+      0
+    ],
+    [
+      "20:56:45",
+      16950
+    ],
+    [
+      "20:57:35",
+      -18950
+    ],
+    [
+      "20:58:35",
+      6000
+    ],
+    [
+      "20:59:35",
+      -5000
+    ],
+    [
+      "21:00:35",
+      0
+    ],
+    [
+      "21:01:35",
+      16950
+    ],
+    [
+      "21:02:03",
+      0
+    ]
+  ],
+  "meter_gaps": [
+    [
+      "21:00:00",
+      "21:00:01",
+      "sensor read unknown for about 1 s; next sample -5000 W"
+    ]
+  ],
+  "events": {
+    "plugin": "20:56:08",
+    "start_pressed": "20:56:09",
+    "transaction_started": "20:56:12",
+    "script_started": "20:56:18",
+    "test_end": "21:01:29",
+    "stop_pressed": "21:02:00",
+    "transaction_closed": "21:02:03",
+    "unplug": "21:02:05",
+    "note": "plugin and unplug times are to within about 2 s (the event bus returns no timestamp); the others are Home Assistant state times"
+  }
+}
