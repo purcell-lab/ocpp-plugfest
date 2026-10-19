@@ -8,7 +8,7 @@ here first.
 |---|---|
 | [`bridge_automation.yaml`](bridge_automation.yaml) | `automation.lab_ode_schedule_to_ac_everest_prototype_v2`, the ODE schedule bridge |
 | [`txprofile_test_script.yaml`](txprofile_test_script.yaml) | `script.lab_v2g_txprofile_test`, a stepped TxProfile test run through the bridge |
-| [`synthetic_site_automation.yaml`](synthetic_site_automation.yaml) | `automation.lab_open_meteo_solar_forecast_to_ode_inverters_1`, the synthetic 6 kW solar inverter (`inverters/1`) and site meter (`site`) |
+| [`synthetic_site_automation.yaml`](synthetic_site_automation.yaml) | `automation.lab_open_meteo_solar_forecast_to_ode_inverters_1`, the synthetic 10 kW solar inverter (`inverters/1`) and site meter (`site`) |
 | [`v2g_readings_automation.yaml`](v2g_readings_automation.yaml) | `automation.lab_v2g_readings_to_ode_lab_site_inverters_4`: `site` + V2G EV + Cactus test load → `lab/site` (ODE's meter), and the charger as ODE's `inverters/4` |
 | [`ode_limits_helpers_automation.yaml`](ode_limits_helpers_automation.yaml) | `automation.lab_ode_limits_to_lab_helpers`: ODE's live `limits/csipAus` → the `lab_ode_*` helpers the synthetic site curtails to |
 | [`helpers.yaml`](helpers.yaml) | Every lab helper these automations use, with its settings |
@@ -62,9 +62,9 @@ data:
 
 Away from the home broker, the Green has no real solar or site meter. This automation stands in for
 them on the local Mosquitto, every 10 s and on every change.
-- **Solar:** the Open-Meteo Solar Forecast for a 6 kW system at the Green's home location: 2.2 kWp
-  east and 3.8 kWp west, with a 6 kW inverter (`sensor.home_power_production_now`). It is published
-  as ODE's `inverters/1`, with a 6 kW / 6 kVA nameplate.
+- **Solar:** the Open-Meteo Solar Forecast for a 10 kW system at the Green's home location: 3.6 kWp
+  east and 6.4 kWp west, with a 10 kW inverter (`sensor.home_power_production_now`). It is published
+  as ODE's `inverters/1`, with a 10 kW / 10 kVA nameplate.
 - **Site meter:** house load (`input_number.lab_house_load`) minus solar, published on `site`.
   "Lab: V2G readings to ODE" then adds the V2G EV and the Cactus test load and publishes it as
   `lab/site`.
@@ -74,11 +74,11 @@ them on the local Mosquitto, every 10 s and on every change.
 - **Variation:** readings vary randomly like a live meter: ±5 % on power, phases and voltage, and
   ±0.1 % on frequency.
 - **Reactive power:** the house load runs at PF 0.95 lagging. The inverter follows the
-  AS/NZS 4777.2 Australia A volt-var curve on its 6 kVA rating, plus a 0.995 absorbing
+  AS/NZS 4777.2 Australia A volt-var curve on its 10 kVA rating, plus a 0.995 absorbing
   power-factor offset.
 
 The Open-Meteo integration itself is configured in the UI: azimuth 90° and 270°, declination 10°,
-efficiency 0.84 and inverter limit 6,000 W. Array sizes can only be changed by removing the entry
+efficiency 0.84 and inverter limit 10,000 W. Array sizes can only be changed by removing the entry
 and adding it again, which keeps the entity IDs.
 
 ## How the pieces fit
