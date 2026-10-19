@@ -1,0 +1,72 @@
+# Lab: ODE limits to lab helpers: copies ODE's live CSIP-AUS limits into helpers for the synthetic site.
+# UI-managed automation (unique id 1792378413799, automation.lab_ode_limits_to_lab_helpers).
+# Deploy: Settings > Automations > the automation > Edit in YAML, replace with this file (keep the id), save.
+id: '1792378413799'
+alias: 'Lab: ODE limits to lab helpers'
+description: 'Plugfest mode: copies ODE''s live CSIP-AUS limits (topic limits/csipAus, about once a second, already ramped by setGradW) into helpers, so the synthetic site publisher can curtail the simulated PV like a real inverter obeying ODE. input_number.lab_ode_export_limit / _generation_limit / _import_limit hold opModExpLimW / opModGenLimW / opModImpLimW in W rounded to 10 W, or -1 when ODE has no such limit; input_boolean.lab_ode_energized is off when opModConnect or opModEnergize is false. A helper is written only when its value changes.'
+triggers:
+- note: ODE publishes its CSIP-AUS limit about once a second.
+  topic: limits/csipAus
+  trigger: mqtt
+conditions:
+- condition: template
+  note: Only a well-formed ODE limits message.
+  value_template: '{{ trigger.payload_json is mapping and trigger.payload_json.get(''limit'') is mapping }}'
+actions:
+- note: Each key reads only the trigger, so render order does not matter.
+  variables:
+    energized: '{%- set l = trigger.payload_json.limit -%}{{ not (l.get(''opModConnect'') == false or l.get(''opModEnergize'') == false) }}'
+    exp: '{%- set v = trigger.payload_json.limit.get(''opModExpLimW'') -%}{{ ((v / 10) | round(0) * 10) | int if v is number else -1 }}'
+    gen: '{%- set v = trigger.payload_json.limit.get(''opModGenLimW'') -%}{{ ((v / 10) | round(0) * 10) | int if v is number else -1 }}'
+    imp: '{%- set v = trigger.payload_json.limit.get(''opModImpLimW'') -%}{{ ((v / 10) | round(0) * 10) | int if v is number else -1 }}'
+- if:
+  - condition: template
+    value_template: '{{ states(''input_number.lab_ode_export_limit'') | float(-2) != exp }}'
+  then:
+  - action: input_number.set_value
+    data:
+      value: '{{ exp }}'
+    target:
+      entity_id: input_number.lab_ode_export_limit
+- if:
+  - condition: template
+    value_template: '{{ states(''input_number.lab_ode_generation_limit'') | float(-2) != gen }}'
+  then:
+  - action: input_number.set_value
+    data:
+      value: '{{ gen }}'
+    target:
+      entity_id: input_number.lab_ode_generation_limit
+- if:
+  - condition: template
+    value_template: '{{ states(''input_number.lab_ode_import_limit'') | float(-2) != imp }}'
+  then:
+  - action: input_number.set_value
+    data:
+      value: '{{ imp }}'
+    target:
+      entity_id: input_number.lab_ode_import_limit
+- if:
+  - condition: template
+    value_template: '{{ energized }}'
+  then:
+  - if:
+    - condition: state
+      entity_id: input_boolean.lab_ode_energized
+      state: 'off'
+    then:
+    - action: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.lab_ode_energized
+  else:
+  - if:
+    - condition: state
+      entity_id: input_boolean.lab_ode_energized
+      state: 'on'
+    then:
+    - action: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.lab_ode_energized
+  note: Energized unless ODE reports opModConnect or opModEnergize false; written only on change.
+max_exceeded: silent
+mode: single

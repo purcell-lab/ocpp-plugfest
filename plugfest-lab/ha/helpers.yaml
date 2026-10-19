@@ -1,5 +1,98 @@
-# UI-created helper (Settings > Devices & services > Helpers > Text), shown here in YAML form for reference.
-# Format while a test runs: "start_ts|step_s|W,W,..."; empty otherwise.
+# The lab helpers on the Green, in YAML form for reference. They are UI-created (Settings > Devices &
+# services > Helpers); recreate them there with these settings.
+#
+# Inputs:   lab_house_load (synthetic house load), lab_test_load (Cactus test load added to lab/site),
+#           lab_v2g_export (bridge export mode), lab_v2g_discharge_target (export-mode discharge),
+#           lab_v2g_test_steps ("start_ts|step_s|W,W,..." while script.lab_v2g_txprofile_test runs; empty otherwise).
+# Written by "Lab: ODE limits to lab helpers": lab_ode_import/export/generation_limit (W, -1 = no limit),
+#           lab_ode_energized (off while opModConnect or opModEnergize is false).
+# Bridge state: lab_ac_default_limit, lab_v2g_default_export_limit (learned defaults), lab_ac_limit_sent,
+#           lab_v2g_discharge_sent, lab_ac_limit_sent_at, lab_ac_schedule_sent (change detection).
+input_number:
+  lab_house_load:
+    name: Lab house load
+    min: 0
+    max: 15000
+    step: 100
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:home-lightning-bolt
+  lab_test_load:
+    name: Lab test load
+    min: 0
+    max: 25000
+    step: 100
+    mode: box
+    unit_of_measurement: W
+  lab_ode_import_limit:
+    name: Lab ODE import limit
+    min: -1
+    max: 100000
+    step: 1
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:transmission-tower-import
+  lab_ode_export_limit:
+    name: Lab ODE export limit
+    min: -1
+    max: 100000
+    step: 1
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:transmission-tower-export
+  lab_ode_generation_limit:
+    name: Lab ODE generation limit
+    min: -1
+    max: 100000
+    step: 1
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:solar-power-variant
+  lab_ac_default_limit:
+    name: Lab AC default limit
+    min: 0
+    max: 25000
+    step: 1
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:ev-station
+  lab_ac_limit_sent:
+    name: Lab AC limit sent
+    min: -1
+    max: 25000
+    step: 1
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:ev-station
+  lab_v2g_discharge_target:
+    name: Lab V2G discharge target
+    min: 0
+    max: 25000
+    step: 100
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:battery-arrow-up
+  lab_v2g_default_export_limit:
+    name: Lab V2G default export limit
+    min: 0
+    max: 25000
+    step: 10
+    mode: box
+    unit_of_measurement: W
+  lab_v2g_discharge_sent:
+    name: Lab V2G discharge sent
+    min: -1
+    max: 25000
+    step: 10
+    mode: box
+    unit_of_measurement: W
+input_boolean:
+  lab_ode_energized:
+    name: Lab ODE energized
+    icon: mdi:power-plug
+  lab_v2g_export:
+    name: Lab V2G export
+    icon: mdi:transmission-tower-export
 input_text:
   lab_v2g_test_steps:
     name: Lab V2G test steps
@@ -7,3 +100,15 @@ input_text:
     min: 0
     max: 255
     mode: text
+  lab_ac_schedule_sent:
+    name: Lab AC schedule sent
+    icon: mdi:calendar-clock
+    min: 0
+    max: 255
+    mode: text
+input_datetime:
+  lab_ac_limit_sent_at:
+    name: Lab AC limit sent at
+    icon: mdi:clock-outline
+    has_date: true
+    has_time: true

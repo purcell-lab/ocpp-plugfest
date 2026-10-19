@@ -1,0 +1,49 @@
+# Lab: V2G readings to ODE (lab/site, inverters/4): adds the simulated V2G EV and Cactus test load to the site meter for ODE.
+# UI-managed automation (unique id 1792222726941, automation.lab_v2g_readings_to_ode_lab_site_inverters_4).
+# Deploy: Settings > Automations > the automation > Edit in YAML, replace with this file (keep the id), save.
+id: '1792222726941'
+alias: 'Lab: V2G readings to ODE (lab/site, inverters/4)'
+description: Lab-only readings for the Green's Open Dynamic Export, purcell-lab/ha-addons#55. On every real site message (published by the main HA on topic site), publishes lab/site = real site + the simulated V2G EV power + the simulated Cactus test load (input_number.lab_test_load, W, split evenly over three phases) (SIM-EV-EVEREST-V2G-03, from CitrineOS meter values; + charging, - discharging; split evenly over three phases) and inverters/4 = the V2G charger as a DER (realPower = - EV power, so discharge is export; nameplate maxW 0 so the site rating ODE reports (and Cactus maxExportW) stays that of the real inverters, type 82 PV_STOR, the nearest type ODE accepts). EV power counts only while the meter is fresh and the transaction open; otherwise 0. The Green's ODE reads lab/site as its meter and inverters/4 as its fourth inverter; the real site topic and the main HA are unchanged.
+triggers:
+- note: The main HA publishes the real site meter on every Sigen frequency update (every few seconds).
+  topic: site
+  trigger: mqtt
+conditions:
+- condition: template
+  note: Only a valid ODE site sample is re-published.
+  value_template: '{{ trigger.payload_json is mapping and trigger.payload_json.get(''realPower'') is mapping and trigger.payload_json.realPower.get(''net'') is number }}'
+actions:
+- note: 'Simulated EV power in W: + charging (import), - discharging (export).'
+  variables:
+    ev: |-
+      {%- set s = 'sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_measured_ev_power' -%}
+      {{ (states(s) | float(0)) if state_attr(s, 'meter_fresh') == true and state_attr(s, 'transaction_closed') == false else 0 }}
+    load: '{{ states(''input_number.lab_test_load'') | float(0) }}'
+- action: mqtt.publish
+  data:
+    evaluate_payload: false
+    payload: |-
+      {%- set m = trigger.payload_json -%}
+      {%- set rp = m.realPower -%}
+      {%- set site_rp = dict(rp, net=(rp.net + ev + load) | round(1)) -%}
+      {%- if rp.type == 'perPhaseNet' -%}
+      {%- set site_rp = dict(site_rp, phaseA=(rp.phaseA + (ev + load) / 3) | round(1), phaseB=(rp.phaseB + (ev + load) / 3) | round(1), phaseC=(rp.phaseC + (ev + load) / 3) | round(1)) -%}
+      {%- endif -%}
+      {{ dict(m, realPower=site_rp) | to_json }}
+    qos: 0
+    retain: true
+    topic: lab/site
+  note: 'Real site plus the simulated EV and the simulated Cactus test load input_number.lab_test_load (ODE site sign: + import, - export).'
+- action: mqtt.publish
+  data:
+    evaluate_payload: false
+    payload: |-
+      {%- set m = trigger.payload_json -%}
+      {%- set v = m.get('voltage', {}) -%}
+      {{ {'inverter': {'realPower': (0 - ev) | round(1), 'reactivePower': 0, 'voltagePhaseA': v.get('phaseA'), 'voltagePhaseB': v.get('phaseB'), 'voltagePhaseC': v.get('phaseC'), 'frequency': m.get('frequency', 50)}, 'nameplate': {'type': 82, 'maxW': 0, 'maxVA': 0, 'maxVar': 0}, 'settings': {'maxW': 0, 'maxVA': 0, 'maxVar': 0}, 'status': {'operationalModeStatus': 2, 'genConnectStatus': 7}} | to_json }}
+    qos: 0
+    retain: true
+    topic: inverters/4
+  note: 'The V2G charger as a DER (ODE inverter sign: + export/produce, - import/consume).'
+max_exceeded: silent
+mode: single

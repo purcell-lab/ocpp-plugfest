@@ -9,7 +9,9 @@ here first.
 | [`bridge_automation.yaml`](bridge_automation.yaml) | `automation.lab_ode_schedule_to_ac_everest_prototype_v2`, the ODE schedule bridge |
 | [`txprofile_test_script.yaml`](txprofile_test_script.yaml) | `script.lab_v2g_txprofile_test`, a stepped TxProfile test run through the bridge |
 | [`synthetic_site_automation.yaml`](synthetic_site_automation.yaml) | `automation.lab_open_meteo_solar_forecast_to_ode_inverters_1`, the synthetic 6 kW solar inverter (`inverters/1`) and site meter (`site`) |
-| [`helpers.yaml`](helpers.yaml) | `input_text.lab_v2g_test_steps`, the test steps the script hands to the bridge |
+| [`v2g_readings_automation.yaml`](v2g_readings_automation.yaml) | `automation.lab_v2g_readings_to_ode_lab_site_inverters_4`: `site` + V2G EV + Cactus test load → `lab/site` (ODE's meter), and the charger as ODE's `inverters/4` |
+| [`ode_limits_helpers_automation.yaml`](ode_limits_helpers_automation.yaml) | `automation.lab_ode_limits_to_lab_helpers`: ODE's live `limits/csipAus` → the `lab_ode_*` helpers the synthetic site curtails to |
+| [`helpers.yaml`](helpers.yaml) | Every lab helper these automations use, with its settings |
 | [`tests/test_bridge_plan.py`](tests/test_bridge_plan.py) | Renders the bridge's plan template with sample ODE limits and site readings |
 
 ## The bridge
@@ -78,6 +80,22 @@ them on the local Mosquitto, every 10 s and on every change.
 The Open-Meteo integration itself is configured in the UI: azimuth 90° and 270°, declination 10°,
 efficiency 0.84 and inverter limit 6,000 W. Array sizes can only be changed by removing the entry
 and adding it again, which keeps the entity IDs.
+
+## How the pieces fit
+
+```
+Open-Meteo forecast ──► synthetic site ──► site, inverters/1 ──► V2G readings ──► lab/site, inverters/4 ──► ODE
+        ▲                     ▲                                       ▲                                      │
+  lab_house_load        lab_ode_* helpers ◄── ODE limits to helpers ◄─┼──────────── limits/csipAus ◄─────────┤
+                                                                      │                                      ▼
+                                              V2G EV power (CitrineOS meter values) ◄── charger ◄── bridge (TxProfile)
+```
+
+- **Meter:** ODE reads `lab/site` and inverters 1 and 4, and publishes `limits/csipAus` about once
+  a second.
+- **Charger:** the bridge turns the limits into the charger's TxProfile.
+- **Curtailment:** "ODE limits to lab helpers" copies the same limits into helpers, so the
+  synthetic site curtails solar like an inverter obeying ODE.
 
 ## Changing and deploying
 
