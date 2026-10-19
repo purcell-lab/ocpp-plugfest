@@ -1,0 +1,2530 @@
+{
+ "test": "Cactus CSIP-AUS GEN-10, primacy validation for generators (DER-G), run 75351",
+ "date": "2026-10-20",
+ "timezone": "AEDT (UTC+11), Canberra; all times below are local",
+ "result": {
+  "status": "46/46 steps complete.",
+  "checks": {
+   "all-steps-complete": {
+    "passed": true,
+    "description": null
+   },
+   "all-requests-xsd-valid": {
+    "passed": true,
+    "description": "No XSD errors detected in any requests."
+   }
+  },
+  "warnings": [
+   "88 active power readings received exceed the DER's setMaxW limit (in the positive/export or negative/import direction). Active power should never exceed setMaxW."
+  ]
+ },
+ "started": "07:44:10",
+ "finalised": "08:42:23",
+ "client": "Open Dynamic Export 0.1.4 App (v0.20.0 + default-control-merge.patch) on the Green; ODE schedule bridge (export mode, solar priority from 07:50) driving the EVerest DC V2G simulator SIM-EV-EVEREST-V2G-03 through CitrineOS; synthetic site: 1 kW house load, Open-Meteo solar for a 10 kW system",
+ "setMaxW_w": 10000,
+ "note_site_power": "Cactus plots Site Power as twice the site net ODE posted (net plus the three phases, which sum to net): e.g. 08:22 ODE posted -13,097 W, Cactus plotted -26,194 W. ode_site_net_w below is what ODE posted (60 s averages, + import, - export).",
+ "note_timestamps": "ODE labels each 60 s average with the end of its averaging window (07:49:01-07:49:50 EV ramp shows in the 07:50 value; the 07:51:00 EV stop shows from the 07:52 value).",
+ "ode_site_net_w": [
+  [
+   "07:44:00",
+   -665
+  ],
+  [
+   "07:45:00",
+   -725
+  ],
+  [
+   "07:46:00",
+   -1046
+  ],
+  [
+   "07:47:00",
+   -2071
+  ],
+  [
+   "07:48:00",
+   -3000
+  ],
+  [
+   "07:49:00",
+   -3045
+  ],
+  [
+   "07:50:00",
+   -8477
+  ],
+  [
+   "07:51:00",
+   -12010
+  ],
+  [
+   "07:52:00",
+   -1666
+  ],
+  [
+   "07:53:00",
+   0
+  ],
+  [
+   "07:54:00",
+   0
+  ],
+  [
+   "07:55:00",
+   0
+  ],
+  [
+   "07:56:00",
+   0
+  ],
+  [
+   "07:57:00",
+   0
+  ],
+  [
+   "07:58:00",
+   0
+  ],
+  [
+   "07:59:00",
+   0
+  ],
+  [
+   "08:00:00",
+   0
+  ],
+  [
+   "08:01:00",
+   0
+  ],
+  [
+   "08:02:00",
+   0
+  ],
+  [
+   "08:03:00",
+   0
+  ],
+  [
+   "08:04:00",
+   0
+  ],
+  [
+   "08:05:00",
+   -53
+  ],
+  [
+   "08:06:00",
+   -2196
+  ],
+  [
+   "08:07:00",
+   -5922
+  ],
+  [
+   "08:08:00",
+   -12380
+  ],
+  [
+   "08:09:00",
+   -12658
+  ],
+  [
+   "08:10:00",
+   -12633
+  ],
+  [
+   "08:11:00",
+   -12559
+  ],
+  [
+   "08:12:00",
+   -11936
+  ],
+  [
+   "08:13:00",
+   -4714
+  ],
+  [
+   "08:14:00",
+   -2844
+  ],
+  [
+   "08:15:00",
+   557
+  ],
+  [
+   "08:16:00",
+   1001
+  ],
+  [
+   "08:17:00",
+   975
+  ],
+  [
+   "08:18:00",
+   1003
+  ],
+  [
+   "08:19:00",
+   1005
+  ],
+  [
+   "08:20:00",
+   -10703
+  ],
+  [
+   "08:21:00",
+   -13011
+  ],
+  [
+   "08:22:00",
+   -13097
+  ],
+  [
+   "08:23:00",
+   -13092
+  ],
+  [
+   "08:24:00",
+   -12982
+  ],
+  [
+   "08:25:00",
+   -13003
+  ],
+  [
+   "08:26:00",
+   -13025
+  ],
+  [
+   "08:27:00",
+   -13056
+  ],
+  [
+   "08:28:00",
+   -6985
+  ],
+  [
+   "08:29:00",
+   -4744
+  ],
+  [
+   "08:30:00",
+   -4805
+  ],
+  [
+   "08:31:00",
+   -1269
+  ],
+  [
+   "08:32:00",
+   0
+  ],
+  [
+   "08:33:00",
+   0
+  ],
+  [
+   "08:34:00",
+   0
+  ],
+  [
+   "08:35:00",
+   0
+  ],
+  [
+   "08:36:00",
+   -1736
+  ],
+  [
+   "08:37:00",
+   -2054
+  ],
+  [
+   "08:38:00",
+   -3047
+  ],
+  [
+   "08:39:00",
+   -4764
+  ],
+  [
+   "08:40:00",
+   -4735
+  ],
+  [
+   "08:41:00",
+   -4782
+  ],
+  [
+   "08:42:00",
+   -4808
+  ]
+ ],
+ "ode_der_net_w": [
+  [
+   "07:44:00",
+   1652
+  ],
+  [
+   "07:45:00",
+   1722
+  ],
+  [
+   "07:46:00",
+   2052
+  ],
+  [
+   "07:47:00",
+   3058
+  ],
+  [
+   "07:48:00",
+   3985
+  ],
+  [
+   "07:49:00",
+   4040
+  ],
+  [
+   "07:50:00",
+   9462
+  ],
+  [
+   "07:51:00",
+   12996
+  ],
+  [
+   "07:52:00",
+   2689
+  ],
+  [
+   "07:53:00",
+   1005
+  ],
+  [
+   "07:54:00",
+   987
+  ],
+  [
+   "07:55:00",
+   991
+  ],
+  [
+   "07:56:00",
+   993
+  ],
+  [
+   "07:57:00",
+   994
+  ],
+  [
+   "07:58:00",
+   1009
+  ],
+  [
+   "07:59:00",
+   1019
+  ],
+  [
+   "08:00:00",
+   1026
+  ],
+  [
+   "08:01:00",
+   1007
+  ],
+  [
+   "08:02:00",
+   1005
+  ],
+  [
+   "08:03:00",
+   1002
+  ],
+  [
+   "08:04:00",
+   1011
+  ],
+  [
+   "08:05:00",
+   1047
+  ],
+  [
+   "08:06:00",
+   3190
+  ],
+  [
+   "08:07:00",
+   6904
+  ],
+  [
+   "08:08:00",
+   13378
+  ],
+  [
+   "08:09:00",
+   13624
+  ],
+  [
+   "08:10:00",
+   13634
+  ],
+  [
+   "08:11:00",
+   13537
+  ],
+  [
+   "08:12:00",
+   12929
+  ],
+  [
+   "08:13:00",
+   5710
+  ],
+  [
+   "08:14:00",
+   3842
+  ],
+  [
+   "08:15:00",
+   453
+  ],
+  [
+   "08:16:00",
+   0
+  ],
+  [
+   "08:17:00",
+   0
+  ],
+  [
+   "08:18:00",
+   0
+  ],
+  [
+   "08:19:00",
+   0
+  ],
+  [
+   "08:20:00",
+   11690
+  ],
+  [
+   "08:21:00",
+   14009
+  ],
+  [
+   "08:22:00",
+   14058
+  ],
+  [
+   "08:23:00",
+   14083
+  ],
+  [
+   "08:24:00",
+   13998
+  ],
+  [
+   "08:25:00",
+   14007
+  ],
+  [
+   "08:26:00",
+   14050
+  ],
+  [
+   "08:27:00",
+   14073
+  ],
+  [
+   "08:28:00",
+   7991
+  ],
+  [
+   "08:29:00",
+   5745
+  ],
+  [
+   "08:30:00",
+   5778
+  ],
+  [
+   "08:31:00",
+   2271
+  ],
+  [
+   "08:32:00",
+   1017
+  ],
+  [
+   "08:33:00",
+   999
+  ],
+  [
+   "08:34:00",
+   1009
+  ],
+  [
+   "08:35:00",
+   998
+  ],
+  [
+   "08:36:00",
+   2773
+  ],
+  [
+   "08:37:00",
+   3063
+  ],
+  [
+   "08:38:00",
+   4064
+  ],
+  [
+   "08:39:00",
+   5736
+  ],
+  [
+   "08:40:00",
+   5749
+  ],
+  [
+   "08:41:00",
+   5793
+  ],
+  [
+   "08:42:00",
+   5785
+  ]
+ ],
+ "cactus_limits_w": [
+  {
+   "t": "07:44:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 0,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -1330
+  },
+  {
+   "t": "07:44:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -1330
+  },
+  {
+   "t": "07:44:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -1450
+  },
+  {
+   "t": "07:45:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -1450
+  },
+  {
+   "t": "07:45:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -1450
+  },
+  {
+   "t": "07:45:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -2092
+  },
+  {
+   "t": "07:46:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -2092
+  },
+  {
+   "t": "07:46:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -2092
+  },
+  {
+   "t": "07:46:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4142
+  },
+  {
+   "t": "07:47:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4142
+  },
+  {
+   "t": "07:47:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4142
+  },
+  {
+   "t": "07:47:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6000
+  },
+  {
+   "t": "07:48:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6000
+  },
+  {
+   "t": "07:48:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6000
+  },
+  {
+   "t": "07:48:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6090
+  },
+  {
+   "t": "07:49:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6090
+  },
+  {
+   "t": "07:49:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6090
+  },
+  {
+   "t": "07:49:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -16954
+  },
+  {
+   "t": "07:50:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -16954
+  },
+  {
+   "t": "07:50:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -16954
+  },
+  {
+   "t": "07:50:50",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -24020
+  },
+  {
+   "t": "07:51:10",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -24020
+  },
+  {
+   "t": "07:51:30",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -24020
+  },
+  {
+   "t": "07:51:50",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -3332
+  },
+  {
+   "t": "07:52:10",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -3332
+  },
+  {
+   "t": "07:52:30",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -3332
+  },
+  {
+   "t": "07:52:50",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:53:10",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:53:30",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:53:50",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:54:10",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:54:30",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:54:50",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:55:10",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:55:30",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:55:50",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:56:10",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:56:30",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:56:50",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:57:10",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:57:30",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:57:50",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:58:10",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:58:30",
+   "derp1_exp": 0,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:58:50",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:59:10",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:59:30",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "07:59:50",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:00:10",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:00:30",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:00:50",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:01:10",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:01:30",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:01:50",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:02:10",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:02:30",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:02:50",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:03:10",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:03:30",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:03:50",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:04:10",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:04:30",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:04:50",
+   "derp1_exp": 0,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -105
+  },
+  {
+   "t": "08:05:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -105
+  },
+  {
+   "t": "08:05:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -105
+  },
+  {
+   "t": "08:05:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4392
+  },
+  {
+   "t": "08:06:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4392
+  },
+  {
+   "t": "08:06:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4392
+  },
+  {
+   "t": "08:06:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -11844
+  },
+  {
+   "t": "08:07:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -11844
+  },
+  {
+   "t": "08:07:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -11844
+  },
+  {
+   "t": "08:07:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -24760
+  },
+  {
+   "t": "08:08:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -24760
+  },
+  {
+   "t": "08:08:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -24760
+  },
+  {
+   "t": "08:08:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25317
+  },
+  {
+   "t": "08:09:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25317
+  },
+  {
+   "t": "08:09:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25317
+  },
+  {
+   "t": "08:09:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25267
+  },
+  {
+   "t": "08:10:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25267
+  },
+  {
+   "t": "08:10:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25267
+  },
+  {
+   "t": "08:10:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25119
+  },
+  {
+   "t": "08:11:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25119
+  },
+  {
+   "t": "08:11:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25119
+  },
+  {
+   "t": "08:11:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -23873
+  },
+  {
+   "t": "08:12:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -23873
+  },
+  {
+   "t": "08:12:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -23873
+  },
+  {
+   "t": "08:12:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9429
+  },
+  {
+   "t": "08:13:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9429
+  },
+  {
+   "t": "08:13:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9429
+  },
+  {
+   "t": "08:13:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -5688
+  },
+  {
+   "t": "08:14:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -5688
+  },
+  {
+   "t": "08:14:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -5688
+  },
+  {
+   "t": "08:14:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 1114
+  },
+  {
+   "t": "08:15:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 1114
+  },
+  {
+   "t": "08:15:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 1114
+  },
+  {
+   "t": "08:15:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2002
+  },
+  {
+   "t": "08:16:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2002
+  },
+  {
+   "t": "08:16:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2002
+  },
+  {
+   "t": "08:16:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 1950
+  },
+  {
+   "t": "08:17:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 1950
+  },
+  {
+   "t": "08:17:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 1950
+  },
+  {
+   "t": "08:17:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2007
+  },
+  {
+   "t": "08:18:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2007
+  },
+  {
+   "t": "08:18:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2007
+  },
+  {
+   "t": "08:18:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": 0,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2009
+  },
+  {
+   "t": "08:19:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2009
+  },
+  {
+   "t": "08:19:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 2009
+  },
+  {
+   "t": "08:19:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -21406
+  },
+  {
+   "t": "08:20:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -21406
+  },
+  {
+   "t": "08:20:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -21406
+  },
+  {
+   "t": "08:20:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26022
+  },
+  {
+   "t": "08:21:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26022
+  },
+  {
+   "t": "08:21:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26022
+  },
+  {
+   "t": "08:21:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26194
+  },
+  {
+   "t": "08:22:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26194
+  },
+  {
+   "t": "08:22:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26194
+  },
+  {
+   "t": "08:22:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26184
+  },
+  {
+   "t": "08:23:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26184
+  },
+  {
+   "t": "08:23:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26184
+  },
+  {
+   "t": "08:23:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25963
+  },
+  {
+   "t": "08:24:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25963
+  },
+  {
+   "t": "08:24:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -25963
+  },
+  {
+   "t": "08:24:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26006
+  },
+  {
+   "t": "08:25:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26006
+  },
+  {
+   "t": "08:25:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26006
+  },
+  {
+   "t": "08:25:50",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26050
+  },
+  {
+   "t": "08:26:10",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26050
+  },
+  {
+   "t": "08:26:30",
+   "derp1_exp": null,
+   "derp6_exp": 20000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26050
+  },
+  {
+   "t": "08:26:50",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26113
+  },
+  {
+   "t": "08:27:10",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26113
+  },
+  {
+   "t": "08:27:30",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -26113
+  },
+  {
+   "t": "08:27:50",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -13970
+  },
+  {
+   "t": "08:28:10",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -13970
+  },
+  {
+   "t": "08:28:30",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -13970
+  },
+  {
+   "t": "08:28:50",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9489
+  },
+  {
+   "t": "08:29:10",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9489
+  },
+  {
+   "t": "08:29:30",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9489
+  },
+  {
+   "t": "08:29:50",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9609
+  },
+  {
+   "t": "08:30:10",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": -9609
+  },
+  {
+   "t": "08:30:30",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": -9609
+  },
+  {
+   "t": "08:30:50",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": -2538
+  },
+  {
+   "t": "08:31:10",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": -2538
+  },
+  {
+   "t": "08:31:30",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": -2538
+  },
+  {
+   "t": "08:31:50",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:32:10",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:32:30",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:32:50",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:33:10",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:33:30",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:33:50",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:34:10",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:34:30",
+   "derp1_exp": 0,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": null,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:34:50",
+   "derp1_exp": null,
+   "derp6_exp": 5000,
+   "default_exp": 3000,
+   "derp1_gen": 5000,
+   "derp6_gen": 3000,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:35:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": 5000,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:35:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 3000,
+   "derp1_gen": 5000,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "08:35:50",
+   "derp1_exp": null,
+   "derp6_exp": 2000,
+   "default_exp": 3000,
+   "derp1_gen": 5000,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -3472
+  },
+  {
+   "t": "08:36:10",
+   "derp1_exp": null,
+   "derp6_exp": 2000,
+   "default_exp": 3000,
+   "derp1_gen": 5000,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -3472
+  },
+  {
+   "t": "08:36:30",
+   "derp1_exp": null,
+   "derp6_exp": 2000,
+   "default_exp": 3000,
+   "derp1_gen": 5000,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -3472
+  },
+  {
+   "t": "08:36:50",
+   "derp1_exp": null,
+   "derp6_exp": 2000,
+   "default_exp": 3000,
+   "derp1_gen": 5000,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4108
+  },
+  {
+   "t": "08:37:10",
+   "derp1_exp": null,
+   "derp6_exp": 2000,
+   "default_exp": 3000,
+   "derp1_gen": 5000,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4108
+  },
+  {
+   "t": "08:37:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -4108
+  },
+  {
+   "t": "08:37:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6094
+  },
+  {
+   "t": "08:38:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6094
+  },
+  {
+   "t": "08:38:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -6094
+  },
+  {
+   "t": "08:38:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9528
+  },
+  {
+   "t": "08:39:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9528
+  },
+  {
+   "t": "08:39:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9528
+  },
+  {
+   "t": "08:39:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9470
+  },
+  {
+   "t": "08:40:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9470
+  },
+  {
+   "t": "08:40:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9470
+  },
+  {
+   "t": "08:40:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9564
+  },
+  {
+   "t": "08:41:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9564
+  },
+  {
+   "t": "08:41:30",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9564
+  },
+  {
+   "t": "08:41:50",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9616
+  },
+  {
+   "t": "08:42:10",
+   "derp1_exp": null,
+   "derp6_exp": null,
+   "default_exp": 5000,
+   "derp1_gen": null,
+   "derp6_gen": null,
+   "default_imp": 0,
+   "cactus_site_power": -9616
+  }
+ ],
+ "steps": [
+  [
+   "07:44:50",
+   "GET",
+   "/edev/1/derp/1/dderc",
+   200,
+   "GET-DEFAULT-DERC"
+  ],
+  [
+   "07:48:49",
+   "GET",
+   "/edev/1/fsa/2/derp",
+   200,
+   "GET-DERP-1"
+  ],
+  [
+   "07:48:53",
+   "GET",
+   "/edev/1/derp/6/derc",
+   200,
+   "GET-DERC-1"
+  ],
+  [
+   "07:48:54",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-1-RESPONSE-STARTED"
+  ],
+  [
+   "07:50:54",
+   "GET",
+   "/edev/1/fsa/1/derp",
+   200,
+   "GET-DERP-2"
+  ],
+  [
+   "07:50:56",
+   "GET",
+   "/edev/1/derp/1/derc",
+   200,
+   "GET-DERC-2"
+  ],
+  [
+   "07:50:56",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-1-RESPONSE-SUPERSEDED"
+  ],
+  [
+   "07:50:56",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-2-RESPONSE-STARTED"
+  ],
+  [
+   "08:04:54",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-2-RESPONSE-COMPLETED"
+  ],
+  [
+   "08:05:54",
+   "GET",
+   "/edev/1/fsa/2/derp",
+   200,
+   "GET-DERP-3"
+  ],
+  [
+   "08:06:03",
+   "GET",
+   "/edev/1/derp/6/derc",
+   200,
+   "GET-DERC-3"
+  ],
+  [
+   "08:06:04",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-3-RESPONSE-STARTED"
+  ],
+  [
+   "08:10:54",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-3-RESPONSE-COMPLETED"
+  ],
+  [
+   "08:13:56",
+   "GET",
+   "/edev/1/fsa/2/derp",
+   200,
+   "GET-DERP-5"
+  ],
+  [
+   "08:14:01",
+   "GET",
+   "/edev/1/fsa/1/derp",
+   200,
+   "GET-DERP-4"
+  ],
+  [
+   "08:14:05",
+   "GET",
+   "/edev/1/derp/1/derc",
+   200,
+   "GET-DERC-4"
+  ],
+  [
+   "08:14:05",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-4-RESPONSE-STARTED"
+  ],
+  [
+   "08:14:07",
+   "GET",
+   "/edev/1/derp/6/derc",
+   200,
+   "GET-DERC-5"
+  ],
+  [
+   "08:14:07",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-5-RESPONSE-STARTED"
+  ],
+  [
+   "08:19:01",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-4-RESPONSE-COMPLETED"
+  ],
+  [
+   "08:27:00",
+   "GET",
+   "/edev/1/fsa/2/derp",
+   200,
+   "GET-DERP-6"
+  ],
+  [
+   "08:27:07",
+   "GET",
+   "/edev/1/derp/6/derc",
+   200,
+   "GET-DERC-6"
+  ],
+  [
+   "08:27:07",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-5-RESPONSE-SUPERSEDED"
+  ],
+  [
+   "08:27:08",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-6-RESPONSE-STARTED"
+  ],
+  [
+   "08:30:02",
+   "GET",
+   "/edev/1/fsa/2/derp",
+   200,
+   "GET-DERP-8"
+  ],
+  [
+   "08:30:08",
+   "GET",
+   "/edev/1/fsa/1/derp",
+   200,
+   "GET-DERP-7"
+  ],
+  [
+   "08:30:09",
+   "GET",
+   "/edev/1/derp/6/derc",
+   200,
+   "GET-DERC-8"
+  ],
+  [
+   "08:30:10",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-8-RESPONSE-STARTED"
+  ],
+  [
+   "08:30:13",
+   "GET",
+   "/edev/1/derp/1/derc",
+   200,
+   "GET-DERC-7"
+  ],
+  [
+   "08:30:14",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-7-RESPONSE-STARTED"
+  ],
+  [
+   "08:35:08",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-7-RESPONSE-COMPLETED"
+  ],
+  [
+   "08:35:10",
+   "GET",
+   "/edev/1/fsa/1/derp",
+   200,
+   "GET-DERP-9"
+  ],
+  [
+   "08:35:12",
+   "GET",
+   "/edev/1/derp/1/derc",
+   200,
+   "GET-DERC-9"
+  ],
+  [
+   "08:35:12",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-9-RESPONSE-STARTED"
+  ],
+  [
+   "08:36:06",
+   "GET",
+   "/edev/1/fsa/2/derp",
+   200,
+   "GET-DERP-10"
+  ],
+  [
+   "08:36:14",
+   "GET",
+   "/edev/1/derp/6/derc",
+   200,
+   "GET-DERC-10"
+  ],
+  [
+   "08:36:15",
+   "POST",
+   "/edev/1/rsps/site_control/rsp",
+   201,
+   "POST-DERC-10-RESPONSE-STARTED"
+  ],
+  [
+   "08:37:14",
+   "GET",
+   "/edev/1/derp/6/dderc",
+   200,
+   "GET-UPDATED-DEFAULT-DERP-6"
+  ],
+  [
+   "08:37:14",
+   "GET",
+   "/edev/1/derp/1/dderc",
+   200,
+   "GET-UPDATED-DEFAULT-DERP-1"
+  ]
+ ]
+}
