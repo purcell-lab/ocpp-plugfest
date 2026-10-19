@@ -98,6 +98,8 @@ is not yet known.
 
 ## Data and method
 
+- [`PROCEDURE.md`](PROCEDURE.md) is the step-by-step procedure: how the test profile was sent
+  with the ODE schedule bridge paused so it was not overwritten, and what to change next time.
 - [`data.json`](data.json) holds the constraint, the dispatch rule, the profile sent, the CSMS
   meter samples and the event times, all in AEDT.
 - [`make_chart.py`](make_chart.py) renders the chart: `python3 make_chart.py`, which needs
