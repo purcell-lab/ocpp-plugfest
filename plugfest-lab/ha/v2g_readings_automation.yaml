@@ -3,7 +3,7 @@
 # Deploy: Settings > Automations > the automation > Edit in YAML, replace with this file (keep the id), save.
 id: '1792222726941'
 alias: 'Lab: V2G readings to ODE (lab/site, inverters/4)'
-description: Lab-only readings for the Green's Open Dynamic Export, purcell-lab/ha-addons#55. On every real site message (published by the main HA on topic site), publishes lab/site = real site + the simulated V2G EV power + the simulated Cactus test load (input_number.lab_test_load, W, split evenly over three phases) (SIM-EV-EVEREST-V2G-03, from CitrineOS meter values; + charging, - discharging; split evenly over three phases) and inverters/4 = the V2G charger as a DER (realPower = - EV power, so discharge is export; nameplate maxW 0 so the site rating ODE reports (and Cactus maxExportW) stays that of the real inverters, type 82 PV_STOR, the nearest type ODE accepts). EV power counts only while the meter is fresh and the transaction open; otherwise 0. The Green's ODE reads lab/site as its meter and inverters/4 as its fourth inverter; the real site topic and the main HA are unchanged.
+description: Lab-only readings for the Green's Open Dynamic Export, purcell-lab/ha-addons#55. On every real site message (published by the main HA on topic site), publishes lab/site = real site + the simulated V2G EV power + the simulated Cactus test load (input_number.lab_test_load, W, split evenly over three phases) (SIM-EV-EVEREST-V2G-03, from CitrineOS meter values; + charging, - discharging; split evenly over three phases) and inverters/4 = the V2G charger as a DER (realPower = - EV power, so discharge is export; nameplate and settings maxW / maxVA 25 kW, the charger's rating, so the DER rating ODE reports (setMaxW, and Cactus maxExportW) covers the EV's export too (with 0, Cactus GEN-10 run 75351 flagged 88 DER readings above setMaxW); type 82 PV_STOR, the nearest type ODE accepts). EV power counts only while the meter is fresh and the transaction open; otherwise 0. The Green's ODE reads lab/site as its meter and inverters/4 as its fourth inverter; the real site topic and the main HA are unchanged.
 triggers:
 - note: The main HA publishes the real site meter on every Sigen frequency update (every few seconds).
   topic: site
@@ -40,7 +40,7 @@ actions:
     payload: |-
       {%- set m = trigger.payload_json -%}
       {%- set v = m.get('voltage', {}) -%}
-      {{ {'inverter': {'realPower': (0 - ev) | round(1), 'reactivePower': 0, 'voltagePhaseA': v.get('phaseA'), 'voltagePhaseB': v.get('phaseB'), 'voltagePhaseC': v.get('phaseC'), 'frequency': m.get('frequency', 50)}, 'nameplate': {'type': 82, 'maxW': 0, 'maxVA': 0, 'maxVar': 0}, 'settings': {'maxW': 0, 'maxVA': 0, 'maxVar': 0}, 'status': {'operationalModeStatus': 2, 'genConnectStatus': 7}} | to_json }}
+      {{ {'inverter': {'realPower': (0 - ev) | round(1), 'reactivePower': 0, 'voltagePhaseA': v.get('phaseA'), 'voltagePhaseB': v.get('phaseB'), 'voltagePhaseC': v.get('phaseC'), 'frequency': m.get('frequency', 50)}, 'nameplate': {'type': 82, 'maxW': 25000, 'maxVA': 25000, 'maxVar': 0}, 'settings': {'maxW': 25000, 'maxVA': 25000, 'maxVar': 0}, 'status': {'operationalModeStatus': 2, 'genConnectStatus': 7}} | to_json }}
     qos: 0
     retain: true
     topic: inverters/4

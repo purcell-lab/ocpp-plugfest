@@ -47,6 +47,9 @@ actions:
       {%- set sol_x = pvf * 1.05 - house * 0.95 -%}
       {%- set lim = m.get('limit', {}) -%}
       {%- set off = lim.get('opModConnect') == false or lim.get('opModEnergize') == false -%}
+      {#- AS/NZS 4777.2 reconnection, done here as the V2G charger's inverter would: after ODE reconnects or re-energises (input_boolean.lab_ode_energized turns on), discharge stays 0 for 60 s, then may rise by WGra, 16.67 % of the 25 kW rating per minute. A period after a scheduled stop starts its own soft start. Charging is a load and is not ramped. -#}
+      {%- set t_on = as_timestamp(states.input_boolean.lab_ode_energized.last_changed) if is_state('input_boolean.lab_ode_energized', 'on') else none -%}
+      {%- set wgra = cap * 0.1667 / 60 -%}
       {%- set cv = [cap] + ([lim.opModImpLimW] if lim.get('opModImpLimW') is number else []) + ([lim.opModLoadLimW] if lim.get('opModLoadLimW') is number else []) -%}
       {%- set cur = 0 if off else ((([cv | min, 0] | max) / 10) | round(0) | int * 10) -%}
       {%- set xv = [cap] + ([lim.opModExpLimW] if lim.get('opModExpLimW') is number else []) + ([lim.opModGenLimW] if lim.get('opModGenLimW') is number else []) -%}
@@ -112,11 +115,19 @@ actions:
         {%- endif -%}
       {%- endfor -%}
       {#- DC V2G CentralSetpoint periods, as in LOA-11 run 74865. Import mode: setpoint = limit = site headroom, no export. Export mode: discharge at the lab target, never beyond the discharge headroom (export ceiling less the solar export, so solar keeps priority; dischargeLimit bounds it too, everest-core#2934). For an AC charger use charging-only periods with numberPhases; physical charger 110A432M0039 reports only the OCPP 1.6 Core profile (no Smart Charging) and ignored them. -#}
-      {%- set fin = namespace(p=[]) -%}
+      {%- set fin = namespace(p=[], on=(none if off else (t_on if t_on is not none else nowts)), rc0=none) -%}
       {#- Disconnected or de-energised (opModConnect/opModEnergize false) means 0 W either way, solar or not. -#}
       {%- for p in out.p -%}
         {%- set chg = 0 if p.z else (([[p.limit + pv_lo - house * 1.05, 0] | max, cap] | min / 10) | round(0, 'floor') | int * 10) -%}
         {%- set dis = 0 if p.z else (([[p.xr - sol_x, 0] | max, cap] | min / 10) | round(0, 'floor') | int * 10) -%}
+        {%- if p.z -%}
+          {%- set fin.on = none -%}
+        {%- elif fin.on is none -%}
+          {%- set fin.on = nowts + p.startPeriod - 1 -%}
+        {%- endif -%}
+        {%- set rc = (((([nowts + p.startPeriod - 1 - fin.on - 60, 0] | max) * wgra) / 10) | round(0, 'floor') | int * 10) if fin.on is not none else 0 -%}
+        {%- set fin.rc0 = (rc if rc < dis else cap) if fin.rc0 is none else fin.rc0 -%}
+        {%- set dis = [dis, rc] | min -%}
         {%- if p.r is not none -%}
           {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg, 'dischargeLimit': 0 - dis, 'setpoint': [[p.r, 0 - dis] | max, chg] | min, 'operationMode': 'CentralSetpoint'}] -%}
         {%- elif xmode -%}
@@ -125,8 +136,8 @@ actions:
           {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg, 'dischargeLimit': 0, 'setpoint': chg, 'operationMode': 'CentralSetpoint'}] -%}
         {%- endif -%}
       {%- endfor -%}
-      {%- set sig = (('x' ~ target ~ 'h' ~ (sol_x / 100) | round(0) | int ~ '|') if xmode else ('h' ~ ((pv_lo - house * 1.05) / 100) | round(0) | int ~ '|')) ~ (('t' ~ (r0 if r0 is not none else '-') ~ '|') if tlive else '') ~ (out.sig | join(',')) -%}
-      {{ {'cur': cur, 'cur_x': cur_x, 'xmode': xmode, 'discharge': [0 - fin.p[0].setpoint, 0] | max if xmode else 0, 'active_now': active_now, 'learn': learn, 'learn_x': learn_x, 'periods': fin.p, 'test': tlive, 'sig': sig[:255]} }}
+      {%- set sig = (('s' ~ (fin.rc0 / 500) | int ~ '|') if fin.rc0 < cap else '') ~ (('x' ~ target ~ 'h' ~ (sol_x / 100) | round(0) | int ~ '|') if xmode else ('h' ~ ((pv_lo - house * 1.05) / 100) | round(0) | int ~ '|')) ~ (('t' ~ (r0 if r0 is not none else '-') ~ '|') if tlive else '') ~ (out.sig | join(',')) -%}
+      {{ {'cur': cur, 'cur_x': cur_x, 'xmode': xmode, 'discharge': [0 - fin.p[0].setpoint, 0] | max if xmode else 0, 'active_now': active_now, 'learn': learn, 'learn_x': learn_x, 'periods': fin.p, 'test': tlive, 'soft_start': fin.rc0 if fin.rc0 < cap else none, 'sig': sig[:255]} }}
 - if:
   - condition: template
     value_template: '{{ plan.learn and states(''input_number.lab_ac_default_limit'') | float(-1) != plan.cur }}'

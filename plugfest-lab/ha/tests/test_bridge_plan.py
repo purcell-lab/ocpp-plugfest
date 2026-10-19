@@ -59,16 +59,46 @@ class _Now:
         return self.ts
 
 
-def render(payload, states, test_steps="", now=NOW):
+class _States:
+    """states('x') and states.domain.object_id.last_changed, as in Home Assistant."""
+
+    def __init__(self, values, changed):
+        self.values, self.changed = values, changed
+
+    def __call__(self, entity_id):
+        return self.values.get(entity_id, "unknown")
+
+    def __getattr__(self, domain):
+        return _Domain(self, domain)
+
+
+class _Domain:
+    def __init__(self, states, domain):
+        self.states, self.domain = states, domain
+
+    def __getattr__(self, object_id):
+        entity_id = f"{self.domain}.{object_id}"
+        ts = self.states.changed.get(entity_id, NOW - 3600)
+        return type("State", (), {"last_changed": dt.datetime.fromtimestamp(ts, dt.timezone.utc)})
+
+
+def _as_timestamp(v):
+    if isinstance(v, dt.datetime):
+        return v.timestamp()
+    return dt.datetime.fromisoformat(str(v).replace("Z", "+00:00")).timestamp()
+
+
+def render(payload, states, test_steps="", now=NOW, energized_since=None):
     env = Environment(extensions=["jinja2.ext.loopcontrols"])
     env.filters.update(float=_float, round=_round, is_number=_is_number,
                        int=lambda v, d=0: int(float(v)) if _is_number(v) else d)
     env.tests.update(is_number=_is_number, mapping=lambda v: isinstance(v, dict),
                      number=lambda v: isinstance(v, (int, float)) and not isinstance(v, bool))
     full = dict(states, **{"input_text.lab_v2g_test_steps": test_steps})
-    env.globals.update(states=lambda e: full.get(e, "unknown"), is_state=lambda e, s: full.get(e) == s,
-                       now=lambda: _Now(now), state_attr=lambda e, a: None,
-                       as_timestamp=lambda v: dt.datetime.fromisoformat(str(v).replace("Z", "+00:00")).timestamp())
+    # By default ODE reconnected an hour ago, so the soft start is long over.
+    changed = {"input_boolean.lab_ode_energized": now - 3600 if energized_since is None else energized_since}
+    env.globals.update(states=_States(full, changed), is_state=lambda e, s: full.get(e) == s,
+                       now=lambda: _Now(now), state_attr=lambda e, a: None, as_timestamp=_as_timestamp)
     out = env.from_string(plan_template()).render(trigger={"payload_json": payload}, false=False, true=True)
     return ast.literal_eval(out)
 
@@ -152,6 +182,38 @@ class ExportMode(unittest.TestCase):
         a = render(payload(), site(solar=0, export_mode=True, target=7000))["sig"]
         b = render(payload(), site(solar=1500, export_mode=True, target=7000))["sig"]
         self.assertNotEqual(a, b)
+
+    def test_reconnect_holds_discharge_for_60_s(self):
+        # ODE reconnected 30 s ago: no discharge yet, whatever the headroom.
+        plan = render(payload(), site(solar=0, export_mode=True, target=7000), energized_since=NOW - 30)
+        self.assertEqual(rows(plan)[0], (0, 0, 4500, 0))
+        self.assertEqual(plan["soft_start"], 0)
+        self.assertTrue(plan["sig"].startswith("s0|"))
+        # Without export headroom the ramp limits nothing, so it is not reported.
+        plan = render(payload(), site(solar=7191, export_mode=True, target=7000), energized_since=NOW - 30)
+        self.assertIsNone(plan["soft_start"])
+
+    def test_reconnect_ramps_at_wgra(self):
+        # 90 s after reconnecting; period 0 starts 1 s before now, so 29 s of ramp at 16.67 %/min of
+        # 25 kW (69.46 W/s) = 2,014 -> 2,010 W.
+        plan = render(payload(), site(solar=0, export_mode=True, target=7000), energized_since=NOW - 90)
+        self.assertEqual(rows(plan)[0], (0, -2010, 4500, -2010))
+        self.assertEqual(plan["discharge"], 2010)
+        # The 1.5 kW control at +197 s is below the ramp by then (2,450 W headroom vs 15.7 kW of ramp).
+        self.assertEqual(rows(plan)[-1][1:], (-2450, 12000, -2450))
+        # 210 s after reconnecting the ramp no longer binds: 5,450 W headroom.
+        plan = render(payload(), site(solar=0, export_mode=True, target=7000), energized_since=NOW - 210)
+        self.assertEqual(rows(plan)[0], (0, -5450, 4500, -5450))
+        self.assertIsNone(plan["soft_start"])
+
+    def test_ramp_changes_the_signature(self):
+        a = render(payload(), site(solar=0, export_mode=True, target=7000), energized_since=NOW - 90)["sig"]
+        b = render(payload(), site(solar=0, export_mode=True, target=7000), energized_since=NOW - 100)["sig"]
+        self.assertNotEqual(a, b)
+
+    def test_charging_is_not_ramped(self):
+        plan = render(payload(), site(solar=0), energized_since=NOW - 30)
+        self.assertEqual(rows(plan)[0], (0, 3450, 3450, 0))
 
     def test_deenergised_is_zero(self):
         plan = render(payload(energised=False), site(solar=0, export_mode=True, target=7000))

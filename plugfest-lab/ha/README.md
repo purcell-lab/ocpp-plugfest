@@ -9,7 +9,7 @@ here first.
 | [`bridge_automation.yaml`](bridge_automation.yaml) | `automation.lab_ode_schedule_to_ac_everest_prototype_v2`, the ODE schedule bridge |
 | [`txprofile_test_script.yaml`](txprofile_test_script.yaml) | `script.lab_v2g_txprofile_test`, a stepped TxProfile test run through the bridge |
 | [`synthetic_site_automation.yaml`](synthetic_site_automation.yaml) | `automation.lab_open_meteo_solar_forecast_to_ode_inverters_1`, the synthetic 10 kW solar inverter (`inverters/1`) and site meter (`site`) |
-| [`v2g_readings_automation.yaml`](v2g_readings_automation.yaml) | `automation.lab_v2g_readings_to_ode_lab_site_inverters_4`: `site` + V2G EV + Cactus test load → `lab/site` (ODE's meter), and the charger as ODE's `inverters/4` |
+| [`v2g_readings_automation.yaml`](v2g_readings_automation.yaml) | `automation.lab_v2g_readings_to_ode_lab_site_inverters_4`: `site` + V2G EV + Cactus test load → `lab/site` (ODE's meter), and the charger as ODE's `inverters/4` (25 kW nameplate, so ODE's `setMaxW` covers the EV) |
 | [`ode_limits_helpers_automation.yaml`](ode_limits_helpers_automation.yaml) | `automation.lab_ode_limits_to_lab_helpers`: ODE's live `limits/csipAus` → the `lab_ode_*` helpers the synthetic site curtails to |
 | [`helpers.yaml`](helpers.yaml) | Every lab helper these automations use, with its settings |
 | [`tests/test_bridge_plan.py`](tests/test_bridge_plan.py) | Renders the bridge's plan template with sample ODE limits and site readings |
@@ -42,6 +42,12 @@ limit = setpoint = import limit + 0.95 × solar forecast − 1.05 × house load 
 discharges at `input_number.lab_v2g_discharge_target`, capped at the discharge headroom below:
 export ceiling − 1.05 × solar + 0.95 × house load. Solar keeps priority on export, so it is not
 curtailed to make room for the EV, and the site still stays within the export limit.
+
+**Reconnection (AS/NZS 4777.2).** After ODE reconnects or re-energises (`input_boolean.lab_ode_energized`
+turns on), the EV's discharge stays at 0 for 60 s, then rises by at most WGra, 16.67 % of the
+25 kW rating per minute (about 70 W/s). A compliant inverter would do this itself; ODE leaves it
+to the inverter, so the lab does it here. A period after a scheduled stop starts its own soft
+start. Charging is a load and is not ramped. The synthetic solar does the same on its 10 kW rating.
 
 **TxProfile test.** While `input_text.lab_v2g_test_steps` holds `start_ts|step_s|W,W,...`, the
 requested steps (+ charge, − discharge) are added to the same schedule as extra boundaries. Each
