@@ -5,6 +5,7 @@
 [![OCPP 2.1](https://img.shields.io/badge/OCPP-2.1-0f6e6e?style=for-the-badge&logo=lightning&logoColor=white)](https://openchargealliance.org/)
 [![ISO 15118-20](https://img.shields.io/badge/ISO_15118--20-DC__BPT-0f6e6e?style=for-the-badge&logo=electricvehicle&logoColor=white)](#proven-this-week)
 [![CSIP-AUS](https://img.shields.io/badge/CSIP--AUS-v1.2-d2a55c?style=for-the-badge&logoColor=white)](cactus/README.md)
+[![OpenADR](https://img.shields.io/badge/OpenADR-3.1_prices-d2a55c?style=for-the-badge&logoColor=white)](design/dynamic-pricing.md)
 [![Cactus LOA-11](https://img.shields.io/badge/Cactus_LOA--11-16%2F16_AC_·_16%2F16_V2G-2e7d32?style=for-the-badge)](cactus/LOA-11/README.md)
 [![Open source](https://img.shields.io/badge/100%25-open_source-1b1b1b?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](#the-open-source-stack)
 
@@ -14,9 +15,10 @@
 
 > [!IMPORTANT]
 > **The idea in one sentence.** A home energy management system takes the network operator's
-> **CSIP-AUS dynamic operating envelope** and turns it into **OCPP 2.1 bidirectional charging
-> profiles** that a charging station validates and follows, fast enough to answer **one-minute-notice
-> network and market events**. Every link is an open standard, and every component is open source.
+> **CSIP-AUS dynamic operating envelope** and an **OpenADR 3.1 price signal**, and turns them into
+> **OCPP 2.1 bidirectional charging profiles** that a charging station validates and follows, fast
+> enough to answer **one-minute-notice network and market events**. The price travels to the station
+> with the power. Every link is an open standard, and every component is open source.
 
 <div align="center">
 
@@ -30,14 +32,15 @@
 
 ## The end-to-end chain
 
-<img src="assets/flow.svg" alt="CSIP-AUS server to ODE to Home Assistant to CitrineOS to EVerest, then the Plugfest charging stations, to EV, with the protocol on each link" width="100%">
+<img src="assets/flow.svg" alt="Two inputs converge on Home Assistant: the CSIP-AUS server through Open Dynamic Export, and the OpenADR 3.1 price server. Home Assistant drives CitrineOS, which drives EVerest and then the Plugfest charging stations, then the EV, with the protocol on each link" width="100%">
 
 | Hop | Protocol | What happens |
 |---|---|---|
 | **Network operator → home** | SEP2 / IEEE 2030.5 (AS 5385), **CSIP-AUS v1.2** | The DNSP publishes the household's import, export and load limits and its schedule of controls. Tested against the ANU **Cactus** harness. |
 | **CSIP-AUS client** | MQTT | **Open Dynamic Export** (certified CSIP-AUS client) publishes the live limit and the upcoming controls. |
-| **EEMS** | REST | **Home Assistant** turns the envelope into a charging plan: the current limit plus the next 600 s of controls, sent ahead of time. |
-| **CSMS** | **OCPP 2.1** `SetChargingProfile` | **CitrineOS** sends a TxProfile with `operationMode: CentralSetpoint`, `setpoint`, `limit` and `dischargeLimit` in watts. |
+| **Price server → home** | **OpenADR 3.1** `PRICE` / `EXPORT_PRICE` events | An **OpenADR VTN** publishes import and export prices for the household's network tariff, 5- then 30-minute intervals, seven days ahead (from AEMO 7-day pre-dispatch). Home Assistant's **OpenADR VEN** reads them. |
+| **EEMS** | REST | **Home Assistant** turns the envelope and the prices into a charging plan: the current setpoint plus the next 600 s, sent ahead of time. |
+| **CSMS** | **OCPP 2.1** `SetChargingProfile` | **CitrineOS** sends a TxProfile with `operationMode: CentralSetpoint`, `setpoint`, `limit` and `dischargeLimit` in watts. The price travels with it: an `absolutePriceSchedule` on the profile, `CostUpdated` with the price now and next, and `SetDefaultTariff` for OCPP 2.1 tariffs ([design](design/dynamic-pricing.md)). |
 | **Charging station** | **ISO 15118-20 DC_BPT** | The station validates and accepts the profile, then charges or discharges the EV to the setpoint. Before the Plugfest: **EVerest**. At the Plugfest: [vendor stations](#the-charging-stations). |
 | **EV** | | Bidirectional: + charging, − discharging (V2G). |
 
@@ -48,16 +51,20 @@
 ```mermaid
 sequenceDiagram
     autonumber
+    participant VTN as OpenADR 3.1 price server (VTN)
     participant DNSP as CSIP-AUS server (Cactus)
     participant ODE as Open Dynamic Export
-    participant HA as Home Assistant (EEMS)
+    participant HA as Home Assistant (EEMS + VEN)
     participant CSMS as CitrineOS (CSMS)
     participant CS as Charging station (EVerest, then Plugfest vendors)
     DNSP->>ODE: DERControl: opModImpLimW / opModExpLimW, start, duration
     ODE->>HA: MQTT limits + scheduled controls
-    HA->>CSMS: lab_schedule: profile periods for the next 600 s
-    CSMS->>CS: OCPP 2.1 SetChargingProfile (TxProfile, CentralSetpoint)
+    HA->>VTN: VEN polls events
+    VTN-->>HA: PRICE / EXPORT_PRICE intervals (5 / 30 min, 7 days)
+    HA->>CSMS: lab_schedule: setpoints for the next 600 s + price schedule
+    CSMS->>CS: OCPP 2.1 SetChargingProfile (TxProfile, CentralSetpoint, absolutePriceSchedule)
     CS-->>CSMS: Accepted
+    CSMS->>CS: CostUpdated: price now and next (California Pricing)
     CS-->>CSMS: TransactionEvent MeterValues every 5 s
     Note over CS: Each control takes effect at its start time,<br/>even if the link drops in between
 ```
@@ -123,7 +130,7 @@ sample of its boundary. Discharging at −20 kW ran at 380 V, −52.6 A.
 | **Household load limit** | The charger backs off so the site stays inside the envelope |
 | **One-minute notice: Minimum System Load and Lack of Reserve** | Soak up surplus or stop and discharge, delivered before the event starts |
 | **Local network congestion** | The charging limit falls with the local constraint |
-| **Price change** | An OpenADR 3.1 price signal moves the setpoint, travels with the profile as an OCPP 2.1 price schedule, and shows at the station ([design](design/dynamic-pricing.md)) |
+| **Price events** | An OpenADR 3.1 price event moves the setpoint, travels with the profile as an OCPP 2.1 price schedule, and shows at the station as the price now and next ([design](design/dynamic-pricing.md)) |
 
 → [Running order, timings and fall-backs](demo/DEMO.md)
 
@@ -138,6 +145,8 @@ system to work across **three protocols**: SEP2 (through CSIP-AUS), **OCPP 2.1**
 chargers, and SunSpec Modbus. This demonstration is an open reference for the two primary paths,
 SEP2 → OCPP 2.1, end to end, with timing evidence against the draft function map
 (**≤ 5 s** read/write, **≤ 30 s** active-power limit, **≤ 15 s** communication-loss fail-safe).
+Price signals arrive by **OpenADR 3.1**, so the household responds to network limits and market
+prices through open standards on every link.
 
 ---
 
@@ -146,7 +155,9 @@ SEP2 → OCPP 2.1, end to end, with timing evidence against the draft function m
 | Component | Role | Source |
 |---|---|---|
 | **Open Dynamic Export** | CSIP-AUS client | [longzheng/open-dynamic-export](https://github.com/longzheng/open-dynamic-export) |
-| **Home Assistant** on a Home Assistant Green | EEMS, bridge, dashboards | [home-assistant.io](https://www.home-assistant.io/) |
+| **OpenLEADR** | OpenADR 3.1 price server (VTN), Australian tariff events | [OpenLEADR/openleadr-rs](https://github.com/OpenLEADR/openleadr-rs) (LF Energy) |
+| **nem_pd7day** | Sets the VTN prices from AEMO 7-day pre-dispatch and the network tariff | [purcell-lab/nem_pd7day](https://github.com/purcell-lab/nem_pd7day) |
+| **Home Assistant** on a Home Assistant Green | EEMS, OpenADR VEN, bridge, dashboards | [home-assistant.io](https://www.home-assistant.io/) |
 | **CitrineOS** | CSMS: OCPP 2.1 / 2.0.1 / 1.6 | [citrineos/citrineos-core](https://github.com/citrineos/citrineos-core) |
 | **EVerest** | Pre-Plugfest reference charging station: AC and DC V2G (ISO 15118-20) | [EVerest/everest-core](https://github.com/EVerest/everest-core) |
 | **Home Assistant Apps** | CitrineOS, EVerest simulators, ODE, MicroOCPP, packaged | [purcell-lab/ha-addons](https://github.com/purcell-lab/ha-addons) |
@@ -159,7 +170,7 @@ SEP2 → OCPP 2.1, end to end, with timing evidence against the draft function m
 
 | **Demonstration** | **CSMS under test** |
 |---|---|
-| CSIP-AUS envelope → OCPP 2.1 bidirectional profile, live, Friday afternoon. | CitrineOS on the Green, Security Profile 1 on the venue LAN, one provisioned password per station. [Six vendor slots](#the-charging-stations): OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
+| CSIP-AUS envelope and OpenADR 3.1 prices → OCPP 2.1 bidirectional profile, live, Friday afternoon. | CitrineOS on the Green, Security Profile 1 on the venue LAN, one provisioned password per station. [Six vendor slots](#the-charging-stations): OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
 | [Demo script](demo/DEMO.md) · [Infographic](infographic/plugfest-infographic.pdf) | [Runbook](plugfest-lab/RUNBOOK.md) · [Lab records](plugfest-lab/README.md) · [Acceptance plan](plugfest-lab/ACCEPTANCE.md) · [Setup](plugfest-lab/SETUP.md) |
 
 ---
