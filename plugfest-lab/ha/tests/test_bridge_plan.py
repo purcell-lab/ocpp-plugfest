@@ -151,8 +151,15 @@ class TxProfileTest(unittest.TestCase):
         ])
 
     def test_discharge_allowed_without_solar(self):
+        # No solar: the export limit plus the house load the EV also feeds, 4,500 + 0.95 x 1,000 = 5,450 W.
         plan = render(payload(), site(solar=0), f"{int(NOW)}|60|-20000,-1000")
-        self.assertEqual(rows(plan)[:2], [(0, -4500, 3450, -4500), (61, -1000, 3450, -4500)])
+        self.assertEqual(rows(plan)[:2], [(0, -5450, 3450, -5450), (61, -1000, 3450, -5450)])
+
+    def test_discharge_headroom_credits_house_load_solar_does_not_cover(self):
+        # 500 W of solar under a 1 kW house load: 4,500 - (1.05 x 500 - 0.95 x 1,000) = 4,925 -> 4,920 W.
+        self.assertEqual(rows(render(payload(), site(solar=500), f"{int(NOW)}|60|-20000"))[0][3], -4920)
+        # Solar above the house load still takes the export limit first: 4,500 - (1.05 x 1,736 - 950) -> 3,620 W.
+        self.assertEqual(rows(render(payload(), site(solar=1736), f"{int(NOW)}|60|-20000"))[0][3], -3620)
 
     def test_empty_invalid_or_finished_steps_are_ignored(self):
         normal = render(payload(), site(solar=7191))

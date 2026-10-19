@@ -45,8 +45,9 @@ discharges at `input_number.lab_v2g_discharge_target`, capped at the export ceil
 requested steps (+ charge, − discharge) are added to the same schedule as extra boundaries. Each
 step is clamped to the headroom of its period:
 - **Charging:** the charge headroom above.
-- **Discharging:** export limit − 1.05 × solar + 0.95 × house load, because solar has priority on
-  export.
+- **Discharging:** export limit − 1.05 × solar + 0.95 × house load. Solar has priority on export,
+  and house load the solar doesn't cover absorbs discharge too: at night the EV may discharge the
+  export limit plus the house load.
 
 The profile id and the price schedule stay the same, so nothing has to be paused. Start a test with:
 
