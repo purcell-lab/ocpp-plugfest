@@ -9,7 +9,7 @@ here first.
 | [`bridge_automation.yaml`](bridge_automation.yaml) | `automation.lab_ode_schedule_to_ac_everest_prototype_v2`, the ODE schedule bridge |
 | [`txprofile_test_script.yaml`](txprofile_test_script.yaml) | `script.lab_v2g_txprofile_test`, a stepped TxProfile test run through the bridge |
 | [`synthetic_site_automation.yaml`](synthetic_site_automation.yaml) | `automation.lab_open_meteo_solar_forecast_to_ode_inverters_1`, the synthetic 10 kW solar inverter (`inverters/1`) and site meter (`site`) |
-| [`v2g_readings_automation.yaml`](v2g_readings_automation.yaml) | `automation.lab_v2g_readings_to_ode_lab_site_inverters_4`: `site` + V2G EV + Cactus test load → `lab/site` (ODE's meter), and the charger as ODE's `inverters/4` (25 kW nameplate, so ODE's `setMaxW` covers the EV) |
+| [`v2g_readings_automation.yaml`](v2g_readings_automation.yaml) | `automation.lab_v2g_readings_to_ode_lab_site_inverters_4`: `site` + V2G EV + Cactus test load → `lab/site` (ODE's meter), and the charger as ODE's `inverters/4` (nameplate = the charger's discharge rating from CitrineOS, so ODE's `setMaxW` covers the EV) |
 | [`ode_limits_helpers_automation.yaml`](ode_limits_helpers_automation.yaml) | `automation.lab_ode_limits_to_lab_helpers`: ODE's live `limits/csipAus` → the `lab_ode_*` helpers the synthetic site curtails to |
 | [`helpers.yaml`](helpers.yaml) | Every lab helper these automations use, with its settings |
 | [`tests/test_bridge_plan.py`](tests/test_bridge_plan.py) | Renders the bridge's plan template with sample ODE limits and site readings |
@@ -26,7 +26,7 @@ active on `SIM-EV-EVEREST-V2G-03`, it sends one OCPP 2.1 TxProfile (id 9001) thr
 **Import mode** (the default) charges at the site headroom, not at the bare import limit:
 
 ```
-limit = setpoint = import limit + 0.95 × solar forecast − 1.05 × house load   (0 to 25 kW, rounded down to 10 W)
+limit = setpoint = import limit + 0.95 × solar forecast − 1.05 × house load   (0 to the charge rating, rounded down to 10 W)
 ```
 
 - **Inputs:** solar is `sensor.home_power_production_now`, capped at the 15 kW nameplate and
@@ -45,9 +45,20 @@ curtailed to make room for the EV, and the site still stays within the export li
 
 **Reconnection (AS/NZS 4777.2).** After ODE reconnects or re-energises (`input_boolean.lab_ode_energized`
 turns on), the EV's discharge stays at 0 for 60 s, then rises by at most WGra, 16.67 % of the
-25 kW rating per minute (about 70 W/s). A compliant inverter would do this itself; ODE leaves it
+discharge rating per minute (about 70 W/s at 25 kW). A compliant inverter would do this itself; ODE leaves it
 to the inverter, so the lab does it here. A period after a scheduled stop starts its own soft
 start. Charging is a load and is not ramped. The synthetic solar does the same on its 10 kW rating.
+
+**Charger rating.** The bridge's charge and discharge caps, and the `inverters/4` nameplate and
+settings (`maxW`, `maxVA`), come from the CitrineOS-HA integration's per-station sensors
+`sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_charge_power` and `..._max_discharge_power`:
+- the EV's limit from `NotifyEVChargingNeeds`, capped at the charger's `EVSE.Power` rating from its
+  OCPP 2.x device model (CitrineOS asks for the full inventory when a station connects);
+- otherwise the `EVSE.Power` rating alone;
+- otherwise 25 kW, which is also used when a sensor is unavailable or below 1 kW.
+
+So a different charger at the Plugfest is capped at, and reported to ODE (`setMaxW`, Cactus
+`maxExportW`) with, the rating it declares, with no edit here. A kW sensor is scaled to W.
 
 **TxProfile test.** While `input_text.lab_v2g_test_steps` holds `start_ts|step_s|W,W,...`, the
 requested steps (+ charge, − discharge) are added to the same schedule as extra boundaries. Each

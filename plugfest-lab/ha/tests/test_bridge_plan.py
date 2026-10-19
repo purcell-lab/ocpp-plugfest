@@ -17,6 +17,8 @@ import yaml
 from jinja2 import Environment
 
 BRIDGE = Path(__file__).resolve().parents[1] / "bridge_automation.yaml"
+READINGS = Path(__file__).resolve().parents[1] / "v2g_readings_automation.yaml"
+RATING = "sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_"
 NOW = 1792390963.0  # 19 Oct 2026 17:22:43 AEDT
 
 
@@ -88,17 +90,23 @@ def _as_timestamp(v):
     return dt.datetime.fromisoformat(str(v).replace("Z", "+00:00")).timestamp()
 
 
-def render(payload, states, test_steps="", now=NOW, energized_since=None):
+def _env(states, attrs, now, changed):
     env = Environment(extensions=["jinja2.ext.loopcontrols"])
     env.filters.update(float=_float, round=_round, is_number=_is_number,
                        int=lambda v, d=0: int(float(v)) if _is_number(v) else d)
     env.tests.update(is_number=_is_number, mapping=lambda v: isinstance(v, dict),
                      number=lambda v: isinstance(v, (int, float)) and not isinstance(v, bool))
+    env.globals.update(states=_States(states, changed), is_state=lambda e, s: states.get(e) == s,
+                       now=lambda: _Now(now), state_attr=lambda e, a: (attrs or {}).get(e, {}).get(a),
+                       as_timestamp=_as_timestamp)
+    return env
+
+
+def render(payload, states, test_steps="", now=NOW, energized_since=None, attrs=None):
     full = dict(states, **{"input_text.lab_v2g_test_steps": test_steps})
     # By default ODE reconnected an hour ago, so the soft start is long over.
     changed = {"input_boolean.lab_ode_energized": now - 3600 if energized_since is None else energized_since}
-    env.globals.update(states=_States(full, changed), is_state=lambda e, s: full.get(e) == s,
-                       now=lambda: _Now(now), state_attr=lambda e, a: None, as_timestamp=_as_timestamp)
+    env = _env(full, attrs, now, changed)
     out = env.from_string(plan_template()).render(trigger={"payload_json": payload}, false=False, true=True)
     return ast.literal_eval(out)
 
@@ -270,3 +278,66 @@ class TxProfileTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def rated(discharge, charge, unit="W"):
+    """citrine_ha's max discharge / charge power sensors for the lab charger."""
+    states = {RATING + "discharge_power": str(discharge), RATING + "charge_power": str(charge)}
+    attrs = {RATING + k + "_power": {"unit_of_measurement": unit} for k in ("discharge", "charge")}
+    return states, attrs
+
+
+BIG = {"limit": {"opModImpLimW": 70000, "opModExpLimW": 70000, "opModConnect": True, "opModEnergize": True},
+       "schedules": {}}
+
+
+class ChargerRating(unittest.TestCase):
+    """The charger's rating comes from CitrineOS (citrine_ha), so another charger at the Plugfest is rated by what it reports."""
+
+    def test_unavailable_falls_back_to_25_kw(self):
+        states, attrs = rated("unavailable", "unknown")
+        plan = render(BIG, dict(site(solar=0, export_mode=True, target=40000), **states), attrs=attrs)
+        self.assertEqual(rows(plan)[0][1], -25000)
+        plan = render(BIG, dict(site(solar=0, house=0), **states), attrs=attrs)
+        self.assertEqual(rows(plan)[0][1], 25000)
+
+    def test_discharge_and_charge_follow_the_reported_ratings(self):
+        states, attrs = rated(11000, 7400)
+        plan = render(BIG, dict(site(solar=0, export_mode=True, target=40000), **states), attrs=attrs)
+        self.assertEqual(rows(plan)[0][1], -11000)
+        self.assertEqual(rows(plan)[0][3], -11000)
+        plan = render(BIG, dict(site(solar=0, house=0), **states), attrs=attrs)
+        self.assertEqual(rows(plan)[0][1:3], (7400, 7400))
+
+    def test_kw_sensor_is_scaled(self):
+        states, attrs = rated(30, 30, unit="kW")
+        plan = render(BIG, dict(site(solar=0, export_mode=True, target=40000), **states), attrs=attrs)
+        self.assertEqual(rows(plan)[0][1], -30000)
+
+    def test_below_1_kw_falls_back(self):
+        states, attrs = rated(0, 0)
+        plan = render(BIG, dict(site(solar=0, export_mode=True, target=40000), **states), attrs=attrs)
+        self.assertEqual(rows(plan)[0][1], -25000)
+
+    def test_soft_start_ramps_at_wgra_of_the_reported_rating(self):
+        # 11 kW rating: 16.67 %/min is about 30.6 W/s. 90 s after reconnecting, and with the profile
+        # starting 1 s before now, that is 29 s of ramp: 886 -> 880 W (rounded down to 10 W).
+        states, attrs = rated(11000, 11000)
+        plan = render(BIG, dict(site(solar=0, export_mode=True, target=11000), **states), attrs=attrs,
+                      energized_since=NOW - 90)
+        self.assertEqual(plan["soft_start"], 880)
+
+
+class ReadingsNameplate(unittest.TestCase):
+    """inverters/4's nameplate and settings follow the same discharge rating."""
+
+    def rating(self, states, attrs):
+        tpl = yaml.safe_load(READINGS.read_text())["actions"][0]["variables"]["rating"]
+        return int(_env(states, attrs, NOW, {}).from_string(tpl).render().strip())
+
+    def test_nameplate_follows_the_sensor(self):
+        self.assertEqual(self.rating(*rated(11000, 7400)), 11000)
+        self.assertEqual(self.rating(*rated(50, 50, unit="kW")), 50000)
+
+    def test_nameplate_falls_back_to_25_kw(self):
+        self.assertEqual(self.rating(*rated("unavailable", "unavailable")), 25000)

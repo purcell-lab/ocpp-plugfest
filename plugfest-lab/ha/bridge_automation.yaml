@@ -4,7 +4,7 @@
 id: '1792204734631'
 alias: 'Lab: ODE schedule to AC EVerest (prototype v2)'
 description: 'Schedule-ahead bridge for purcell-lab/ha-addons#55. On each ODE limits/csipAus message (about 1 s) it builds one TxProfile for the lab command station: DC V2G simulator SIM-EV-EVEREST-V2G-03 with CentralSetpoint periods. Import mode (input_boolean.lab_v2g_export off, LOA-11 run 74865): charges at the site headroom (see below), no export. Export mode (on, for Cactus ALL-22): the EV discharges at input_number.lab_v2g_discharge_target, never beyond the discharge headroom: ODE''s export ceiling (opModExpLimW/opModGenLimW, 0 W while disconnected or de-energised; gaps use the learned input_number.lab_v2g_default_export_limit) - 105 % solar + 95 % house load, so solar keeps priority on export; dischargeLimit is that headroom (EVerest only bounds discharge through the setpoint and dischargeLimit, everest-core#2934); a smaller discharge is sent at once, a larger one at most every 5 s. Earlier targets: AC simulator SIM-EV-EVEREST-G1; physical DC charger 110A432M0039 on OCPP 1.6, which reports only the Core profile (no Smart Charging) and ignored the profiles. Period 0 is
-  ODE''s current CSIP-AUS limit (live, already ramped), never above the active control''s own value; later periods are ODE''s scheduled controls over the next 600 s (opModImpLimW/opModLoadLimW, 0 W while opModConnect/opModEnergize is false; gaps use the last seen default). Boundaries are rounded down for decreases and up for increases, so a step is never late and an increase never early; boundaries in the same second merge. Import mode uses the site headroom, not the bare import limit: limit = setpoint = import limit + 95 % of the solar forecast (sensor.home_power_production_now, capped at 15 kW and opModGenLimW, 0 while de-energised) - 105 % of input_number.lab_house_load, so site import stays within the limit at night too; 0 W while disconnected or de-energised; cap 25 kW. A headroom change of 100 W or more is sent at once. Sends at once when the limit falls by more than 50 W, the future steps change, or 60 s have passed; a rise of more than 200 W or 5 % is sent at most every 5 s (a 1
+  ODE''s current CSIP-AUS limit (live, already ramped), never above the active control''s own value; later periods are ODE''s scheduled controls over the next 600 s (opModImpLimW/opModLoadLimW, 0 W while opModConnect/opModEnergize is false; gaps use the last seen default). Boundaries are rounded down for decreases and up for increases, so a step is never late and an increase never early; boundaries in the same second merge. Import mode uses the site headroom, not the bare import limit: limit = setpoint = import limit + 95 % of the solar forecast (sensor.home_power_production_now, capped at 15 kW and opModGenLimW, 0 while de-energised) - 105 % of input_number.lab_house_load, so site import stays within the limit at night too; 0 W while disconnected or de-energised; capped at the charger''s charge rating (citrine_ha max charge power, 25 kW fallback). A headroom change of 100 W or more is sent at once. Sends at once when the limit falls by more than 50 W, the future steps change, or 60 s have passed; a rise of more than 200 W or 5 % is sent at most every 5 s (a 1
   s send rate during an ODE ramp drew a CitrineOS HTTP 500 in Cactus LOA-11). Profiles last 600 s. TxProfile test: while input_text.lab_v2g_test_steps holds "start_ts|step_s|W,W,..." (set by script.lab_v2g_txprofile_test), the requested setpoints (+ charge, - discharge) are folded into the same schedule as extra boundaries, each clamped to the site headroom (charge as above; discharge = export limit - 105 % solar + 95 % house load, so solar keeps priority on export and, at night, house load absorbs discharge too), with limit/dischargeLimit set to that headroom.'
 triggers:
 - note: ODE publishes CSIP-AUS limit and schedules about once a second.
@@ -26,8 +26,12 @@ actions:
     plan: |-
       {%- set m = trigger.payload_json if trigger.payload_json is mapping else {} -%}
       {%- set nowts = now().timestamp() -%}
-      {%- set cap = 25000 -%}
-      {#- Export ceilings are not clipped to the charger's 25 kW: the solar share comes off the real ceiling first (a 70 kW ceiling with 4 kW of solar still leaves the full 25 kW), and the discharge is capped after. -#}
+      {#- Charger ratings from CitrineOS (citrine_ha max discharge / charge power: the EV's ChargingNeeds limit, else the EVSE.Power rating from the device model, else 25 kW), so another charger at the Plugfest is rated by what it reports. Below 1 kW or unavailable: 25 kW. cap_c bounds charging, cap_d discharge and the soft-start ramp. -#}
+      {%- set cap_d = states('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_discharge_power') | float(0) * (1000 if state_attr('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_discharge_power', 'unit_of_measurement') == 'kW' else 1) -%}
+      {%- set cap_d = ([cap_d, 500000] | min / 10) | round(0, 'floor') | int * 10 if cap_d >= 1000 else 25000 -%}
+      {%- set cap_c = states('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_charge_power') | float(0) * (1000 if state_attr('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_charge_power', 'unit_of_measurement') == 'kW' else 1) -%}
+      {%- set cap_c = ([cap_c, 500000] | min / 10) | round(0, 'floor') | int * 10 if cap_c >= 1000 else 25000 -%}
+      {#- Export ceilings are not clipped to the charger's rating: the solar share comes off the real ceiling first (a 70 kW ceiling with 4 kW of solar still leaves the full 25 kW), and the discharge is capped after. -#}
       {%- set xcap = 100000 -%}
       {#- Export mode (input_boolean.lab_v2g_export) discharges the V2G EV at the lab target, clipped by the discharge headroom (ODE's export ceiling, opModExpLimW/opModGenLimW, less the solar export). Off: import mode, charging at the site headroom. -#}
       {%- set xmode = is_state('input_boolean.lab_v2g_export', 'on') -%}
@@ -49,10 +53,10 @@ actions:
       {%- set sol_x = pvf * 1.05 - house * 0.95 -%}
       {%- set lim = m.get('limit', {}) -%}
       {%- set off = lim.get('opModConnect') == false or lim.get('opModEnergize') == false -%}
-      {#- AS/NZS 4777.2 reconnection, done here as the V2G charger's inverter would: after ODE reconnects or re-energises (input_boolean.lab_ode_energized turns on), discharge stays 0 for 60 s, then may rise by WGra, 16.67 % of the 25 kW rating per minute. A period after a scheduled stop starts its own soft start. Charging is a load and is not ramped. -#}
+      {#- AS/NZS 4777.2 reconnection, done here as the V2G charger's inverter would: after ODE reconnects or re-energises (input_boolean.lab_ode_energized turns on), discharge stays 0 for 60 s, then may rise by WGra, 16.67 % of the discharge rating (cap_d) per minute. A period after a scheduled stop starts its own soft start. Charging is a load and is not ramped. -#}
       {%- set t_on = as_timestamp(states.input_boolean.lab_ode_energized.last_changed) if is_state('input_boolean.lab_ode_energized', 'on') else none -%}
-      {%- set wgra = cap * 0.1667 / 60 -%}
-      {%- set cv = [cap] + ([lim.opModImpLimW] if lim.get('opModImpLimW') is number else []) + ([lim.opModLoadLimW] if lim.get('opModLoadLimW') is number else []) -%}
+      {%- set wgra = cap_d * 0.1667 / 60 -%}
+      {%- set cv = [cap_c] + ([lim.opModImpLimW] if lim.get('opModImpLimW') is number else []) + ([lim.opModLoadLimW] if lim.get('opModLoadLimW') is number else []) -%}
       {%- set cur = 0 if off else ((([cv | min, 0] | max) / 10) | round(0) | int * 10) -%}
       {%- set xv = [xcap] + ([lim.opModExpLimW] if lim.get('opModExpLimW') is number else []) + ([lim.opModGenLimW] if lim.get('opModGenLimW') is number else []) -%}
       {%- set cur_x = 0 if off else ((([xv | min, 0] | max) / 10) | round(0) | int * 10) -%}
@@ -96,7 +100,7 @@ actions:
         {%- set ws = act | selectattr('w') | map(attribute='v') | list -%}
         {%- set xs = act | selectattr('x') | map(attribute='v') | list -%}
         {%- set stop = act | selectattr('c') | selectattr('v', 'eq', 0) | list | count > 0 -%}
-        {%- set v = 0 if stop else (((([cap] + ws) | min if ws else [cap, dflt] | min) / 10) | round(0) | int * 10) -%}
+        {%- set v = 0 if stop else (((([cap_c] + ws) | min if ws else [cap_c, dflt] | min) / 10) | round(0) | int * 10) -%}
         {%- set vx = 0 if stop else (((([xcap] + xs) | min if xs else [xcap, dflt_x] | min) / 10) | round(0) | int * 10) -%}
         {%- set vxr = vx -%}
         {%- set vx = vx if xmode else out.last_x -%}
@@ -120,15 +124,15 @@ actions:
       {%- set fin = namespace(p=[], on=(none if off else (t_on if t_on is not none else nowts)), rc0=none) -%}
       {#- Disconnected or de-energised (opModConnect/opModEnergize false) means 0 W either way, solar or not. -#}
       {%- for p in out.p -%}
-        {%- set chg = 0 if p.z else (([[p.limit + pv_lo - house * 1.05, 0] | max, cap] | min / 10) | round(0, 'floor') | int * 10) -%}
-        {%- set dis = 0 if p.z else (([[p.xr - sol_x, 0] | max, cap] | min / 10) | round(0, 'floor') | int * 10) -%}
+        {%- set chg = 0 if p.z else (([[p.limit + pv_lo - house * 1.05, 0] | max, cap_c] | min / 10) | round(0, 'floor') | int * 10) -%}
+        {%- set dis = 0 if p.z else (([[p.xr - sol_x, 0] | max, cap_d] | min / 10) | round(0, 'floor') | int * 10) -%}
         {%- if p.z -%}
           {%- set fin.on = none -%}
         {%- elif fin.on is none -%}
           {%- set fin.on = nowts + p.startPeriod - 1 -%}
         {%- endif -%}
         {%- set rc = (((([nowts + p.startPeriod - 1 - fin.on - 60, 0] | max) * wgra) / 10) | round(0, 'floor') | int * 10) if fin.on is not none else 0 -%}
-        {%- set fin.rc0 = (rc if rc < dis else cap) if fin.rc0 is none else fin.rc0 -%}
+        {%- set fin.rc0 = (rc if rc < dis else cap_d) if fin.rc0 is none else fin.rc0 -%}
         {%- set dis = [dis, rc] | min -%}
         {%- if p.r is not none -%}
           {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg, 'dischargeLimit': 0 - dis, 'setpoint': [[p.r, 0 - dis] | max, chg] | min, 'operationMode': 'CentralSetpoint'}] -%}
@@ -138,8 +142,8 @@ actions:
           {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg, 'dischargeLimit': 0, 'setpoint': chg, 'operationMode': 'CentralSetpoint'}] -%}
         {%- endif -%}
       {%- endfor -%}
-      {%- set sig = (('s' ~ (fin.rc0 / 500) | int ~ '|') if fin.rc0 < cap else '') ~ (('x' ~ target ~ 'h' ~ (sol_x / 100) | round(0) | int ~ '|') if xmode else ('h' ~ ((pv_lo - house * 1.05) / 100) | round(0) | int ~ '|')) ~ (('t' ~ (r0 if r0 is not none else '-') ~ '|') if tlive else '') ~ (out.sig | join(',')) -%}
-      {{ {'cur': cur, 'cur_x': cur_x, 'xmode': xmode, 'discharge': [0 - fin.p[0].setpoint, 0] | max if xmode else 0, 'active_now': active_now, 'learn': learn, 'learn_x': learn_x, 'periods': fin.p, 'test': tlive, 'soft_start': fin.rc0 if fin.rc0 < cap else none, 'sig': sig[:255]} }}
+      {%- set sig = (('s' ~ (fin.rc0 / 500) | int ~ '|') if fin.rc0 < cap_d else '') ~ (('x' ~ target ~ 'h' ~ (sol_x / 100) | round(0) | int ~ '|') if xmode else ('h' ~ ((pv_lo - house * 1.05) / 100) | round(0) | int ~ '|')) ~ (('t' ~ (r0 if r0 is not none else '-') ~ '|') if tlive else '') ~ (out.sig | join(',')) -%}
+      {{ {'cur': cur, 'cur_x': cur_x, 'xmode': xmode, 'discharge': [0 - fin.p[0].setpoint, 0] | max if xmode else 0, 'active_now': active_now, 'learn': learn, 'learn_x': learn_x, 'periods': fin.p, 'test': tlive, 'soft_start': fin.rc0 if fin.rc0 < cap_d else none, 'sig': sig[:255]} }}
 - if:
   - condition: template
     value_template: '{{ plan.learn and states(''input_number.lab_ac_default_limit'') | float(-1) != plan.cur }}'
