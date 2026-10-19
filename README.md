@@ -109,6 +109,16 @@ meter, as recorded by the CSMS every 5 s, **matched every step exactly**, each w
 sample of its boundary. Discharging at −20 kW ran at 380 V, −52.6 A.
 → [Full result, raw data and station screenshots](results/2026-10-17-v2g-txprofile/README.md)
 
+### The same setpoints under a live network constraint
+
+<img src="results/2026-10-19-v2g-network-constrained/v2g-constrained-chart.svg" alt="Requested, dispatched and measured EV power, and site grid power against the 4.5 kW CSIP-AUS limits" width="100%">
+
+The same request, sent as a real dispatch while Cactus held the site to **4.5 kW import and
+4.5 kW export**. +20 kW was clamped to the 17.42 kW of charge headroom. Both discharge steps
+became 0 W, because solar already filled the export limit. The charger followed each dispatched
+step exactly, and the site stayed inside both limits while the profile was in force.
+→ [Full result, dispatch rule and the no-profile gap](results/2026-10-19-v2g-network-constrained/README.md)
+
 ### CSIP-AUS envelopes on the Cactus test harness
 
 | Procedure | Charger | Result | Report |

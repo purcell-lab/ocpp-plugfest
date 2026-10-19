@@ -1,0 +1,53 @@
+{
+  "test": "Network-constrained V2G TxProfile: OCPP 2.1 CentralSetpoint clamped to CSIP-AUS site limits",
+  "date": "2026-10-19",
+  "timezone": "AEDT (UTC+11), Canberra; all times below are local",
+  "station": "SIM-EV-EVEREST-V2G-03 (EVerest DC V2G Test Charger 0.1.11, ISO 15118-20 DC_BPT, 25 kW both ways)",
+  "csms": "CitrineOS Isolated Lab 0.7.1 (CitrineOS v2.0.1) on the Green",
+  "transaction_id": "2aec5136-e3c2-45f7-a270-de3845e573df",
+  "network_constraint": {
+    "source": "Cactus CSIP-AUS run 75143 (ALL-25-EXT), DERC1 via Open Dynamic Export",
+    "opModExpLimW": 4500,
+    "opModImpLimW": 4500,
+    "window": "13:45:34 to 19:45:34"
+  },
+  "site_model": {
+    "house_load_w": 1000,
+    "cactus_test_load_w": 0,
+    "pv": "Open-Meteo Solar Forecast, house arrays (8.5 kWp east, 15 kWp west) at the Green's home location, capped at the 15 kW inverters/1 nameplate, curtailed so site export stays within opModExpLimW / 1.05",
+    "pv_forecast_w": [["14:30:00", 15526], ["14:45:00", 14994]],
+    "note": "Site values are computed from the model's mean values at the CSMS-measured EV power, before the +/-5% random variation; the live site meter is published on MQTT every 10 s and is not recorded in Home Assistant."
+  },
+  "dispatch": {
+    "rule": "Requested setpoints are clamped to the site headroom before sending. Discharge headroom = 0.98 x export limit - worst-case PV export (PV keeps priority on the export limit). Charge headroom = 0.98 x import limit + 0.95 x (least PV - most house load) - test load.",
+    "charge_headroom_w": 17420,
+    "discharge_headroom_w": 0
+  },
+  "profile": {
+    "sent_at": "14:40:58",
+    "duration_s": 330,
+    "chargingRateUnit": "W",
+    "operationMode": "CentralSetpoint",
+    "limit_w": 17420,
+    "dischargeLimit_w": 0,
+    "steps": [
+      {"startPeriod": 0, "requested_w": 20000, "dispatched_w": 17420},
+      {"startPeriod": 60, "requested_w": -20000, "dispatched_w": 0},
+      {"startPeriod": 120, "requested_w": 6000, "dispatched_w": 6000},
+      {"startPeriod": 180, "requested_w": -5000, "dispatched_w": 0},
+      {"startPeriod": 240, "requested_w": 0, "dispatched_w": 0}
+    ]
+  },
+  "csms_measured_ev_power_w": [
+    ["14:39:58", 0], ["14:40:08", 1800], ["14:40:15", 0], ["14:40:18", 25000],
+    ["14:41:03", 17420], ["14:42:03", 0], ["14:43:03", 6000], ["14:44:03", 0],
+    ["14:45:03", 0], ["14:46:33", 25000], ["14:46:58", 0]
+  ],
+  "events": {
+    "start_pressed": "14:39:56",
+    "profile_sent": "14:40:58",
+    "profile_expired": "14:46:28",
+    "stop_pressed": "14:46:56",
+    "transaction_closed": "14:46:58"
+  }
+}

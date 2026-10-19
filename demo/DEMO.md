@@ -25,7 +25,7 @@ Cactus CSIP-AUS server ──SEP2/CSIP-AUS──► Open Dynamic Export ──MQ
 |---|---:|---|---|---|
 | 0 | 5 | **Stack tour** | Infographic; each hop named with its protocol; open source throughout | Ready |
 | 1 | 5 | **Plug in and start** | RequestStartTransaction from the CSMS; ISO 15118-20 DC_BPT session; transaction appears in CitrineOS | Proven 17 Oct |
-| 2 | 5 | **Bidirectional setpoints** | One OCPP 2.1 CentralSetpoint TxProfile: +20, −20, +6, −5, 0 kW; meter follows each step | Proven 17 Oct ([result](../results/2026-10-17-v2g-txprofile/README.md)) |
+| 2 | 5 | **Bidirectional setpoints** | One OCPP 2.1 CentralSetpoint TxProfile: +20, −20, +6, −5, 0 kW; meter follows each step | Proven 17 Oct ([result](../results/2026-10-17-v2g-txprofile/README.md)); under a live 4.5 kW CSIP-AUS constraint 19 Oct ([result](../results/2026-10-19-v2g-network-constrained/README.md)) |
 | 3 | 8 | **Import limit (network constraint)** | CSIP-AUS `opModImpLimW` steps (for example 30 → 12 → 7.5 → 0 kW); each arrives as profile periods ahead of time and takes effect at its start | Proven: Cactus LOA-11 16/16 on AC and DC V2G ([report](../cactus/LOA-11/README.md)) |
 | 4 | 8 | **Export limit with V2G discharge** | Export mode on; discharge target clipped by the CSIP-AUS export limit (`opModExpLimW`/`opModGenLimW`) and released | Built; Cactus ALL-22 attempted 17 Oct, rerun pending |
 | 5 | 6 | **Short-notice events (1 minute)** | A control with 60 s notice, modelling Minimum System Load (raise charging / soak) and Lack of Reserve (stop charging, discharge): the next profile carries it before it starts | Rehearse: schedule-ahead path proven in LOA-11 |
