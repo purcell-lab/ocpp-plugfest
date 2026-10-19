@@ -136,6 +136,7 @@ house load the EV also supplies. The site exported 17.95 kW, inside the limit.
 | **LOA-11** (CSIP-AUS import limits) | EVerest AC, OCPP 2.1 | **16 / 16 pass** (run 74858) | [LOA-11](cactus/LOA-11/README.md) |
 | **LOA-11** (CSIP-AUS import limits) | EVerest DC V2G, OCPP 2.1 | **16 / 16 pass** (run 74865); every decrease applied on time from the held profile, including 0 W | [LOA-11](cactus/LOA-11/README.md) |
 | **GEN-10** (primacy validation, generators) | EVerest DC V2G + solar | **46 / 46 pass** (run 75351), after an ODE fix for equal-primacy defaults | [GEN-10](results/2026-10-20-cactus-gen10/README.md) |
+| **GEN-11** (variable export limit, 200 % to 0 %) | EVerest DC V2G + solar | **16 / 16 pass, no warnings** (run 75354) | [GEN-11](results/2026-10-20-cactus-gen11/README.md) |
 | ALL-22, ALT-ALL-29, ALT-LOA-13 (export, readings, load) | EVerest DC V2G | Run this week; findings being fixed before reruns | [Cactus records](cactus/README.md) |
 
 ---

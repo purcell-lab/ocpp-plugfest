@@ -1,0 +1,463 @@
+{
+ "test": "Cactus CSIP-AUS GEN-11, variable export limit (DER-G), run 75354",
+ "date": "2026-10-20",
+ "timezone": "AEDT (UTC+11), Canberra; all times below are local",
+ "result": {
+  "status": "1/1 steps complete.",
+  "checks_passed": 17,
+  "checks_total": 17,
+  "warnings": []
+ },
+ "started": "08:58:52",
+ "finalised": "09:12:20",
+ "client": "Open Dynamic Export App 0.1.4 on the Green; ODE schedule bridge in export mode (solar priority, 25 kW target; export-ceiling fix deployed at 09:02) driving the EVerest DC V2G simulator SIM-EV-EVEREST-V2G-03 through CitrineOS; synthetic site: 1 kW house load, Open-Meteo solar for a 10 kW system",
+ "setMaxW_w": 35000,
+ "note_timestamps": "ODE labels each 60 s average with the end of its averaging window, so a value labelled T covers T-60 s to T.",
+ "note_site_power": "Cactus plots Site Power as twice the site net ODE posted; ode_site_net_w is what ODE posted (+ import, - export).",
+ "ode_site_net_w": [
+  [
+   "08:59:00",
+   -567
+  ],
+  [
+   "09:00:00",
+   -12273
+  ],
+  [
+   "09:01:00",
+   -24748
+  ],
+  [
+   "09:02:00",
+   -24786
+  ],
+  [
+   "09:03:00",
+   -25325
+  ],
+  [
+   "09:04:00",
+   -19904
+  ],
+  [
+   "09:05:00",
+   -13829
+  ],
+  [
+   "09:06:00",
+   -9847
+  ],
+  [
+   "09:07:00",
+   -8483
+  ],
+  [
+   "09:08:00",
+   -2121
+  ],
+  [
+   "09:09:00",
+   0
+  ],
+  [
+   "09:10:00",
+   0
+  ],
+  [
+   "09:11:00",
+   0
+  ],
+  [
+   "09:12:00",
+   0
+  ]
+ ],
+ "ode_der_net_w": [
+  [
+   "08:59:00",
+   1567
+  ],
+  [
+   "09:00:00",
+   13197
+  ],
+  [
+   "09:01:00",
+   25777
+  ],
+  [
+   "09:02:00",
+   25798
+  ],
+  [
+   "09:04:00",
+   23623
+  ],
+  [
+   "09:05:00",
+   14810
+  ],
+  [
+   "09:06:00",
+   10714
+  ],
+  [
+   "09:07:00",
+   9503
+  ],
+  [
+   "09:08:00",
+   3105
+  ],
+  [
+   "09:09:00",
+   988
+  ],
+  [
+   "09:10:00",
+   1002
+  ],
+  [
+   "09:11:00",
+   1004
+  ],
+  [
+   "09:12:00",
+   1012
+  ]
+ ],
+ "cactus_limits_w": [
+  {
+   "t": "08:58:52",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": -1134
+  },
+  {
+   "t": "08:59:12",
+   "control_exp": 70000,
+   "default_exp": 0,
+   "cactus_site_power": -1134
+  },
+  {
+   "t": "08:59:32",
+   "control_exp": 70000,
+   "default_exp": 0,
+   "cactus_site_power": -1134
+  },
+  {
+   "t": "08:59:52",
+   "control_exp": 70000,
+   "default_exp": 0,
+   "cactus_site_power": -24547
+  },
+  {
+   "t": "09:00:12",
+   "control_exp": 70000,
+   "default_exp": 0,
+   "cactus_site_power": -24547
+  },
+  {
+   "t": "09:00:32",
+   "control_exp": 70000,
+   "default_exp": 0,
+   "cactus_site_power": -24547
+  },
+  {
+   "t": "09:00:52",
+   "control_exp": 70000,
+   "default_exp": 0,
+   "cactus_site_power": -49496
+  },
+  {
+   "t": "09:01:12",
+   "control_exp": 35000,
+   "default_exp": 0,
+   "cactus_site_power": -49496
+  },
+  {
+   "t": "09:01:32",
+   "control_exp": 35000,
+   "default_exp": 0,
+   "cactus_site_power": -49496
+  },
+  {
+   "t": "09:01:52",
+   "control_exp": 35000,
+   "default_exp": 0,
+   "cactus_site_power": -49572
+  },
+  {
+   "t": "09:02:12",
+   "control_exp": 35000,
+   "default_exp": 0,
+   "cactus_site_power": -49572
+  },
+  {
+   "t": "09:02:32",
+   "control_exp": 35000,
+   "default_exp": 0,
+   "cactus_site_power": -49572
+  },
+  {
+   "t": "09:02:52",
+   "control_exp": 35000,
+   "default_exp": 0,
+   "cactus_site_power": -50650
+  },
+  {
+   "t": "09:03:12",
+   "control_exp": 14000,
+   "default_exp": 0,
+   "cactus_site_power": -50650
+  },
+  {
+   "t": "09:03:32",
+   "control_exp": 14000,
+   "default_exp": 0,
+   "cactus_site_power": -50650
+  },
+  {
+   "t": "09:03:52",
+   "control_exp": 14000,
+   "default_exp": 0,
+   "cactus_site_power": -39807
+  },
+  {
+   "t": "09:04:12",
+   "control_exp": 14000,
+   "default_exp": 0,
+   "cactus_site_power": -39807
+  },
+  {
+   "t": "09:04:32",
+   "control_exp": 14000,
+   "default_exp": 0,
+   "cactus_site_power": -39807
+  },
+  {
+   "t": "09:04:52",
+   "control_exp": 14000,
+   "default_exp": 0,
+   "cactus_site_power": -27658
+  },
+  {
+   "t": "09:05:12",
+   "control_exp": 8750,
+   "default_exp": 0,
+   "cactus_site_power": -27658
+  },
+  {
+   "t": "09:05:32",
+   "control_exp": 8750,
+   "default_exp": 0,
+   "cactus_site_power": -27658
+  },
+  {
+   "t": "09:05:52",
+   "control_exp": 8750,
+   "default_exp": 0,
+   "cactus_site_power": -19694
+  },
+  {
+   "t": "09:06:12",
+   "control_exp": 8750,
+   "default_exp": 0,
+   "cactus_site_power": -19694
+  },
+  {
+   "t": "09:06:32",
+   "control_exp": 8750,
+   "default_exp": 0,
+   "cactus_site_power": -19694
+  },
+  {
+   "t": "09:06:52",
+   "control_exp": 8750,
+   "default_exp": 0,
+   "cactus_site_power": -16966
+  },
+  {
+   "t": "09:07:12",
+   "control_exp": 0,
+   "default_exp": 0,
+   "cactus_site_power": -16966
+  },
+  {
+   "t": "09:07:32",
+   "control_exp": 0,
+   "default_exp": 0,
+   "cactus_site_power": -16966
+  },
+  {
+   "t": "09:07:52",
+   "control_exp": 0,
+   "default_exp": 0,
+   "cactus_site_power": -4241
+  },
+  {
+   "t": "09:08:12",
+   "control_exp": 0,
+   "default_exp": 0,
+   "cactus_site_power": -4241
+  },
+  {
+   "t": "09:08:32",
+   "control_exp": 0,
+   "default_exp": 0,
+   "cactus_site_power": -4241
+  },
+  {
+   "t": "09:08:52",
+   "control_exp": 0,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:09:12",
+   "control_exp": 0,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:09:32",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:09:52",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:10:12",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:10:32",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:10:52",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:11:12",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:11:32",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:11:52",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  },
+  {
+   "t": "09:12:12",
+   "control_exp": null,
+   "default_exp": 0,
+   "cactus_site_power": 0
+  }
+ ],
+ "responses": [
+  [
+   "08:59:14",
+   "DERC2",
+   "Received"
+  ],
+  [
+   "08:59:14",
+   "DERC3",
+   "Received"
+  ],
+  [
+   "08:59:14",
+   "DERC4",
+   "Received"
+  ],
+  [
+   "08:59:14",
+   "DERC1",
+   "Started"
+  ],
+  [
+   "08:59:15",
+   "DERC1",
+   "Received"
+  ],
+  [
+   "08:59:15",
+   "DERC5",
+   "Received"
+  ],
+  [
+   "09:01:13",
+   "DERC2",
+   "Started"
+  ],
+  [
+   "09:01:14",
+   "DERC1",
+   "Completed"
+  ],
+  [
+   "09:03:13",
+   "DERC2",
+   "Completed"
+  ],
+  [
+   "09:03:13",
+   "DERC3",
+   "Started"
+  ],
+  [
+   "09:05:14",
+   "DERC3",
+   "Completed"
+  ],
+  [
+   "09:05:14",
+   "DERC4",
+   "Started"
+  ],
+  [
+   "09:07:14",
+   "DERC4",
+   "Completed"
+  ],
+  [
+   "09:07:14",
+   "DERC5",
+   "Started"
+  ],
+  [
+   "09:09:15",
+   "DERC5",
+   "Completed"
+  ]
+ ],
+ "steps": [
+  [
+   "08:59:13",
+   "GET",
+   "/edev/1/fsa/1/derp",
+   200,
+   "GET-DER-CONTROLS"
+  ]
+ ]
+}
