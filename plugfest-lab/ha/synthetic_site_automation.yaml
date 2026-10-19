@@ -1,0 +1,84 @@
+# Lab: Open-Meteo solar forecast to ODE (inverters/1 + site): the synthetic 6 kW solar inverter and site meter on the Green.
+# UI-managed automation (unique id 1792376241524, automation.lab_open_meteo_solar_forecast_to_ode_inverters_1).
+# Deploy: Settings > Automations > the automation > Edit in YAML, replace with this file (keep the id), save.
+id: '1792376241524'
+alias: 'Lab: Open-Meteo solar forecast to ODE (inverters/1 + site)'
+description: 'Plugfest mode, away from the home broker: stands in for the main HA''s Sigen publisher. Publishes the Open-Meteo Solar Forecast estimate of PV at the Green''s home location (a 6 kW system: 2.2 kWp east, 3.8 kWp west, 6 kW inverter) as ODE''s inverters/1, and a synthetic site meter on topic site = input_number.lab_house_load - PV (ODE site sign: + import, - export), both on the local Mosquitto in the same shape the main HA publishes. The existing ''Lab: V2G readings to ODE'' automation then turns site into lab/site and inverters/4 unchanged. Each publish adds independent random variation so the readings look like a live meter: PV and house load +/-5%, each site phase +/-5% (net = sum of phases), each phase voltage 230 V +/-5%, frequency 50 Hz +/-0.1%; reactive power from an inductive house load (PF 0.95 lagging, +/-5%) and the inverter''s AS/NZS 4777.2 Australia A volt-var response to the varied voltage plus a 0.995 absorbing power factor offset; inverters/1 and site share the
+  same PV, voltages and frequency. PV is capped at the 6 kW inverters/1 nameplate (6 kW / 6 kVA, published to ODE) and curtailed like an inverter obeying ODE: never above opModGenLimW, and low enough that lab/site export stays within opModExpLimW (aiming at limit / 1.05 so the phase variation never breaches it), 0 while de-energised; limits come from ''Lab: ODE limits to lab helpers''. Import limits are not enforced here: the house load is not controllable, and the V2G charger''s import is limited by the ODE schedule bridge. Publishes on every forecast, house-load or ODE limit change and every 10 s so ODE always has fresh retained samples.'
+triggers:
+- entity_id: sensor.home_power_production_now
+  note: Forecast power changes (the integration updates it through the day).
+  trigger: state
+- entity_id: input_number.lab_house_load
+  note: House load changed by hand.
+  trigger: state
+- note: Heartbeat so ODE keeps receiving samples between changes.
+  seconds: /10
+  trigger: time_pattern
+- trigger: state
+  entity_id:
+  - input_number.lab_ode_export_limit
+  - input_number.lab_ode_generation_limit
+  - input_boolean.lab_ode_energized
+  note: ODE limit changed (about every second during a ramp), so curtailment follows within a second.
+conditions:
+- above: -1
+  condition: numeric_state
+  entity_id: sensor.home_power_production_now
+  note: Skip while the forecast is unavailable or unknown rather than publish a false 0 W.
+actions:
+- note: 'Independent random factors: +/-5% (1 in 20000 steps) for power, phases, house reactive power and voltage, +/-0.1% for frequency. No key reads another, so render order does not matter.'
+  variables:
+    f_a: '{{ 1 + (range(-1000, 1001) | random) / 20000 }}'
+    f_b: '{{ 1 + (range(-1000, 1001) | random) / 20000 }}'
+    f_c: '{{ 1 + (range(-1000, 1001) | random) / 20000 }}'
+    f_load: '{{ 1 + (range(-1000, 1001) | random) / 20000 }}'
+    f_pv: '{{ 1 + (range(-1000, 1001) | random) / 20000 }}'
+    freq: '{{ (50 * (1 + (range(-1000, 1001) | random) / 1000000)) | round(3) }}'
+    v_a: '{{ (230 * (1 + (range(-1000, 1001) | random) / 20000)) | round(1) }}'
+    v_b: '{{ (230 * (1 + (range(-1000, 1001) | random) / 20000)) | round(1) }}'
+    v_c: '{{ (230 * (1 + (range(-1000, 1001) | random) / 20000)) | round(1) }}'
+    f_q: '{{ 1 + (range(-1000, 1001) | random) / 20000 }}'
+    f_qi: '{{ 1 + (range(-1000, 1001) | random) / 20000 }}'
+- variables:
+    load: '{{ ([states(''input_number.lab_house_load'') | float(0) * f_load, 0] | max) | round(1) }}'
+    pv_avail: '{{ ([[states(''sensor.home_power_production_now'') | float(0) * f_pv, 6000] | min, 0] | max) | round(1) }}'
+    ev: '{%- set s = ''sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_measured_ev_power'' -%}{{ (states(s) | float(0)) if state_attr(s, ''meter_fresh'') == true and state_attr(s, ''transaction_closed'') == false else 0 }}'
+    test: '{{ states(''input_number.lab_test_load'') | float(0) }}'
+  note: 'Varied house load and available PV (forecast, capped at the 6 kW nameplate), plus the V2G EV power (+ charging) and Cactus test load that ''Lab: V2G readings to ODE'' adds to lab/site, W. Each key reads only earlier steps.'
+- variables:
+    pv_cap: '{%- set exp = states(''input_number.lab_ode_export_limit'') | float(-1) -%}{%- set gen = states(''input_number.lab_ode_generation_limit'') | float(-1) -%}{%- set caps = [6000] + ([gen] if gen >= 0 else []) + ([load + (exp + ev + test) / 1.05] if exp >= 0 else []) -%}{{ ([caps | min, 0] | max) | round(1) if is_state(''input_boolean.lab_ode_energized'', ''on'') else 0 }}'
+  note: 'Curtailment ceiling, like the inverter obeying ODE: the lowest of the nameplate, opModGenLimW, and the PV that keeps lab/site export (PV - load - EV - test load) within opModExpLimW even after the +/-5% phase variation (export target limit / 1.05); 0 while ODE reports opModConnect or opModEnergize false. Limits come from ''Lab: ODE limits to lab helpers'' (-1 = no limit).'
+- variables:
+    pv: '{{ [pv_avail, pv_cap] | min | round(1) }}'
+    curtailed: '{{ pv_cap < pv_avail }}'
+  note: 'Published PV: the available PV, curtailed to the ceiling when needed.'
+- note: 'Per-phase site power, each varied independently (+ import, - export). House reactive power: inductive load at PF 0.95 lagging (tan = 0.3287), +/-5%. Inverter reactive power: AS/NZS 4777.2 Australia A volt-var on the mean phase voltage (207 V +44%, 220-240 V 0, 258 V -60% of the 6 kVA rating; + supplying, - absorbing), plus a small fixed power factor offset of 0.995 absorbing (tan = 0.1002, about -0.6 kvar at 6 kW, +/-5%) that scales with PV output.'
+  variables:
+    p_a: '{{ ((load - pv) / 3 * f_a) | round(1) }}'
+    p_b: '{{ ((load - pv) / 3 * f_b) | round(1) }}'
+    p_c: '{{ ((load - pv) / 3 * f_c) | round(1) }}'
+    q_load: '{{ (load * 0.3287 * f_q) | round(1) }}'
+    q_inv: '{%- set v = (v_a + v_b + v_c) / 3 -%}{%- set frac = 0.44 if v <= 207 else (0.44 * (220 - v) / 13 if v < 220 else (0 if v <= 240 else (-0.60 * (v - 240) / 18 if v < 258 else -0.60))) -%}{{ (frac * 6000 - pv * 0.1002 * f_qi) | round(1) }}'
+- note: Site net is the sum of the phases; site reactive = house load reactive minus what the inverter supplies (+ import).
+  variables:
+    net: '{{ (p_a + p_b + p_c) | round(1) }}'
+    q_net: '{{ (q_load - q_inv) | round(1) }}'
+- action: mqtt.publish
+  data:
+    evaluate_payload: false
+    payload: '{{ {''inverter'': {''realPower'': pv, ''reactivePower'': q_inv, ''voltagePhaseA'': v_a, ''voltagePhaseB'': v_b, ''voltagePhaseC'': v_c, ''frequency'': freq}, ''nameplate'': {''type'': 4, ''maxW'': 6000, ''maxVA'': 6000, ''maxVar'': 12000}, ''settings'': {''maxW'': 6000, ''maxVA'': 6000, ''maxVar'': 12000}, ''status'': {''operationalModeStatus'': 2, ''genConnectStatus'': 7}} | to_json }}'
+    qos: 0
+    retain: true
+    topic: inverters/1
+  note: 'ODE inverter sign: + export/produce.'
+- action: mqtt.publish
+  data:
+    evaluate_payload: false
+    payload: '{{ {''realPower'': {''type'': ''perPhaseNet'', ''phaseA'': p_a, ''phaseB'': p_b, ''phaseC'': p_c, ''net'': net}, ''reactivePower'': {''type'': ''noPhase'', ''net'': q_net}, ''voltage'': {''type'': ''perPhase'', ''phaseA'': v_a, ''phaseB'': v_b, ''phaseC'': v_c}, ''frequency'': freq} | to_json }}'
+    qos: 0
+    retain: true
+    topic: site
+  note: 'Synthetic site meter in the main HA''s format; consumed by ''Lab: V2G readings to ODE''.'
+max_exceeded: silent
+mode: single
