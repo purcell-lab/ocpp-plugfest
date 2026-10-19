@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/hero.svg" alt="From grid envelope to bidirectional charging profile: open, standard, end to end" width="100%">
+<img src="assets/hero.svg" alt="From grid signal to bidirectional charging profile: open, standard, end to end" width="100%">
 
 [![OCPP 2.1](https://img.shields.io/badge/OCPP-2.1-0f6e6e?style=for-the-badge&logo=lightning&logoColor=white)](https://openchargealliance.org/)
 [![ISO 15118-20](https://img.shields.io/badge/ISO_15118--20-DC__BPT-0f6e6e?style=for-the-badge&logo=electricvehicle&logoColor=white)](#proven-this-week)

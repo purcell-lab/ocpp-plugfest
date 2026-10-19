@@ -107,6 +107,11 @@ ICONS = {
     "price": f'''<g {SW}><circle cx="20" cy="20" r="13"/></g>
 <text x="20" y="26.5" font-size="18" font-weight="700" fill="currentColor" text-anchor="middle">$</text>
 <path d="M6 54 L18 50 L26 52 L34 44 L40 47 L46 24 L52 46 L59 42" fill="none" stroke="{GOLD}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>''',
+    # OpenADR 3.1 VTN: price tag broadcasting a signal
+    "vtn": f'''<g {SW}><path d="M7 33 L33 7 H52.5 Q57 7 57 11.5 V31 L31 57 Z"/></g>
+<circle cx="47.5" cy="16.5" r="3.6" fill="{GOLD}"/>
+<text x="33" y="40.5" font-size="20" font-weight="800" fill="currentColor" text-anchor="middle">$</text>
+<g fill="none" stroke="{GOLD}" stroke-width="3.2" stroke-linecap="round"><path d="M12 21.5 A10.5 10.5 0 0 1 21.5 12"/><path d="M4.5 21 A17 17 0 0 1 21 4.5"/></g>''',
     "check": f'''<path d="M18 33 L28 43 L47 22" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>''',
 }
 
@@ -136,7 +141,7 @@ def arrow(x1, y, x2, color=GOLD, w=3.5):
 CHAIN = [
     ("tower", "Network operator", "CSIP-AUS server", "ANU BSGIP Cactus", "v1.2 test harness"),
     ("envelope", "Open Dynamic", "Export (ODE)", "CSIP-AUS client", "dynamic envelopes"),
-    ("home", "Home Assistant", "EEMS", "Home Assistant Green", "bridge + CitrineOS-HA"),
+    ("home", "Home Assistant", "EEMS", "Green · OpenADR VEN", "bridge + CitrineOS-HA"),
     ("server", "CitrineOS", "CSMS", "OCPP 2.1 / 2.0.1 / 1.6", "open-source CSMS"),
     ("charger", "EVerest →", "Plugfest stations", "charging stations", "validate profiles"),
     ("ev", "Electric vehicle", "V2G", "ISO 15118-20 EV", "charge + · discharge −"),
@@ -148,6 +153,9 @@ LINKS = [
     ("OCPP 2.1", "SetChargingProfile"),
     ("ISO 15118-20", "DC_BPT"),
 ]
+
+PRICE_SRC = ("vtn", "OpenADR 3.1 VTN", "price server", "AU tariff events · 5/30-min")
+PRICE_LINK = ("OpenADR 3.1", "PRICE · EXPORT_PRICE")
 
 
 def chain(x0, y0, width, tile_w=200, tile_h=236, compact=False, f1=20, f2=15):
@@ -197,6 +205,36 @@ def link_pills(x0, y, width, tile_w, gap, h=58, size1=16, size2=14, pw=214):
         out.append(T(cxl, y + h / 2 - 3, l1, size1, 700, c1, "middle"))
         out.append(T(cxl, y + h / 2 + 17, l2, size2, 500, c2, "middle"))
     return "".join(out)
+
+
+def price_lane(x, y, w, h, hx, top, f1=20, f2=15, r=34, icon_sz=52,
+               pw=200, ph=58, ps1=16, ps2=14):
+    """Second input lane: OpenADR VTN tile, then an arrow (with pill) that turns up into the
+    bottom of the Home Assistant tile at x=hx, ending at y=top."""
+    ic, t1, s1, s2 = PRICE_SRC
+    o = [f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="18" fill="#ffffff" stroke="{RULE}" stroke-width="1.5"/>']
+    cx, cy = x + 14 + r, y + h / 2
+    o.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{CREAM}"/>')
+    o.append(icon(ic, cx - icon_sz / 2, cy - icon_sz / 2, icon_sz))
+    tx = cx + r + 16
+    blk = f1 * 0.72 + 2 * f2 * 1.45
+    b0 = cy - blk / 2 + f1 * 0.72
+    o.append(T(tx, b0, t1, f1, 700, INK))
+    o.append(T(tx, b0 + f2 * 1.45, s1, f2, 500, GREY))
+    o.append(T(tx, b0 + f2 * 2.9, s2, f2, 400, GREY))
+    # arrow: right, round the corner, up into Home Assistant
+    xa = x + w + 8
+    rr = 16
+    o.append(f'<path d="M{xa} {cy} H{hx - rr} Q{hx} {cy} {hx} {cy - rr} V{top + 2}" fill="none" stroke="{GOLD}" '
+             f'stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>')
+    o.append(f'<path d="M{hx - 7} {top + 11} L{hx} {top} L{hx + 7} {top + 11}" fill="none" stroke="{GOLD}" '
+             f'stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>')
+    pcx = (xa + hx - rr) / 2
+    l1, l2 = PRICE_LINK
+    o.append(f'<rect x="{pcx - pw / 2}" y="{cy - ph / 2}" width="{pw}" height="{ph}" rx="{ph / 2}" fill="{CREAM}" stroke="{GOLD}" stroke-width="2"/>')
+    o.append(T(pcx, cy - 3, l1, ps1, 700, TEAL_D, "middle"))
+    o.append(T(pcx, cy + 17, l2, ps2, 500, GREY, "middle"))
+    return "".join(o)
 
 
 # ---------- V2G TxProfile chart ----------
@@ -320,7 +358,7 @@ SCEN = [
     ("load", "Load-limit clip", "site load envelope"),
     ("clock", "1-minute MSL / LOR", "short-notice events"),
     ("congestion", "Local congestion", "network constraint"),
-    ("price", "Price changes", "AEMO spot price"),
+    ("price", "Price events", "OpenADR 3.1 PRICE"),
 ]
 STATS = [
     ("16/16", "LOA-11 import limits", "AC charger · run 74858"),
@@ -359,9 +397,10 @@ def infographic():
     W, H = 1600, 2263
     M = 80
     CW = W - 2 * M
-    o = [svg_open(W, H, "From grid envelope to bidirectional charging profile",
-                  "Open-source, standards-based chain from the network operator's CSIP-AUS server to an OCPP 2.1 "
-                  "bidirectional charging profile at the EV socket. OCA OCPP Plugfest & Conference Australia, "
+    o = [svg_open(W, H, "From grid signal to bidirectional charging profile",
+                  "Open-source, standards-based chain: CSIP-AUS dynamic operating envelopes from the network operator "
+                  "and OpenADR 3.1 price events both reach the Home Assistant EEMS, which sends one OCPP 2.1 "
+                  "bidirectional charging profile to the charging station. OCA OCPP Plugfest & Conference Australia, "
                   "21-23 October 2026, Canberra.")]
     o.append(defs(*ICONS.keys(), extra=f'''
 <linearGradient id="hdr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{TEAL}"/><stop offset="1" stop-color="{TEAL_DD}"/></linearGradient>
@@ -380,12 +419,12 @@ def infographic():
     o.append(f'<image x="{W - M - 128}" y="58" width="128" height="148" href="data:image/png;base64,{CREST200}"/>')
     o.append(T(M, 92, "OCA OCPP 2.0.1 / 2.1 PLUGFEST & CONFERENCE AUSTRALIA", 19, 700, GOLD, "start", 'letter-spacing="2.2"'))
     o.append(T(M, 124, "21–23 October 2026  ·  Canberra", 19, 500, "#ffffff", "start", 'opacity=".85" letter-spacing=".5"'))
-    o.append(T(M, 226, "From grid envelope to", 78, 800, "#ffffff", "start", 'letter-spacing="-2"'))
+    o.append(T(M, 226, "From grid signal to", 78, 800, "#ffffff", "start", 'letter-spacing="-2"'))
     o.append(T(M, 312, "bidirectional charging profile", 78, 800, "#ffffff", "start", 'letter-spacing="-2"'))
     o.append(T(M, 390, "open, standard, end to end.", 60, 800, GOLD, "start", 'letter-spacing="-1.5"'))
-    o.append(T(M, 444, "Home energy management that turns CSIP-AUS dynamic operating envelopes into OCPP 2.1", 23, 400, CREAM))
-    o.append(T(M, 476, "bidirectional charging profiles that the charging station validates — responding quickly to", 23, 400, CREAM))
-    o.append(T(M, 508, "price and network events, including 1-minute-notice Minimum System Load and Lack of Reserve events.", 23, 400, CREAM))
+    o.append(T(M, 444, "Home energy management that coordinates CSIP-AUS dynamic operating envelopes and OpenADR 3.1 price", 23, 400, CREAM))
+    o.append(T(M, 476, "signals into OCPP 2.1 bidirectional charging profiles the charging station validates, responding quickly", 23, 400, CREAM))
+    o.append(T(M, 508, "to price and network events, including 1-minute-notice Minimum System Load and Lack of Reserve events.", 23, 400, CREAM))
 
     # ---- section helper ----
     def section(y, num, title, sub=None):
@@ -398,37 +437,40 @@ def infographic():
 
     # ---- 1. the chain ----
     y = 604
-    o.append(section(y, "1", "The chain: network operator to EV socket", "every component open source"))
+    o.append(section(y, "1", "Two signals in, one OCPP 2.1 profile out", "every component open source"))
     cy0 = y + 36
     tile_w = 206
-    c, gap = chain(M, cy0, CW, tile_w=tile_w, tile_h=226)
+    tile_h = 226
+    c, gap = chain(M, cy0, CW, tile_w=tile_w, tile_h=tile_h)
     o.append(c)
-    o.append(link_pills(M, cy0 + 252, CW, tile_w, gap))
+    o.append(link_pills(M, cy0 + 240, CW, tile_w, gap, pw=200))
+    hx = M + 2 * (tile_w + gap) + tile_w / 2
+    o.append(price_lane(M, cy0 + 318, 326, 84, hx, cy0 + tile_h + 6))
     # payload callout
-    by = cy0 + 338
+    by = cy0 + 418
     o.append(f'<rect x="{M}" y="{by}" width="{CW}" height="84" rx="16" fill="{CREAM}"/>')
     o.append(f'<rect x="{M}" y="{by}" width="8" height="84" rx="4" fill="{TEAL}"/>')
     o.append(TS(M + 32, by + 36, [("OCPP 2.1 SetChargingProfile", 800, TEAL_D),
-                                  ("  ·  TxProfile  ·  operationMode CentralSetpoint  ·  setpoint / limit / dischargeLimit in W", 500, INK)], 19))
-    o.append(T(M + 32, by + 64, "Standard OCPP 2.1 smart charging — not reliant on the OCPP 2.1 DER control block.  "
-               "Secondary path: SunSpec Modbus 1.2 to a hybrid inverter.", 16, 400, GREY))
+                                  ("  ·  TxProfile  ·  CentralSetpoint  ·  setpoint / limit / dischargeLimit in W", 500, INK)], 19))
+    o.append(T(M + 32, by + 64, "Prices travel with the power: absolutePriceSchedule on the profile · CostUpdated (California Pricing) · "
+               "SetDefaultTariff. Not reliant on the OCPP 2.1 DER control block.", 16, 400, GREY))
 
     # ---- 2. proven ----
-    y = by + 140
+    y = by + 130
     o.append(section(y, "2", "Proven on 17 October 2026", "ANU BSGIP Cactus CSIP-AUS v1.2 test harness · EVerest DC V2G simulator"))
     sy0 = y + 34
-    o.append(stat_cards(M, sy0, CW, 146))
-    o.append(T(M, sy0 + 176, "Schedule-ahead: the bridge sends the next 600 s of CSIP-AUS controls as OCPP 2.1 profile periods, "
+    o.append(stat_cards(M, sy0, CW, 138))
+    o.append(T(M, sy0 + 168, "Schedule-ahead: the bridge sends the next 600 s of CSIP-AUS controls as OCPP 2.1 profile periods, "
                "so each limit takes effect at its start time.", 16, 400, GREY))
-    o.append(T(M, sy0 + 200, "In run 74865 every decrease applied 0.5–0.6 s early from the held profile, including 0 W.", 16, 400, GREY))
+    o.append(T(M, sy0 + 192, "In run 74865 every decrease applied 0.5–0.6 s early from the held profile, including 0 W.", 16, 400, GREY))
 
     # ---- 3. chart + 4. scenarios ----
-    y = sy0 + 266
+    y = sy0 + 254
     o.append(section(y, "3", "One TxProfile, five setpoints"))
     o.append(T(M + 56, y + 30, "EVerest DC V2G simulator · ISO 15118-20 DC_BPT · ±25 kW rated · 60 s per step", 16, 500, GREY))
     chx, chw = M, 870
     chy = y + 52
-    chh = 392
+    chh = 340
     o.append(f'<rect x="{chx}" y="{chy}" width="{chw}" height="{chh}" rx="18" fill="{CREAM}"/>')
     o.append(chart_legend(chx + 28, chy + 34, fs=0.92))
     o.append(chart(chx + 6, chy + 58, chw - 12, chh - 66, surface=CREAM))
@@ -453,7 +495,7 @@ def infographic():
         o.append(T(cx + 88, cyy + ch2 / 2 + 19, t2, 14, 400, GREY))
 
     # ---- 5. AS 5438 ----
-    y = chy + chh + 72
+    y = chy + chh + 64
     o.append(section(y, "5", "Draft AS 5438: three protocols an EEMS must support"))
     ay0 = y + 30
     ah = 142
@@ -501,10 +543,11 @@ def panel(w, h, fill=CREAM, r=24):
 
 
 def hero():
-    W, H = 1280, 420
-    o = [svg_open(W, H, "OCPP Plugfest Australia 2026: from grid envelope to bidirectional charging profile",
-                  "Open, standard, end to end: CSIP-AUS dynamic operating envelopes to OCPP 2.1 bidirectional charging profiles.")]
-    o.append(defs(*[c[0] for c in CHAIN], extra=f'''
+    W, H = 1280, 476
+    o = [svg_open(W, H, "OCPP Plugfest Australia 2026: from grid signal to bidirectional charging profile",
+                  "Open, standard, end to end: CSIP-AUS dynamic operating envelopes and OpenADR 3.1 price signals "
+                  "converge on the Home Assistant EEMS, which sends OCPP 2.1 bidirectional charging profiles to the charging station.")]
+    o.append(defs(*[c[0] for c in CHAIN], PRICE_SRC[0], extra=f'''
 <linearGradient id="hdr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{TEAL}"/><stop offset="1" stop-color="{TEAL_DD}"/></linearGradient>
 <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.3" fill="#ffffff" opacity=".07"/></pattern>
 <clipPath id="pc"><rect x="0" y="0" width="{W}" height="{H}" rx="24"/></clipPath>'''))
@@ -512,46 +555,74 @@ def hero():
     o.append(f'<path d="M0 {H - 8} C 260 {H - 26}, 460 {H + 6}, 700 {H - 10} S 1100 {H - 28}, 1280 {H - 12}" fill="none" stroke="{GOLD}" stroke-width="2" opacity=".35"/></g>')
     o.append(f'<image x="{W - 56 - 92}" y="40" width="92" height="106" href="data:image/png;base64,{CREST200}"/>')
     o.append(T(56, 70, "OCA OCPP 2.0.1 / 2.1 PLUGFEST · CANBERRA · 21–23 OCT 2026", 16, 700, GOLD, "start", 'letter-spacing="1.8"'))
-    o.append(T(56, 138, "From grid envelope to", 52, 800, "#ffffff", "start", 'letter-spacing="-1.4"'))
+    o.append(T(56, 138, "From grid signal to", 52, 800, "#ffffff", "start", 'letter-spacing="-1.4"'))
     o.append(T(56, 196, "bidirectional charging profile", 52, 800, "#ffffff", "start", 'letter-spacing="-1.4"'))
     o.append(T(56, 246, "open, standard, end to end.", 38, 800, GOLD, "start", 'letter-spacing="-1"'))
-    # mini chain
-    labels = ["CSIP-AUS server", "ODE", "Home Assistant", "CitrineOS", "EVerest → Plugfest stations", "EV"]
-    protos = ["SEP2", "MQTT", "REST", "OCPP 2.1", "ISO 15118-20"]
-    y = 318
+    # mini chain: two input lanes (network, price) merge into Home Assistant, then one lane to the EV
+    R = 28
+    y1, y2 = 304, 398            # network lane, price lane
+    ym = (y1 + y2) / 2           # main lane
     n = 6
     x0, x1 = 56, W - 56
     step = (x1 - x0) / (n - 1)
-    for i in range(n - 1):
-        xa, xb = x0 + i * step + 34, x0 + (i + 1) * step - 34
-        o.append(f'<path d="M{xa} {y} H{xb}" stroke="{GOLD}" stroke-width="2.5" opacity=".9"/>')
-        o.append(f'<path d="M{xb - 8} {y - 5} L{xb} {y} L{xb - 8} {y + 5}" fill="none" stroke="{GOLD}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>')
-        mx = (xa + xb) / 2
-        o.append(T(mx, y - 10, protos[i], 13, 700, GOLD_L, "middle", 'letter-spacing=".3"'))
-    for i, (ic, *_r) in enumerate(CHAIN):
-        cx = x0 + i * step
-        o.append(f'<circle cx="{cx}" cy="{y}" r="30" fill="{CREAM}"/>')
-        o.append(icon(ic, cx - 21, y - 21, 42))
-        anchor = "start" if i == 0 else ("end" if i == n - 1 else "middle")
-        ax = cx - 30 if i == 0 else (cx + 30 if i == n - 1 else cx)
-        o.append(T(ax, y + 56, labels[i], 15, 600, "#ffffff", anchor))
+    X = [x0 + i * step for i in range(n)]
+    st = f'stroke="{GOLD}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".9"'
+
+    def head(xb, yb):
+        return f'<path d="M{xb - 8} {yb - 5} L{xb} {yb} L{xb + 0} {yb} L{xb - 8} {yb + 5}" {st}/>'
+
+    def lbl(x, y, s):
+        return T(x, y, s, 13, 700, GOLD_L, "middle", 'letter-spacing=".3"')
+
+    # network lane: CSIP-AUS -> ODE
+    xa, xb = X[0] + R + 6, X[1] - R - 6
+    o.append(f'<path d="M{xa} {y1} H{xb}" {st}/>' + head(xb, y1) + lbl((xa + xb) / 2, y1 - 10, "SEP2"))
+    # ODE -> Home Assistant (curves down into the main lane)
+    ha_in = X[2] - R - 6
+    xa = X[1] + R + 6
+    xc = ha_in - 64
+    o.append(f'<path d="M{xa} {y1} H{xc} C{xc + 34} {y1} {xc + 30} {ym - 9} {ha_in} {ym - 9}" {st}/>' + head(ha_in, ym - 9)
+             + lbl((xa + xc) / 2, y1 - 10, "MQTT"))
+    # price lane: OpenADR VTN -> Home Assistant (curves up into the main lane)
+    xa = X[0] + R + 6
+    o.append(f'<path d="M{xa} {y2} H{xc} C{xc + 34} {y2} {xc + 30} {ym + 9} {ha_in} {ym + 9}" {st}/>' + head(ha_in, ym + 9)
+             + lbl((xa + xc) / 2, y2 - 10, "OpenADR 3.1"))
+    # main lane: Home Assistant -> CitrineOS -> EVerest -> EV
+    protos = ["REST", "OCPP 2.1", "ISO 15118-20"]
+    for i in range(2, n - 1):
+        xa, xb = X[i] + R + 6, X[i + 1] - R - 6
+        o.append(f'<path d="M{xa} {ym} H{xb}" {st}/>' + head(xb, ym) + lbl((xa + xb) / 2, ym - 10, protos[i - 2]))
+    labels = ["CSIP-AUS server", "ODE", "Home Assistant", "CitrineOS", "EVerest → Plugfest stations", "EV"]
+    nodes = [(X[0], y1, CHAIN[0][0], labels[0], "start"), (X[1], y1, CHAIN[1][0], labels[1], "middle"),
+             (X[0], y2, PRICE_SRC[0], "OpenADR 3.1 VTN", "start")]
+    nodes += [(X[i], ym, CHAIN[i][0], labels[i], "end" if i == n - 1 else "middle") for i in range(2, n)]
+    for cx, cy, ic, lab, anchor in nodes:
+        o.append(f'<circle cx="{cx}" cy="{cy}" r="{R}" fill="{CREAM}"/>')
+        o.append(icon(ic, cx - 20, cy - 20, 40))
+        ax = cx - R if anchor == "start" else (cx + R if anchor == "end" else cx)
+        o.append(T(ax, cy + R + 22, lab, 15, 600, "#ffffff", anchor))
     o.append("</svg>")
     return "".join(o)
 
 
 def flow():
-    W, H = 1280, 390
+    W, H = 1280, 448
     o = [svg_open(W, H, "End-to-end chain with protocol labels",
-                  "Network operator CSIP-AUS server (Cactus) via SEP2/CSIP-AUS to Open Dynamic Export, via MQTT to Home Assistant EEMS, "
-                  "via REST to CitrineOS CSMS, via OCPP 2.1 SetChargingProfile to EVerest, then the Plugfest charging stations, via ISO 15118-20 DC_BPT to the EV.")]
-    o.append(defs(*[c[0] for c in CHAIN]))
+                  "Two inputs converge on the Home Assistant EEMS. Network: the network operator's CSIP-AUS server (Cactus) via SEP2/CSIP-AUS "
+                  "to Open Dynamic Export, via MQTT to Home Assistant. Price: an OpenADR 3.1 VTN via OpenADR 3.1 PRICE and EXPORT_PRICE "
+                  "events to Home Assistant (OpenADR VEN). Then via REST to CitrineOS CSMS, via OCPP 2.1 SetChargingProfile to EVerest, "
+                  "then the Plugfest charging stations, via ISO 15118-20 DC_BPT to the EV.")]
+    o.append(defs(*[c[0] for c in CHAIN], PRICE_SRC[0]))
     o.append(panel(W, H))
     M = 36
     tile_w = 176
-    c, gap = chain(M, 28, W - 2 * M, tile_w=tile_w, tile_h=224, f1=17, f2=13)
-    # reuse non-compact chain but tighter text: rebuild manually for smaller tiles
+    tile_h = 224
+    c, gap = chain(M, 28, W - 2 * M, tile_w=tile_w, tile_h=tile_h, f1=17, f2=13)
     o.append(c)
-    o.append(link_pills(M, 296, W - 2 * M, tile_w, gap, h=52, size1=15, size2=12.5, pw=184))
+    o.append(link_pills(M, 266, W - 2 * M, tile_w, gap, h=52, size1=15, size2=12.5, pw=170))
+    hx = M + 2 * (tile_w + gap) + tile_w / 2
+    o.append(price_lane(M, 336, 266, 82, hx, 28 + tile_h + 6, f1=17, f2=13, r=30, icon_sz=46,
+                        pw=178, ph=52, ps1=15, ps2=12.5))
     o.append("</svg>")
     return "".join(o)
 
@@ -584,11 +655,11 @@ def scenarios():
     W, H = 1280, 300
     o = [svg_open(W, H, "What the demo shows",
                   "Export-limit clip during V2G discharge, import-limit clip during charging, load-limit clip, "
-                  "1-minute MSL and LOR events, local network congestion, AEMO spot price changes.")]
+                  "1-minute MSL and LOR events, local network congestion, OpenADR 3.1 price events.")]
     o.append(defs(*[s[0] for s in SCEN]))
     o.append(panel(W, H))
     o.append(T(32, 50, "What the demo shows", 24, 800, INK, "start", 'letter-spacing="-.4"'))
-    o.append(T(W - 32, 50, "CSIP-AUS envelopes → OCPP 2.1 profiles, live", 15, 500, GREY, "end"))
+    o.append(T(W - 32, 50, "CSIP-AUS envelopes + OpenADR prices → OCPP 2.1 profiles, live", 15, 500, GREY, "end"))
     n = 6
     gap = 16
     cw = (W - 64 - gap * (n - 1)) / n
