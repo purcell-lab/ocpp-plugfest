@@ -38,8 +38,10 @@ limit = setpoint = import limit + 0.95 × solar forecast − 1.05 × house load 
 - **Off:** while ODE reports disconnected or de-energised, the bridge sends 0 W.
 - **Sending:** a headroom change of 100 W or more is sent at once.
 
-**Export mode** (`input_boolean.lab_v2g_export` on, for Cactus ALL-22) is unchanged. The EV
-discharges at `input_number.lab_v2g_discharge_target`, capped at the export ceiling.
+**Export mode** (`input_boolean.lab_v2g_export` on, for Cactus ALL-22 and the GEN tests). The EV
+discharges at `input_number.lab_v2g_discharge_target`, capped at the discharge headroom below:
+export ceiling − 1.05 × solar + 0.95 × house load. Solar keeps priority on export, so it is not
+curtailed to make room for the EV, and the site still stays within the export limit.
 
 **TxProfile test.** While `input_text.lab_v2g_test_steps` holds `start_ts|step_s|W,W,...`, the
 requested steps (+ charge, − discharge) are added to the same schedule as extra boundaries. Each

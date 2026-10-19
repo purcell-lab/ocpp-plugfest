@@ -126,11 +126,37 @@ class ImportMode(unittest.TestCase):
 
 
 class ExportMode(unittest.TestCase):
-    def test_discharge_at_target_clipped_by_export_ceiling(self):
+    def test_night_discharge_at_export_ceiling_plus_house_load(self):
+        # No solar: 4,500 + 0.95 x 1,000 = 5,450 W, below the 7 kW target.
+        plan = render(payload(), site(solar=0, export_mode=True, target=7000))
+        self.assertEqual(rows(plan)[0], (0, -5450, 4500, -5450))
+        # The 1.5 kW export control at +197 s: 1,500 + 950 = 2,450 W.
+        self.assertEqual(rows(plan)[-1][1:], (-2450, 12000, -2450))
+        self.assertEqual(plan["discharge"], 5450)
+        self.assertTrue(plan["sig"].startswith("x7000h-10|"))
+
+    def test_solar_keeps_priority_on_export(self):
+        # 1,500 W of solar: 4,500 - (1,575 - 950) = 3,875 -> 3,870 W.
+        plan = render(payload(), site(solar=1500, export_mode=True, target=7000))
+        self.assertEqual(rows(plan)[0], (0, -3870, 4500, -3870))
+        # Solar filling the export limit leaves the EV nothing to discharge.
         plan = render(payload(), site(solar=7191, export_mode=True, target=7000))
-        self.assertEqual(rows(plan)[0], (0, -4500, 4500, -4500))
-        self.assertEqual(rows(plan)[-1][1:], (-1500, 12000, -1500))
-        self.assertTrue(plan["sig"].startswith("x7000|"))
+        self.assertEqual(rows(plan)[0], (0, 0, 4500, 0))
+        self.assertEqual(plan["discharge"], 0)
+
+    def test_target_below_headroom_is_kept(self):
+        plan = render(payload(), site(solar=0, export_mode=True, target=3000))
+        self.assertEqual(rows(plan)[0], (0, -3000, 4500, -5450))
+
+    def test_headroom_change_changes_the_signature(self):
+        a = render(payload(), site(solar=0, export_mode=True, target=7000))["sig"]
+        b = render(payload(), site(solar=1500, export_mode=True, target=7000))["sig"]
+        self.assertNotEqual(a, b)
+
+    def test_deenergised_is_zero(self):
+        plan = render(payload(energised=False), site(solar=0, export_mode=True, target=7000))
+        self.assertEqual(rows(plan)[0][1], 0)
+        self.assertEqual(rows(plan)[0][3], 0)
 
 
 class TxProfileTest(unittest.TestCase):
