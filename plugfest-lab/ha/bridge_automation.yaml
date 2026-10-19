@@ -1,0 +1,195 @@
+# Lab: ODE schedule to AC EVerest (prototype v2): the ODE schedule bridge on the Green.
+# UI-managed automation (unique id 1792204734631, automation.lab_ode_schedule_to_ac_everest_prototype_v2).
+# Deploy: Settings > Automations > the bridge > Edit in YAML, replace with this file (keep the id), save.
+id: '1792204734631'
+alias: 'Lab: ODE schedule to AC EVerest (prototype v2)'
+description: 'Schedule-ahead bridge for purcell-lab/ha-addons#55. On each ODE limits/csipAus message (about 1 s) it builds one TxProfile for the lab command station: DC V2G simulator SIM-EV-EVEREST-V2G-03 with CentralSetpoint periods. Import mode (input_boolean.lab_v2g_export off, LOA-11 run 74865): setpoint = import limit, no export. Export mode (on, for Cactus ALL-22): the EV discharges at input_number.lab_v2g_discharge_target, never beyond ODE''s export ceiling (opModExpLimW/opModGenLimW, 0 W while disconnected or de-energised; gaps use the learned input_number.lab_v2g_default_export_limit), and dischargeLimit is that ceiling (EVerest only bounds discharge through the setpoint and dischargeLimit, everest-core#2934); a smaller discharge is sent at once, a larger one at most every 5 s. Earlier targets: AC simulator SIM-EV-EVEREST-G1; physical DC charger 110A432M0039 on OCPP 1.6, which reports only the Core profile (no Smart Charging) and ignored the profiles. Period 0 is ODE''s current
+  CSIP-AUS limit (live, already ramped), never above the active control''s own value; later periods are ODE''s scheduled controls over the next 600 s (opModImpLimW/opModLoadLimW, 0 W while opModConnect/opModEnergize is false; gaps use the last seen default). Boundaries are rounded down for decreases and up for increases, so a step is never late and an increase never early; boundaries in the same second merge. Import mode uses the site headroom, not the bare import limit: limit = setpoint = import limit + 95 % of the solar forecast (sensor.home_power_production_now, capped at 15 kW and opModGenLimW, 0 while de-energised) - 105 % of input_number.lab_house_load, so site import stays within the limit at night too; 0 W while disconnected or de-energised; cap 25 kW. A headroom change of 100 W or more is sent at once. Sends at once when the limit falls by more than 50 W, the future steps change, or 60 s have passed; a rise of more than 200 W or 5 % is sent at most every 5 s (a 1 s send rate during
+  an ODE ramp drew a CitrineOS HTTP 500 in Cactus LOA-11). Profiles last 600 s. TxProfile test: while input_text.lab_v2g_test_steps holds "start_ts|step_s|W,W,..." (set by script.lab_v2g_txprofile_test), the requested setpoints (+ charge, - discharge) are folded into the same schedule as extra boundaries, each clamped to the site headroom (charge as above; discharge = export limit - 105 % solar + 95 % house load, so solar keeps priority on export), with limit/dischargeLimit set to that headroom.'
+triggers:
+- note: ODE publishes CSIP-AUS limit and schedules about once a second.
+  topic: limits/csipAus
+  trigger: mqtt
+conditions:
+- condition: not
+  conditions:
+  - condition: state
+    entity_id: sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_current_transaction
+    state:
+    - unknown
+    - unavailable
+    - ''
+  note: The lab schedule needs an active transaction on the lab command station (SIM-EV-EVEREST-V2G-03).
+actions:
+- note: Turn ODE's CSIP-AUS limit and schedules into TxProfile periods.
+  variables:
+    plan: |-
+      {%- set m = trigger.payload_json if trigger.payload_json is mapping else {} -%}
+      {%- set nowts = now().timestamp() -%}
+      {%- set cap = 25000 -%}
+      {#- Export mode (input_boolean.lab_v2g_export) discharges the V2G EV at the lab target, clipped by ODE's export ceiling (opModExpLimW/opModGenLimW). Off: the LOA-11 import mapping, unchanged. -#}
+      {%- set xmode = is_state('input_boolean.lab_v2g_export', 'on') -%}
+      {%- set target = ((states('input_number.lab_v2g_discharge_target') | float(0) / 10) | round(0) | int * 10) if xmode else 0 -%}
+      {#- TxProfile test (input_text.lab_v2g_test_steps = "start_ts|step_s|W,W,..."): the requested setpoints (+ charge, - discharge) become profile periods, each clamped to the site headroom. Empty: no test, the mapping below is unchanged. -#}
+      {%- set tst = states('input_text.lab_v2g_test_steps').split('|') -%}
+      {%- set tw = (tst[2].split(',') | map('trim') | list) if tst | count == 3 else [] -%}
+      {%- set tok = tst | count == 3 and tst[0] | is_number and tst[1] | is_number and tst[1] | float(0) > 0 and tw | count > 0 and tw | count == tw | select('is_number') | list | count -%}
+      {%- set t0 = tst[0] | float(0) if tok else 0 -%}
+      {%- set tstep = tst[1] | float(0) if tok else 0 -%}
+      {%- set treq = (tw | map('float') | map('round', 0) | map('int') | list) if tok else [] -%}
+      {%- set tend = t0 + tstep * (treq | count) -%}
+      {%- set tlive = tok and tend > nowts and t0 < nowts + 599 -%}
+      {#- Site headroom, with margins for the synthetic site's +/-5% variation: charge = import limit + least solar - most house load (the charger is not the only load, so at night it gets the import limit less the house load); discharge = export limit - most solar export (solar has priority on export). Used for import mode and test periods; export mode is unchanged. -#}
+      {%- set house = states('input_number.lab_house_load') | float(0) -%}
+      {%- set genl = states('input_number.lab_ode_generation_limit') | float(-1) -%}
+      {%- set pvf = ([([states('sensor.home_power_production_now') | float(0), 15000] + ([genl] if genl >= 0 else [])) | min, 0] | max) if is_state('input_boolean.lab_ode_energized', 'on') else 0 -%}
+      {%- set pv_lo = pvf * 0.95 -%}
+      {%- set sol_x = [pvf * 1.05 - house * 0.95, 0] | max -%}
+      {%- set lim = m.get('limit', {}) -%}
+      {%- set off = lim.get('opModConnect') == false or lim.get('opModEnergize') == false -%}
+      {%- set cv = [cap] + ([lim.opModImpLimW] if lim.get('opModImpLimW') is number else []) + ([lim.opModLoadLimW] if lim.get('opModLoadLimW') is number else []) -%}
+      {%- set cur = 0 if off else ((([cv | min, 0] | max) / 10) | round(0) | int * 10) -%}
+      {%- set xv = [cap] + ([lim.opModExpLimW] if lim.get('opModExpLimW') is number else []) + ([lim.opModGenLimW] if lim.get('opModGenLimW') is number else []) -%}
+      {%- set cur_x = 0 if off else ((([xv | min, 0] | max) / 10) | round(0) | int * 10) -%}
+      {%- set sch = m.get('schedules', {}) -%}
+      {%- set ns = namespace(ctl=[], pts=[]) -%}
+      {%- for typ in ['opModImpLimW', 'opModLoadLimW', 'opModExpLimW', 'opModGenLimW', 'opModConnect', 'opModEnergize'] -%}
+        {%- for c in sch.get(typ, []) -%}
+          {%- set s = as_timestamp(c.effectiveStartInclusive) -%}
+          {%- set e = as_timestamp(c.effectiveEndExclusive) -%}
+          {%- set b = c.derControlBase[typ] -%}
+          {%- set k = 'w' if typ in ['opModImpLimW', 'opModLoadLimW'] else ('x' if typ in ['opModExpLimW', 'opModGenLimW'] else 'c') -%}
+          {%- set v = (b.value * 10 ** b.multiplier) if k != 'c' else (none if b else 0) -%}
+          {%- set ns.ctl = ns.ctl + [{'s': s, 'e': e, 'v': v, 'w': k == 'w', 'x': k == 'x', 'c': k == 'c'}] -%}
+          {%- if k != 'x' or xmode or tlive -%}
+            {%- set ns.pts = ns.pts + [s, e] -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+      {%- if tlive -%}
+        {%- for i in range(treq | count + 1) -%}
+          {%- set ns.pts = ns.pts + [t0 + i * tstep] -%}
+        {%- endfor -%}
+      {%- endif -%}
+      {%- set active_now = ns.ctl | selectattr('w') | selectattr('s', 'le', nowts) | selectattr('e', 'gt', nowts) | list | count > 0 -%}
+      {#- The active control is a ceiling: ODE's ramp may slow a rise but must not hold the limit above a lower control (LOA-11 run 74858: a ramp-down raised the charger back to 16 kW under a 12 kW DERC3). -#}
+      {%- set now_ws = ns.ctl | selectattr('w') | selectattr('s', 'le', nowts) | selectattr('e', 'gt', nowts) | map(attribute='v') | list -%}
+      {%- set cur = cur if off or not now_ws else (((([cur] + now_ws) | min) / 10) | round(0) | int * 10) -%}
+      {%- set now_xs = ns.ctl | selectattr('x') | selectattr('s', 'le', nowts) | selectattr('e', 'gt', nowts) | map(attribute='v') | list -%}
+      {%- set cur_x = cur_x if off or not now_xs else (((([cur_x] + now_xs) | min) / 10) | round(0) | int * 10) -%}
+      {#- Consecutive controls leave sub-second gaps; learn the default only when no control has been active within 2 s either side. -#}
+      {%- set learn = ns.ctl | selectattr('w') | selectattr('s', 'le', nowts + 2) | selectattr('e', 'gt', nowts - 2) | list | count == 0 -%}
+      {%- set learn_x = ns.ctl | selectattr('x') | selectattr('s', 'le', nowts + 2) | selectattr('e', 'gt', nowts - 2) | list | count == 0 -%}
+      {%- set dflt = cur if learn else states('input_number.lab_ac_default_limit') | float(0) -%}
+      {%- set dflt_x = cur_x if learn_x else states('input_number.lab_v2g_default_export_limit') | float(0) -%}
+      {%- set r0 = treq[((nowts - t0) / tstep) | int] if tlive and t0 <= nowts else none -%}
+      {%- set out = namespace(p=[{'startPeriod': 0, 'limit': cur, 'x': cur_x, 'xr': cur_x, 'r': r0, 'z': off}], last=cur, last_x=cur_x, last_xr=cur_x, last_r=r0, last_z=off, sig=[]) -%}
+      {#- The profile starts 1 s before now (immediate), so a boundary b is at offset b - now + 1.
+          Decreases round down (never late), increases round up (never early). -#}
+      {%- for b in ns.pts | unique | sort if b > nowts and b < nowts + 599 -%}
+        {%- set act = ns.ctl | selectattr('s', 'le', b) | selectattr('e', 'gt', b) | list -%}
+        {%- set ws = act | selectattr('w') | map(attribute='v') | list -%}
+        {%- set xs = act | selectattr('x') | map(attribute='v') | list -%}
+        {%- set stop = act | selectattr('c') | selectattr('v', 'eq', 0) | list | count > 0 -%}
+        {%- set v = 0 if stop else (((([cap] + ws) | min if ws else [cap, dflt] | min) / 10) | round(0) | int * 10) -%}
+        {%- set vx = 0 if stop else (((([cap] + xs) | min if xs else [cap, dflt_x] | min) / 10) | round(0) | int * 10) -%}
+        {%- set vxr = vx -%}
+        {%- set vx = vx if xmode else out.last_x -%}
+        {%- set r = treq[((b - t0) / tstep + 0.001) | int] if tlive and b >= t0 and b < tend else none -%}
+        {%- set out.sig = out.sig + [(b | int) ~ ':' ~ v ~ (('/' ~ vx) if xmode else '') ~ (('/r' ~ r ~ '/' ~ vxr) if tlive else '') ~ ('/z' if stop else '')] -%}
+        {%- if v != out.last or vx != out.last_x or r != out.last_r or (r is not none and vxr != out.last_xr) or stop != out.last_z -%}
+          {%- set sp = (b - nowts + 1) | round(0, 'floor' if v < out.last or vx < out.last_x else 'ceil') | int -%}
+          {%- if sp <= out.p[-1].startPeriod -%}
+            {%- set out.p = out.p[:-1] + [{'startPeriod': out.p[-1].startPeriod, 'limit': v, 'x': vx, 'xr': vxr, 'r': r, 'z': stop}] -%}
+          {%- elif out.p | count < 10 -%}
+            {%- set out.p = out.p + [{'startPeriod': sp, 'limit': v, 'x': vx, 'xr': vxr, 'r': r, 'z': stop}] -%}
+          {%- endif -%}
+          {%- set out.last = out.p[-1].limit -%}
+          {%- set out.last_x = out.p[-1].x -%}
+          {%- set out.last_xr = out.p[-1].xr -%}
+          {%- set out.last_r = out.p[-1].r -%}
+          {%- set out.last_z = out.p[-1].z -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {#- DC V2G CentralSetpoint periods, as in LOA-11 run 74865. Import mode: setpoint = limit, no export. Export mode: discharge at the lab target, never beyond the export ceiling (dischargeLimit bounds it too, everest-core#2934). For an AC charger use charging-only periods with numberPhases; physical charger 110A432M0039 reports only the OCPP 1.6 Core profile (no Smart Charging) and ignored them. -#}
+      {%- set fin = namespace(p=[]) -%}
+      {#- Disconnected or de-energised (opModConnect/opModEnergize false) means 0 W either way, solar or not. -#}
+      {%- for p in out.p -%}
+        {%- set chg = 0 if p.z else (([[p.limit + pv_lo - house * 1.05, 0] | max, cap] | min / 10) | round(0, 'floor') | int * 10) -%}
+        {%- set dis = 0 if p.z else (([[p.xr - sol_x, 0] | max, cap] | min / 10) | round(0, 'floor') | int * 10) -%}
+        {%- if p.r is not none -%}
+          {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg, 'dischargeLimit': 0 - dis, 'setpoint': [[p.r, 0 - dis] | max, chg] | min, 'operationMode': 'CentralSetpoint'}] -%}
+        {%- elif xmode -%}
+          {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': p.limit, 'dischargeLimit': 0 - p.x, 'setpoint': 0 - ([target, p.x] | min), 'operationMode': 'CentralSetpoint'}] -%}
+        {%- else -%}
+          {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg, 'dischargeLimit': 0, 'setpoint': chg, 'operationMode': 'CentralSetpoint'}] -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- set sig = (('x' ~ target ~ '|') if xmode else ('h' ~ ((pv_lo - house * 1.05) / 100) | round(0) | int ~ '|')) ~ (('t' ~ (r0 if r0 is not none else '-') ~ '|') if tlive else '') ~ (out.sig | join(',')) -%}
+      {{ {'cur': cur, 'cur_x': cur_x, 'xmode': xmode, 'discharge': [target, cur_x] | min if xmode else 0, 'active_now': active_now, 'learn': learn, 'learn_x': learn_x, 'periods': fin.p, 'test': tlive, 'sig': sig[:255]} }}
+- if:
+  - condition: template
+    value_template: '{{ plan.learn and states(''input_number.lab_ac_default_limit'') | float(-1) != plan.cur }}'
+  note: 'Remember the default control value, used for future gaps between controls. Not learned within 2 s of a control: in LOA-11 the 0.1 s gap between DERC2 and DERC3 stored 30 kW as the default.'
+  then:
+  - action: input_number.set_value
+    data:
+      value: '{{ plan.cur }}'
+    target:
+      entity_id: input_number.lab_ac_default_limit
+- if:
+  - condition: template
+    value_template: '{{ plan.xmode and plan.learn_x and states(''input_number.lab_v2g_default_export_limit'') | float(-1) != plan.cur_x }}'
+  note: 'Export mode: remember the default export ceiling for gaps between export controls, learned like the import default.'
+  then:
+  - action: input_number.set_value
+    data:
+      value: '{{ plan.cur_x }}'
+    target:
+      entity_id: input_number.lab_v2g_default_export_limit
+- variables:
+    send: |-
+      {%- set last = states('input_number.lab_ac_limit_sent') | float(-1) -%}
+      {%- set t = state_attr('input_datetime.lab_ac_limit_sent_at', 'timestamp') -%}
+      {%- set age = (now().timestamp() - t) if t is number else 999999 -%}
+      {%- set c = plan.cur -%}
+      {%- set changed = plan.sig != states('input_text.lab_ac_schedule_sent') -%}
+      {%- set rise = c > last + ([200, 0.05 * last] | max) -%}
+      {#- Export mode: a smaller discharge goes at once, a larger one at most every 5 s (ODE ramps export too). -#}
+      {%- set lastx = states('input_number.lab_v2g_discharge_sent') | float(-1) -%}
+      {%- set dx = plan.discharge -%}
+      {%- set xrise = dx > lastx + ([200, 0.05 * lastx] | max) -%}
+      {{ last < 0 or age > 60 or changed or c < last - 50 or (rise and age >= 5) or (plan.xmode and (lastx < 0 or dx < lastx - 50 or (xrise and age >= 5))) }}
+- condition: template
+  note: Change detection; rises at most every 5 s, everything else at once.
+  value_template: '{{ send }}'
+- action: citrine_ha.lab_schedule
+  data:
+    duration: 600
+    entry_id: 01M51W1XF0B0JJP3H2VVTNKPZ1
+    immediate: true
+    periods: '{{ plan.periods }}'
+    price_entity: sensor.openadr3_vtn_openleadr_vtn_au_fly_dev_au_nsw1_essential_blnt3al_price
+  note: One TxProfile with the current limit and the scheduled steps, carrying the OpenADR NSW1 Essential import price schedule (OCPP 2.1 absolutePriceSchedule; information only, power bounds unchanged).
+- action: input_number.set_value
+  data:
+    value: '{{ plan.cur }}'
+  target:
+    entity_id: input_number.lab_ac_limit_sent
+- action: input_number.set_value
+  data:
+    value: '{{ plan.discharge }}'
+  target:
+    entity_id: input_number.lab_v2g_discharge_sent
+- action: input_datetime.set_datetime
+  data:
+    timestamp: '{{ now().timestamp() }}'
+  target:
+    entity_id: input_datetime.lab_ac_limit_sent_at
+- action: input_text.set_value
+  data:
+    value: '{{ plan.sig }}'
+  target:
+    entity_id: input_text.lab_ac_schedule_sent
+max_exceeded: silent
+mode: single

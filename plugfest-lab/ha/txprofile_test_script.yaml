@@ -1,0 +1,67 @@
+# script.lab_v2g_txprofile_test (UI-managed script, id lab_v2g_txprofile_test). Deploy: Settings > Scripts > the script > Edit in YAML.
+alias: 'Lab: V2G TxProfile test through the bridge'
+description: Runs a stepped OCPP 2.1 CentralSetpoint test on SIM-EV-EVEREST-V2G-03 without pausing the ODE schedule bridge. It writes the steps to input_text.lab_v2g_test_steps as "start_ts|step_s|W,W,..."; the bridge folds them into its own TxProfile (same profile id, no gaps, price schedule kept), clamping each step to the site headroom under the live CSIP-AUS limits. Needs an active transaction (plug in and start first). The helper is cleared when the test ends. If the script is stopped early, the bridge still ignores the steps once their window has passed; to cancel a test at once, clear input_text.lab_v2g_test_steps.
+icon: mdi:stairs
+mode: single
+max_exceeded: silent
+fields:
+  setpoints:
+    name: Setpoints (W)
+    description: Comma-separated requested setpoints in W, + charge, - discharge, one per step (at most 20).
+    required: true
+    default: 20000,-20000,6000,-5000,0
+    example: 20000,-20000,6000,-5000,0
+    selector:
+      text: {}
+  step_s:
+    name: Step length
+    description: Seconds per step.
+    default: 60
+    selector:
+      number:
+        min: 10
+        max: 600
+        unit_of_measurement: s
+        mode: box
+  lead_s:
+    name: Lead time
+    description: Seconds from now until the first step, so the bridge sends the steps ahead of time.
+    default: 10
+    selector:
+      number:
+        min: 2
+        max: 120
+        unit_of_measurement: s
+        mode: box
+sequence:
+- condition: not
+  conditions:
+  - condition: state
+    entity_id: sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_current_transaction
+    state:
+    - unknown
+    - unavailable
+    - ''
+  note: The bridge only sends while a transaction is active on the lab command station.
+- variables:
+    steps: '{{ (setpoints | string).replace('' '', '''').split('','') | select(''is_number'') | map(''float'') | map(''round'', 0) | map(''int'') | list }}'
+    step: '{{ (step_s | float(60)) | round(0) | int }}'
+    start: '{{ (now().timestamp() + (lead_s | float(10))) | round(0) | int }}'
+  note: Parse the steps; anything that is not a number is dropped.
+- condition: template
+  value_template: '{{ 0 < steps | count <= 20 }}'
+  note: One to 20 steps (the helper holds 255 characters).
+- action: input_text.set_value
+  target:
+    entity_id: input_text.lab_v2g_test_steps
+  data:
+    value: '{{ start }}|{{ step }}|{{ steps | join('','') }}'
+- delay:
+    seconds: '{{ (start - now().timestamp()) + step * (steps | count) + 5 }}'
+  note: Run until the last step has ended.
+- action: input_text.set_value
+  target:
+    entity_id: input_text.lab_v2g_test_steps
+  data:
+    value: ''
+  note: 'Test over: the bridge returns to its normal mapping.'
