@@ -24,6 +24,11 @@ Status at 18 October 2026. The Green test box is offline; nothing below has been
 - [ ] **Rehearsal on the home network** after the releases: V2G TxProfile steps, a forced station
       reconnect (replies must continue), a test station on 8083 with Basic Auth, the HA bridge.
 
+- [ ] **OCPP 2.1 EMS checks in each vendor slot**: follow
+      [`plugfest-lab/OCPP21-EMS-CHECKLIST.md`](plugfest-lab/OCPP21-EMS-CHECKLIST.md) and fill in its
+      results table. Lab follow-ups: [ha-addons#87](https://github.com/purcell-lab/ha-addons/issues/87),
+      [ha-addons#88](https://github.com/purcell-lab/ha-addons/issues/88).
+
 ## 2. Decisions
 
 - [ ] **Commands to vendor stations** ([ha-addons#40](https://github.com/purcell-lab/ha-addons/issues/40)):

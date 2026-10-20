@@ -55,6 +55,9 @@ plugged into the venue LAN. Stations connect with Security Profile 1
    identity; needs `price_commands_enabled: true`) and record the reply:
    `Accepted`, `Rejected`, `TooManyElements`, `ConditionNotSupported` or a
    CALLERROR. See [dynamic pricing](../design/dynamic-pricing.md#path-d-ocpp-21-tariff-to-vendor-stations).
+   Then work through the [OCPP 2.1 EMS checklist](OCPP21-EMS-CHECKLIST.md). Do the read-only
+   device model and `NotifyChargingLimit` checks every slot. Do the profile and operation-mode
+   checks only with a command path and the vendor's agreement.
 4. After the slot: clear the `8083/tcp` host port and restart the server
    App. Remove the vendor's entry from `plugfest_stations` if it will not
    return; on restart its password is revoked in the database.
