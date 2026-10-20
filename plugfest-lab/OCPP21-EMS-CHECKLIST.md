@@ -8,7 +8,8 @@ CSIP-AUS client enforcing the site's dynamic operating envelope.
 Background: [What's New in OCPP 2.1 (OCA)](https://openchargealliance.org/wp-content/uploads/2024/03/Whats-New-OCPP-2.1.pdf),
 the "Smart Charging" modes and "Energy management systems" slides. Lab follow-ups:
 [ha-addons#87](https://github.com/purcell-lab/ha-addons/issues/87) (store and show `NotifyChargingLimit`)
-and [ha-addons#88](https://github.com/purcell-lab/ha-addons/issues/88) (local-EMS prototype on the EVerest simulator).
+[ha-addons#88](https://github.com/purcell-lab/ha-addons/issues/88) (local-EMS prototype on the EVerest simulator)
+and [ha-addons#89](https://github.com/purcell-lab/ha-addons/issues/89) (CSIP-AUS `setGradW` as OCPP 2.1 DER control `Gradients`).
 
 **Rules for the slot.**
 - **Observe first.** Read-only checks need nothing beyond the slot set-up in the [runbook](RUNBOOK.md).
@@ -59,6 +60,19 @@ Before that, ask the vendor to send it.
 - [ ] **Dynamic profiles:** a `TxProfile` with `dynUpdateInterval`, then `UpdateDynamicSchedule` with a
       new setpoint and limit. Record the statuses, and whether the station sends
       `PullDynamicScheduleUpdate`.
+- [ ] **DER control `Gradients` and `EnterService`** ([ha-addons#89](https://github.com/purcell-lab/ha-addons/issues/89)):
+      how the CSIP-AUS ramp rates map to the charger.
+      - **First, read back:** `GetDERControl` for `Gradients` and `EnterService` (what the station
+        already holds).
+      - **Gradients:** send `SetDERControl` `Gradients` with `isDefault: true` and `gradient` and
+        `softGradient` set. Record the status.
+      - **EnterService:** send `SetDERControl` `EnterService` with `delay` 60 and `rampRate` set.
+        Record the status.
+      - **If Accepted:** does the station ramp a step change in its limit at that gradient? Does it
+        apply the delay and ramp after a disconnect? Does it send `ReportDERControl` or
+        `NotifyDERStartStop`?
+      - **Units:** record how the vendor reads `gradient`, "ramp rate in seconds": time to 100 % of
+        rating, or something else.
 - [ ] **Priority charging:** does the station offer it (`PriorityCharging` purpose,
       `UsePriorityCharging`)? Record, but don't test unless the vendor asks.
 
@@ -72,6 +86,6 @@ Before that, ask the vendor to send it.
 
 ## Results template
 
-| Vendor | OCPP | A: device model | B: `NotifyChargingLimit` | B: external wins | C: `LocalGeneration` | C: `ExternalLimits` / `ExternalSetpoint` | C: dynamic profiles | Notes |
-|---|---|---|---|---|---|---|---|---|
-| | | | | | | | | |
+| Vendor | OCPP | A: device model | B: `NotifyChargingLimit` | B: external wins | C: `LocalGeneration` | C: `ExternalLimits` / `ExternalSetpoint` | C: dynamic profiles | C: DER `Gradients` / `EnterService` | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| | | | | | | | | | |
