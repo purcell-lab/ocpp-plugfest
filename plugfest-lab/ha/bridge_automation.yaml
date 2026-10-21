@@ -148,7 +148,8 @@ actions:
         {%- set fin.rc0 = (rc if rc < dis else cap_d) if fin.rc0 is none else fin.rc0 -%}
         {%- set dis = [dis, rc] | min -%}
         {%- if not v2x -%}
-          {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg}] -%}
+          {#- Charging-only station: a TxProfile test step is a charging limit, a discharge step 0 W, never above the charge headroom (22 October: the AC simulator ignored the steps). -#}
+          {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg if p.r is none else [[p.r, 0] | max, chg] | min}] -%}
         {%- elif p.r is not none -%}
           {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg, 'dischargeLimit': 0 - dis, 'setpoint': [[p.r, 0 - dis] | max, chg] | min, 'operationMode': 'CentralSetpoint'}] -%}
         {%- elif xmode -%}

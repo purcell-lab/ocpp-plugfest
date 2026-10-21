@@ -329,6 +329,13 @@ class TxProfileTest(unittest.TestCase):
             (321, 17780, 17780, 0),     # test over: import-mode headroom again
         ])
 
+    def test_charging_only_station_follows_the_steps(self):
+        # 22 October: the AC simulator (charge-only) got the full headroom for every step.
+        states = dict(site(solar=0), **{"input_boolean.lab_bridge_charge_only": "on"})
+        plan = render(payload(), states, self.STEPS)
+        self.assertEqual([(p["startPeriod"], p["limit"]) for p in plan["periods"]],
+                         [(0, 3450), (21, 3450), (81, 0), (141, 3450), (198, 6000), (201, 0), (261, 0), (321, 10950)])
+
     def test_discharge_allowed_without_solar(self):
         # No solar: the export limit plus the house load the EV also feeds, 4,500 + 0.95 x 1,000 = 5,450 W.
         plan = render(payload(), site(solar=0), f"{int(NOW)}|60|-20000,-1000")
