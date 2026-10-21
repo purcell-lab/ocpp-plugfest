@@ -119,6 +119,20 @@ The server bounds every profile: one command station, an active transaction, 600
    - `command_station_id` back to `SIM-EV-EVEREST-V2G-03` and `command_real_stations_enabled: false`;
      restart the server and reload the integration.
 
+**After any CitrineOS restart** (22 October):
+- **Wait for each station to reconnect** before sending commands. CitrineOS can hold a station's old
+  websocket for about a minute and refuse its reconnect ("New connection attempted for already connected
+  identifier"). A profile sent then fails as `dispatch_not_confirmed`, and the integration blocks every
+  command until it's reconciled.
+- **Reload the integration once CitrineOS is ready**, then check the command station's
+  `command_dispatch_status`. If it reads `outcome_unknown` or `dispatch_not_confirmed`, run
+  `citrine_ha.lab_reconcile` (it's allowed 90 s after the last send; the error message gives the wait).
+- **Don't stop a transaction HA hasn't shown yet.** Right after a start, the `current_transaction` sensor can
+  lag; check the station's own status first. A new transaction mistaken for a stale one was stopped on
+  the AC simulator.
+- **Ask the station what it applied:** `GetCompositeSchedule` and `GetChargingProfiles` through the
+  Operator UI (see the EMS checklist, section A).
+
 ## After the event
 
 1. Set `plugfest_enabled: false`, clear `plugfest_stations` and the host
