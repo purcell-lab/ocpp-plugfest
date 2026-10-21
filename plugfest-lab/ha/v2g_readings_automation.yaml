@@ -24,11 +24,13 @@ actions:
     rating: |-
       {%- set px = states('input_text.lab_bridge_station_prefix') | trim -%}
       {%- set px = px if px not in ('', 'unknown', 'unavailable') else 'citrineos_everest_v2g_lab_sim_ev_everest_v2g_03' -%}
-      {#- A physical charge-only charger (input_boolean.lab_bridge_physical on) is a load, not a DER: rating 0 and inverters/4 at 0 W; its power is still in lab/site. -#}
+      {#- A charging-only station (input_boolean.lab_bridge_charge_only on) is a load, not a DER: rating 0 and inverters/4 at 0 W; its power is still in lab/site. -#}
       {#- The charger's discharge rating from CitrineOS (citrine_ha max discharge power: the EV's ChargingNeeds limit, else EVSE.Power, else 25 kW); 25 kW below 1 kW or unavailable. -#}
       {%- set r = states(('sensor.' ~ px ~ '_max_discharge_power')) | float(0) * (1000 if state_attr(('sensor.' ~ px ~ '_max_discharge_power'), 'unit_of_measurement') == 'kW' else 1) -%}
       {%- set r = ([r, 500000] | min / 10) | round(0, 'floor') | int * 10 if r >= 1000 else 25000 -%}
-      {{ 0 if is_state('input_boolean.lab_bridge_physical', 'on') else r }}
+      {%- set man = states('input_number.lab_bridge_rating') | float(0) -%}
+      {%- set r = ([r, man | int] | min) if man >= 1000 else r -%}
+      {{ 0 if is_state('input_boolean.lab_bridge_charge_only', 'on') else r }}
 - action: mqtt.publish
   data:
     evaluate_payload: false

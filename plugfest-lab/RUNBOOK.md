@@ -64,16 +64,23 @@ plugged into the venue LAN. Stations connect with Security Profile 1
 
 ## ODE controlling a vendor's charger (with the vendor's agreement)
 
-The demonstration: Open Dynamic Export's CSIP-AUS limits drive the vendor's physical charger through
-CitrineOS. The bridge sends one TxProfile with charging-only `limit` periods (W) on the station's OCPP
-version (1.6, 2.0.1 or 2.1). It's bounded by the server: one command station, an active transaction,
-600 s, 10 periods, 25 kW.
+The demonstration chain is **Cactus → ODE → bridge → CitrineOS → the vendor's charger**. Cactus sets
+CSIP-AUS controls (this needs venue internet); Open Dynamic Export turns them into limits; the bridge
+turns those into TxProfiles that CitrineOS sends to the charger.
 
-1. **Agree with the vendor first.** Their charger, their EV, and an import limit we'll vary. Ask:
+- **V2G stations** (for example StarCharge): OCPP 2.1 `CentralSetpoint` periods, charging in import
+  mode and discharging in export mode, as with the V2G simulator.
+- **Charging-only stations:** charging-only `limit` periods (W) on the station's OCPP version (1.6,
+  2.0.1 or 2.1).
+
+The server bounds every profile: one command station, an active transaction, 600 s, 10 periods, 25 kW.
+
+1. **Agree with the vendor first.** Their charger, their EV, and limits we'll vary (import, and export
+   for a V2G station). Ask:
    - **Rate unit:** does the station accept charging profiles in **W**? (2.x: `SmartChargingCtrlr.RateUnit`;
      1.6: `ChargingScheduleAllowedChargingRateUnit`.) The lab command path only sends W; an A-only
      station will reject the profile.
-   - **Rating:** the charger's rating in W.
+   - **Rating:** the charger's rating in W, and whether it's V2G (bidirectional) or charging only.
 2. **Server options** (citrineos_server):
    - `command_control_enabled: true`, with its `command_token`;
    - `command_real_stations_enabled: true`;
@@ -84,14 +91,21 @@ version (1.6, 2.0.1 or 2.1). It's bounded by the server: one command station, an
    - `input_text.lab_bridge_station_prefix` = `citrineos_lab_<station id, lower case, with every
      character other than a-z and 0-9 replaced by _>`. Check that
      `sensor.<prefix>_current_transaction` exists.
-   - `input_boolean.lab_bridge_physical` **on**. This means charging-only periods, no export, and
-     `inverters/4` at 0 W. The charger's power still counts in `lab/site`.
-   - `input_number.lab_bridge_charge_cap` = the charger's rating in W, unless CitrineOS reports one.
-   - `input_boolean.lab_v2g_export` doesn't matter: it's ignored for a physical charger.
+   - `input_boolean.lab_bridge_charge_only`: **on** for a charging-only station (charging-only periods,
+     no export, `inverters/4` at 0 W; its power still counts in `lab/site`). **Off** for a V2G station,
+     which is then ODE's `inverters/4` DER, rated at `lab_bridge_rating`.
+   - `input_number.lab_bridge_rating` = the charger's rating in W. It bounds charge and discharge, and is
+     the V2G station's nameplate (ODE's `setMaxW`, Cactus's `maxExportW`). Set it unless CitrineOS
+     reports a rating.
+   - V2G stations only: `input_boolean.lab_v2g_export` **on** for export tests (ALL-22, GEN-10, GEN-11,
+     ALL-28, ALL-23), with `input_number.lab_v2g_discharge_target`; **off** for import tests (LOA-11).
+     It's ignored for a charging-only station.
 4. **Start a transaction:** the vendor starts it with its own ID token, or press
    `button.<prefix>_start_charging`. The bridge acts only while the transaction is open.
 5. **Change the limit.**
-   - **With internet:** run a Cactus import test, for example LOA-11.
+   - **With internet:** run a Cactus test: an import test such as LOA-11 for any station, export tests
+     (ALL-22, GEN-10, GEN-11, ALL-28, ALL-23) for a V2G station. As in the lab, restart ODE once Cactus
+     has started the run if it still shows the previous run's controls.
    - **Without internet:** ODE gets no CSIP-AUS controls. Change `setpoints.csipAus.fixedDefaults.importLimitWatts`
      in ODE's config and restart ODE. Rehearse this first: it assumes ODE publishes the fixed default on
      `limits/csipAus` when it can't reach the server. The `lab_ode_*` helpers can't be used as a knob,
@@ -99,7 +113,8 @@ version (1.6, 2.0.1 or 2.1). It's bounded by the server: one command station, an
 
    Record the TxProfile status and the charger's measured power against the limit.
 6. **After the slot:**
-   - `input_boolean.lab_bridge_physical` **off** and `input_text.lab_bridge_station_prefix` empty, so the
+   - `input_boolean.lab_bridge_charge_only` **off**, `input_number.lab_bridge_rating` 0 and
+     `input_text.lab_bridge_station_prefix` empty, so the
      bridge targets the V2G simulator again;
    - `command_station_id` back to `SIM-EV-EVEREST-V2G-03` and `command_real_stations_enabled: false`;
      restart the server and reload the integration.

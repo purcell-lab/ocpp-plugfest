@@ -348,14 +348,14 @@ PHYS = "citrineos_lab_evx_cp01"
 
 def physical(solar=0, house=1000, export_mode=False, cap=None, prefix=PHYS):
     states = dict(site(solar=solar, house=house, export_mode=export_mode, target=7000),
-                  **{"input_boolean.lab_bridge_physical": "on", "input_text.lab_bridge_station_prefix": prefix})
+                  **{"input_boolean.lab_bridge_charge_only": "on", "input_text.lab_bridge_station_prefix": prefix})
     if cap is not None:
-        states["input_number.lab_bridge_charge_cap"] = str(cap)
+        states["input_number.lab_bridge_rating"] = str(cap)
     return states
 
 
 class PhysicalCharger(unittest.TestCase):
-    """input_boolean.lab_bridge_physical on: a physical charge-only charger takes charging-only limit periods."""
+    """input_boolean.lab_bridge_charge_only on: a physical charging-only station takes charging-only limit periods."""
 
     def test_charging_only_periods(self):
         plan = render(payload(), physical())
@@ -394,7 +394,34 @@ class PhysicalCharger(unittest.TestCase):
 
 
 class ReadingsPhysical(unittest.TestCase):
-    def test_physical_charger_is_not_a_der(self):
+    def test_charging_only_station_is_not_a_der(self):
         tpl = yaml.safe_load(READINGS.read_text())["actions"][0]["variables"]["rating"]
-        states = {"input_boolean.lab_bridge_physical": "on", "input_text.lab_bridge_station_prefix": PHYS}
+        states = {"input_boolean.lab_bridge_charge_only": "on", "input_text.lab_bridge_station_prefix": PHYS}
         self.assertEqual(int(_env(states, {}, NOW, {}).from_string(tpl).render().strip()), 0)
+
+
+class PhysicalV2G(unittest.TestCase):
+    """A physical V2G station (e.g. StarCharge): its own prefix, CentralSetpoint periods and export mode."""
+
+    def states(self, **kw):
+        return dict(site(solar=0, export_mode=True, target=25000, **kw),
+                    **{"input_text.lab_bridge_station_prefix": "citrineos_lab_starcharge_v2g",
+                       "input_number.lab_bridge_rating": "11000"})
+
+    def test_export_mode_discharges_up_to_the_rating(self):
+        plan = render(BIG, self.states(house=0))
+        self.assertTrue(plan["v2x"] and plan["xmode"])
+        p = plan["periods"][0]
+        self.assertEqual(p["operationMode"], "CentralSetpoint")
+        self.assertEqual((p["setpoint"], p["dischargeLimit"]), (-11000, -11000))
+
+    def test_import_mode_charges_up_to_the_rating(self):
+        s = self.states(house=0)
+        s["input_boolean.lab_v2g_export"] = "off"
+        p = render(BIG, s)["periods"][0]
+        self.assertEqual((p["setpoint"], p["limit"]), (11000, 11000))
+
+    def test_readings_nameplate_is_the_rating(self):
+        tpl = yaml.safe_load(READINGS.read_text())["actions"][0]["variables"]["rating"]
+        st = {"input_text.lab_bridge_station_prefix": "citrineos_lab_starcharge_v2g", "input_number.lab_bridge_rating": "11000"}
+        self.assertEqual(int(_env(st, {}, NOW, {}).from_string(tpl).render().strip()), 11000)

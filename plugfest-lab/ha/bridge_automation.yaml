@@ -25,16 +25,17 @@ actions:
       {%- set nowts = now().timestamp() -%}
       {%- set px = states('input_text.lab_bridge_station_prefix') | trim -%}
       {%- set px = px if px not in ('', 'unknown', 'unavailable') else 'citrineos_everest_v2g_lab_sim_ev_everest_v2g_03' -%}
-      {#- input_boolean.lab_bridge_physical off (default): the DC V2G simulator, CentralSetpoint periods with export mode. On: a physical (AC or charge-only) charger, charging-only limit periods, import mode only, no discharge. -#}
-      {%- set v2x = not is_state('input_boolean.lab_bridge_physical', 'on') -%}
+      {#- input_boolean.lab_bridge_charge_only off (default): a V2G station (the DC V2G simulator, or a physical V2G charger such as StarCharge), CentralSetpoint periods with export mode. On: a charging-only station, charging-only limit periods, import mode only, no discharge. -#}
+      {%- set v2x = not is_state('input_boolean.lab_bridge_charge_only', 'on') -%}
       {#- Charger ratings from CitrineOS (citrine_ha max discharge / charge power: the EV's ChargingNeeds limit, else the EVSE.Power rating from the device model, else 25 kW), so another charger at the Plugfest is rated by what it reports. Below 1 kW or unavailable: 25 kW. cap_c bounds charging, cap_d discharge and the soft-start ramp. -#}
       {%- set cap_d = states(('sensor.' ~ px ~ '_max_discharge_power')) | float(0) * (1000 if state_attr(('sensor.' ~ px ~ '_max_discharge_power'), 'unit_of_measurement') == 'kW' else 1) -%}
       {%- set cap_d = ([cap_d, 500000] | min / 10) | round(0, 'floor') | int * 10 if cap_d >= 1000 else 25000 -%}
       {%- set cap_c = states(('sensor.' ~ px ~ '_max_charge_power')) | float(0) * (1000 if state_attr(('sensor.' ~ px ~ '_max_charge_power'), 'unit_of_measurement') == 'kW' else 1) -%}
       {%- set cap_c = ([cap_c, 500000] | min / 10) | round(0, 'floor') | int * 10 if cap_c >= 1000 else 25000 -%}
-      {#- input_number.lab_bridge_charge_cap (W, 0 = off): the physical charger's rating, an upper bound when CitrineOS reports none (the 25 kW fallback is too high for most AC chargers). Charge-only chargers have no discharge. -#}
-      {%- set man = states('input_number.lab_bridge_charge_cap') | float(0) -%}
+      {#- input_number.lab_bridge_rating (W, 0 = off): the charger's rating, an upper bound on charge and discharge (the 25 kW fallback is too high for most AC chargers when CitrineOS reports no rating). Charging-only stations have no discharge. -#}
+      {%- set man = states('input_number.lab_bridge_rating') | float(0) -%}
       {%- set cap_c = ([cap_c, man] | min) if man >= 1000 else cap_c -%}
+      {%- set cap_d = ([cap_d, man] | min) if man >= 1000 else cap_d -%}
       {%- set cap_d = cap_d if v2x else 0 -%}
       {#- Export ceilings are not clipped to the charger's rating: the solar share comes off the real ceiling first (a 70 kW ceiling with 4 kW of solar still leaves the full 25 kW), and the discharge is capped after. -#}
       {%- set xcap = 100000 -%}
@@ -198,7 +199,7 @@ actions:
       immediate: true
       periods: '{{ plan.periods }}'
       price_entity: sensor.openadr3_vtn_openleadr_vtn_au_fly_dev_au_nsw1_essential_blnt3al_price
-    note: V2G simulator. One TxProfile with the current limit and the scheduled steps, carrying the OpenADR NSW1 Essential import price schedule (OCPP 2.1 absolutePriceSchedule; information only, power bounds unchanged).
+    note: V2G station (simulator or physical). One TxProfile with the current limit and the scheduled steps, carrying the OpenADR NSW1 Essential import price schedule (OCPP 2.1 absolutePriceSchedule; information only, power bounds unchanged).
   else:
   - action: citrine_ha.lab_schedule
     data:
@@ -206,7 +207,7 @@ actions:
       entry_id: 01M51W1XF0B0JJP3H2VVTNKPZ1
       immediate: true
       periods: '{{ plan.periods }}'
-    note: Physical charger. Charging-only limit periods (W) on whatever OCPP version it speaks (1.6, 2.0.1 or 2.1); no price schedule.
+    note: Charging-only station. Charging-only limit periods (W) on whatever OCPP version it speaks (1.6, 2.0.1 or 2.1); no price schedule.
 - action: input_number.set_value
   data:
     value: '{{ plan.cur }}'
