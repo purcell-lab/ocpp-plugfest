@@ -15,27 +15,28 @@ localhost end-to-end test records and findings from the run on the
 
 ## Station endpoints
 
-Each station under test has its own Plugfest listener on the Green
-(`citrineos_server` 0.7.2, purcell-lab/ha-addons#90). The station ID goes at
-the end of the URL and is also the Basic Auth user name.
+Every station under test uses the same CSMS endpoint on the Green, port 8083,
+followed by its own station ID. This is standard OCPP practice: the station
+ID identifies the station, not the port.
 
 | Slot | Station under test | Endpoint |
 |---|---|---|
-| 1 | OCTT (DNV) | `ws://purcell.local:8100/<station-id>` |
-| 2 | EVX Australia | `ws://purcell.local:8101/<station-id>` |
-| 5 | EVSE | `ws://purcell.local:8102/<station-id>` |
-| 6 | Trialog | `ws://purcell.local:8103/<station-id>` |
-| 7 | AS Jade CS (online) | `ws://purcell.local:8104/<station-id>` |
-| 10 | Starcharge | `ws://purcell.local:8105/<station-id>` |
+| 1 | OCTT (DNV) | `ws://purcell.local:8083/<station-id>` |
+| 2 | EVX Australia | `ws://purcell.local:8083/<station-id>` |
+| 5 | EVSE | `ws://purcell.local:8083/<station-id>` |
+| 6 | Trialog | `ws://purcell.local:8083/<station-id>` |
+| 7 | AS Jade CS (online) | `ws://purcell.local:8083/<station-id>` |
+| 10 | Starcharge | `ws://purcell.local:8083/<station-id>` |
 
-- All seven Plugfest ports (8083 and 8100 to 8105) speak OCPP 2.1, 2.0.1 and 1.6 and
-  admit stations the same way: the station's provisioned password in
-  `plugfest_stations`, or any station with `plugfest_open_admission`. A port
-  does not restrict which station ID connects on it; it gives each station
-  its own URL, log trail and firewall rule. 8083 stays available as the
-  shared endpoint.
+- 8083 speaks OCPP 2.1, 2.0.1 and 1.6 (the server picks the first of these the
+  station offers), Security Profile 1 over `ws://`.
+- Admission: a station listed in `plugfest_stations` uses its station ID as
+  the Basic Auth user name with its own password; with
+  `plugfest_open_admission` any station ID connects without a password.
+- `citrineos_server` 0.7.2 also has identical listeners on 8100 to 8105
+  (purcell-lab/ha-addons#90). They are spares; vendors are given 8083.
 - `purcell.local` is mDNS. If a station can't resolve `.local` names, use the
-  Green's venue LAN address instead, with the same port.
+  Green's venue LAN address instead, port 8083.
 - Slot 7 is online: a station off the venue LAN can't reach these `ws://`
   endpoints, and they must never be port-forwarded to the internet. It needs a
   separate TLS (Security Profile 2) path.
@@ -83,9 +84,9 @@ password were generated for this test only. **Rotate them before the event.**
 | `open_admission_enabled` | `true` | 8082 stays internal; it is never published on the host |
 | `command_control_enabled` | `true` | Scoped commands for `command_station_id` only (purcell-lab/ha-addons#40) |
 | `command_station_id` | `SIM-EV-EVEREST-V2G-03`, then `SIM-EV-EVEREST-G1` | Switching needs a server restart and an integration reload |
-| `plugfest_enabled` | `true` | Adds the Plugfest listeners: 8083 (shared) and 8100 to 8105 (one per station, from 0.7.2); unknown stations are rejected. Left on for the event |
+| `plugfest_enabled` | `true` | Adds the Plugfest listener on 8083 (and spare listeners 8100 to 8105 from 0.7.2); unknown stations are rejected unless `plugfest_open_admission` is on. Left on for the event |
 | `plugfest_stations` | `[{id: SIM-EV-EVEREST-V2G-03, password: <32 hex>}]` | At the event: one entry per vendor station ID |
-| Host ports `8083/tcp` and `8100/tcp` to `8105/tcp` | the same numbers on the host | See [Station endpoints](#station-endpoints); never port-forward to the internet |
+| Host port `8083/tcp` | `8083` | The vendor endpoint, see [Station endpoints](#station-endpoints); never port-forward to the internet |
 
 The seed provisions each Plugfest station (ChargingStations row, Boots
 `Accepted`, `SecurityCtrlr.BasicAuthPassword`) and revokes the password of
