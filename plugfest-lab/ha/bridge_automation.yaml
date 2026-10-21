@@ -102,8 +102,8 @@ actions:
       {#- Consecutive controls leave sub-second gaps; learn the default only when no control has been active within 2 s either side. -#}
       {%- set learn = ns.ctl | selectattr('w') | selectattr('s', 'le', nowts + 2) | selectattr('e', 'gt', nowts - 2) | list | count == 0 and not hold -%}
       {%- set learn_x = ns.ctl | selectattr('x') | selectattr('s', 'le', nowts + 2) | selectattr('e', 'gt', nowts - 2) | list | count == 0 and not hold -%}
-      {%- set dflt = cur if learn else states('input_number.lab_ac_default_limit') | float(0) -%}
-      {%- set dflt_x = cur_x if learn_x else states('input_number.lab_v2g_default_export_limit') | float(0) -%}
+      {%- set dflt = cur if learn or hold else states('input_number.lab_ac_default_limit') | float(0) -%}
+      {%- set dflt_x = cur_x if learn_x or hold else states('input_number.lab_v2g_default_export_limit') | float(0) -%}
       {%- set r0 = treq[((nowts - t0) / tstep) | int] if tlive and t0 <= nowts else none -%}
       {%- set out = namespace(p=[{'startPeriod': 0, 'limit': cur, 'x': cur_x, 'xr': cur_x, 'r': r0, 'z': off}], last=cur, last_x=cur_x, last_xr=cur_x, last_r=r0, last_z=off, sig=[]) -%}
       {#- The profile starts 1 s before now (immediate), so a boundary b is at offset b - now + 1.

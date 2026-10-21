@@ -523,6 +523,13 @@ class LabHold(unittest.TestCase):
         plan = render(zero_import(), dict(site(solar=0), **self.HOLD), test_steps=f"{int(NOW) - 1}|60|-20000")
         self.assertEqual(rows(plan)[0], (0, -5950, 23950, -5950))
 
+    def test_hold_test_steps_ignore_the_learned_zero_defaults(self):
+        # 22 October 07:13: the learned defaults were 0 W (a stale ODE control), so every later step got limit 0.
+        states = dict(site(solar=0), **self.HOLD, **{"input_number.lab_ac_default_limit": "0",
+                                                    "input_number.lab_v2g_default_export_limit": "0"})
+        plan = render(zero_import(), states, test_steps=f"{int(NOW) + 10}|60|20000,-20000,6000")
+        self.assertEqual(rows(plan)[1:], [(11, 20000, 23950, -5950), (71, -5950, 23950, -5950), (131, 6000, 23950, -5950), (191, 23950, 23950, 0)])
+
     def test_hold_off_follows_ode(self):
         plan = render(zero_import(), dict(site(solar=0), **{"input_boolean.lab_bridge_hold": "off"}))
         self.assertEqual(rows(plan)[0], (0, -950, 0, -950))
