@@ -185,7 +185,7 @@ actions:
       {%- set px = px if px not in ('', 'unknown', 'unavailable') else 'citrineos_everest_v2g_lab_sim_ev_everest_v2g_03' -%}
       {%- set t = state_attr('input_datetime.lab_ac_limit_sent_at', 'timestamp') -%}
       {%- set sp = plan.periods[0].get('setpoint', 0) if plan.periods | count > 0 else 0 -%}
-      {{ plan.v2x and not plan.refused and plan.tx not in ('unknown', 'unavailable', '') and sp < 0 and t is number and now().timestamp() - t >= 30 and states('sensor.' ~ px ~ '_measured_ev_power') | float(0) > 500 }}
+      {{ plan.v2x and not plan.refused and plan.tx not in ('unknown', 'unavailable', '') and sp < 0 and plan.sig == states('input_text.lab_ac_schedule_sent') and t is number and now().timestamp() - t >= 30 and states('sensor.' ~ px ~ '_measured_ev_power') | float(0) > 500 }}
   then:
   - action: input_text.set_value
     data:
@@ -197,7 +197,7 @@ actions:
       level: warning
       logger: lab.bridge
       message: 'Bridge: the EV still charges 30 s after a discharge setpoint; no discharge for transaction {{ plan.tx }} (input_text.lab_bridge_discharge_refused).'
-  note: Discharge refused. The last profile asked for discharge at least 30 s ago, yet the EV still charges above 500 W, so the station did not take the discharge setpoint (and kept its old charge limit). Latch the transaction so the next profile stops the EV instead (sig gains r|, so it is sent at once).
+  note: Discharge refused. The current profile, already sent and unchanged (so a schedule-ahead step that has just begun is resent first), asks for discharge, the last send was at least 30 s ago, yet the EV still charges above 500 W, so the station did not take the discharge setpoint (and kept its old charge limit). Latch the transaction so the next profile stops the EV instead (sig gains r|, so it is sent at once). Without the sent-and-unchanged check, a TxProfile test step that began 60 s after the last send latched in 1.5 s, before the EV could respond (21 October, 22:55).
 - variables:
     send: |-
       {%- set last = states('input_number.lab_ac_limit_sent') | float(-1) -%}
