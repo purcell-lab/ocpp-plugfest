@@ -13,6 +13,33 @@ localhost end-to-end test records and findings from the run on the
 | 7 | AS Jade CS (online) |
 | 10 | Starcharge |
 
+## Station endpoints
+
+Each station under test has its own Plugfest listener on the Green
+(`citrineos_server` 0.7.2, purcell-lab/ha-addons#90). The station ID goes at
+the end of the URL and is also the Basic Auth user name.
+
+| Slot | Station under test | Endpoint |
+|---|---|---|
+| 1 | OCTT (DNV) | `ws://purcell.local:8084/<station-id>` |
+| 2 | EVX Australia | `ws://purcell.local:8085/<station-id>` |
+| 5 | EVSE | `ws://purcell.local:8086/<station-id>` |
+| 6 | Trialog | `ws://purcell.local:8087/<station-id>` |
+| 7 | AS Jade CS (online) | `ws://purcell.local:8088/<station-id>` |
+| 10 | Starcharge | `ws://purcell.local:8089/<station-id>` |
+
+- All seven Plugfest ports (8083 to 8089) speak OCPP 2.1, 2.0.1 and 1.6 and
+  admit stations the same way: the station's provisioned password in
+  `plugfest_stations`, or any station with `plugfest_open_admission`. A port
+  does not restrict which station ID connects on it; it gives each station
+  its own URL, log trail and firewall rule. 8083 stays available as the
+  shared endpoint.
+- `purcell.local` is mDNS. If a station can't resolve `.local` names, use the
+  Green's venue LAN address instead, with the same port.
+- Slot 7 is online: a station off the venue LAN can't reach these `ws://`
+  endpoints, and they must never be port-forwarded to the internet. It needs a
+  separate TLS (Security Profile 2) path.
+
 Decisions: Green on the venue LAN, **Security Profile 1 (Basic Auth over
 `ws://`) only**, a provisioned password per station. Procedures are in
 [`RUNBOOK.md`](RUNBOOK.md).
@@ -56,9 +83,9 @@ password were generated for this test only. **Rotate them before the event.**
 | `open_admission_enabled` | `true` | 8082 stays internal; it is never published on the host |
 | `command_control_enabled` | `true` | Scoped commands for `command_station_id` only (purcell-lab/ha-addons#40) |
 | `command_station_id` | `SIM-EV-EVEREST-V2G-03`, then `SIM-EV-EVEREST-G1` | Switching needs a server restart and an integration reload |
-| `plugfest_enabled` | `true` | Adds the 8083 SP1 listener; unknown stations are rejected |
+| `plugfest_enabled` | `true` | Adds the Plugfest listeners: 8083 (shared) and 8084 to 8089 (one per station, from 0.7.2); unknown stations are rejected. Left on for the event |
 | `plugfest_stations` | `[{id: SIM-EV-EVEREST-V2G-03, password: <32 hex>}]` | At the event: one entry per vendor station ID |
-| Host port `8083/tcp` | `8083` during the test, then `null` | Publish only for the slot; never port-forward to the internet |
+| Host ports `8083/tcp` to `8089/tcp` | `8083` to `8089` (same number on the host) | See [Station endpoints](#station-endpoints); never port-forward to the internet |
 
 The seed provisions each Plugfest station (ChargingStations row, Boots
 `Accepted`, `SecurityCtrlr.BasicAuthPassword`) and revokes the password of
