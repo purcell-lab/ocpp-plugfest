@@ -1,0 +1,998 @@
+{
+ "run": 76007,
+ "procedure": "ALL-06",
+ "csipAusVersion": "v1.2",
+ "statusSummary": "4/4 steps complete.",
+ "checkResults": {
+  "all-steps-complete": {
+   "passed": true,
+   "description": null
+  },
+  "readings-site-active-power": {
+   "passed": true,
+   "description": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading 0514EF158854B78B8AF7710300065434 at /mup/2 has 9 Readings.\nAll 36 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 4 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  },
+  "readings-site-reactive-power": {
+   "passed": true,
+   "description": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading 2A568CD1DAC482713806AB0300065434 at /mup/2 has 9 Readings.\nAll 9 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 4 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  },
+  "readings-voltage": {
+   "passed": true,
+   "description": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading BD5368CFB9107A6B7FC8380300065434 at /mup/2 has 9 Readings.\nAll 27 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 3 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  },
+  "readings-der-active-power": {
+   "passed": true,
+   "description": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading B1DC7C5CB152A8C3C1DBD54900065434 at /mup/3 has 9 Readings.\nAll 9 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 4 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  },
+  "readings-der-reactive-power": {
+   "passed": true,
+   "description": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading 3DB2A2DC5F66947783B5874900065434 at /mup/3 has 9 Readings.\nAll 9 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 4 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  },
+  "all-polls-at-correct-time": {
+   "passed": true,
+   "description": "All poll timing checks passed for GET ['/dcap', '/edev', '/edev/1/fsa', '/edev/1/der', '/edev/1/fsa/1/derp', '/edev/1/derp/1/dderc', '/mup']"
+  },
+  "all-requests-xsd-valid": {
+   "passed": true,
+   "description": "No XSD errors detected in any requests."
+  }
+ },
+ "preconditionChecks": [],
+ "warnings": [],
+ "stepStatus": {
+  "POST-MUP": {
+   "startedAt": "2026-10-21T11:28:31.600369Z",
+   "completedAt": "2026-10-21T11:29:18.831376Z",
+   "eventStatus": null
+  },
+  "GET-MUP-2": {
+   "startedAt": "2026-10-21T11:29:18.831221Z",
+   "completedAt": "2026-10-21T11:30:17.983800Z",
+   "eventStatus": null
+  },
+  "SET-CONTROL": {
+   "startedAt": "2026-10-21T11:30:17.983502Z",
+   "completedAt": "2026-10-21T11:35:20.437449Z",
+   "eventStatus": null
+  },
+  "WAIT-CONTROL": {
+   "startedAt": "2026-10-21T11:35:20.436923Z",
+   "completedAt": "2026-10-21T11:38:20.471238Z",
+   "eventStatus": null
+  }
+ },
+ "timestampStart": "2026-10-21T11:28:31.599970Z",
+ "timestampStatus": "2026-10-21T11:38:20.644249Z",
+ "timeline": {
+  "start": "2026-10-21T11:28:31.599970Z",
+  "intervalSeconds": 20,
+  "dataStreams": [
+   {
+    "label": "Site Power",
+    "offsetWattValues": [
+     null,
+     null,
+     null,
+     null,
+     34634,
+     34634,
+     34634,
+     49898,
+     49898,
+     49898,
+     49908,
+     49908,
+     49908,
+     49875,
+     49875,
+     49875,
+     49938,
+     49938,
+     49938,
+     49907,
+     49907,
+     49907,
+     49974,
+     49974,
+     49974,
+     49928,
+     49928,
+     49928,
+     49898,
+     49898
+    ],
+    "stepped": false,
+    "dashed": false
+   },
+   {
+    "label": "Device Power",
+    "offsetWattValues": [
+     null,
+     null,
+     null,
+     null,
+     -16140,
+     -16140,
+     -16140,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950,
+     -23950
+    ],
+    "stepped": false,
+    "dashed": false
+   },
+   {
+    "label": "/derp/1 opModImpLimW",
+    "offsetWattValues": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "stepped": true,
+    "dashed": false
+   },
+   {
+    "label": "/derp/1 opModExpLimW",
+    "offsetWattValues": [
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "stepped": true,
+    "dashed": false
+   },
+   {
+    "label": "Default opModImpLimW",
+    "offsetWattValues": [
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000,
+     200000
+    ],
+    "stepped": true,
+    "dashed": true
+   },
+   {
+    "label": "Default opModExpLimW",
+    "offsetWattValues": [
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000,
+     -200000
+    ],
+    "stepped": true,
+    "dashed": true
+   }
+  ]
+ },
+ "readings": [
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": -16140
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": -23950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": -23950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": -23950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": -23950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": -23950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": -23950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": -23950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": -23950
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 0
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 228
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 226
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 226
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 236
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 236
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 235
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 231
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 225
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 229
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 231
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 235
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 227
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 227
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 226
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 226
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 225
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 233
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 228
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 233
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 228
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 330
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 331
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 336
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 333
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 328
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 334
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 335
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 331
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 326
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 17317
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 24949
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 24954
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 24938
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 24969
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 24954
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 24987
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 24964
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 24949
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 5772
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 8312
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 8319
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 8316
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 8325
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 8321
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 8334
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 8317
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 8316
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 5768
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 8321
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 8316
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 8308
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 8324
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 8313
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 8325
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 8323
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 8315
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 5777
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 8316
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 8319
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 8313
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 8320
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 8319
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 8328
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 8324
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 8318
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 228
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 226
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 226
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 236
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 236
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 235
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 231
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 225
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 229
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 231
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 235
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 227
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582200.0,
+   "seconds": 60,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582260.0,
+   "seconds": 60,
+   "value": 227
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582320.0,
+   "seconds": 60,
+   "value": 226
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582380.0,
+   "seconds": 60,
+   "value": 226
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582440.0,
+   "seconds": 60,
+   "value": 225
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582500.0,
+   "seconds": 60,
+   "value": 233
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582560.0,
+   "seconds": 60,
+   "value": 228
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582620.0,
+   "seconds": 60,
+   "value": 233
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792582680.0,
+   "seconds": 60,
+   "value": 228
+  }
+ ]
+}
