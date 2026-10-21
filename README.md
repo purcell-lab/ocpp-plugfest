@@ -82,12 +82,12 @@ meets real vendor stations**, one slot each.
 |---|---|---|---|
 | **Pre‑Plugfest** | **EVerest AC** simulator | OCPP 2.1 (2.0.1 fallback), AC charging | Home lab |
 | **Pre‑Plugfest** | **EVerest DC V2G** simulator | OCPP 2.1, ISO 15118-20 DC_BPT, ±25 kW | Home lab |
-| Slot 1 | **OCTT (DNV)** | OCPP conformance test tool acting as a station | `ws://purcell.local:8084/<station-id>` |
-| Slot 2 | **EVX Australia** | Charging station | `ws://purcell.local:8085/<station-id>` |
-| Slot 5 | **EVSE** | Charging station | `ws://purcell.local:8086/<station-id>` |
-| Slot 6 | **Trialog** | Charging station | `ws://purcell.local:8087/<station-id>` |
-| Slot 7 | **AS Jade** | Charging station (online) | `ws://purcell.local:8088/<station-id>` on the venue LAN; remote path to be agreed |
-| Slot 10 | **Starcharge** | V2G charging station | `ws://purcell.local:8089/<station-id>` |
+| Slot 1 | **OCTT (DNV)** | OCPP conformance test tool acting as a station | `ws://purcell.local:8100/<station-id>` |
+| Slot 2 | **EVX Australia** | Charging station | `ws://purcell.local:8101/<station-id>` |
+| Slot 5 | **EVSE** | Charging station | `ws://purcell.local:8102/<station-id>` |
+| Slot 6 | **Trialog** | Charging station | `ws://purcell.local:8103/<station-id>` |
+| Slot 7 | **AS Jade** | Charging station (online) | `ws://purcell.local:8104/<station-id>` on the venue LAN; remote path to be agreed |
+| Slot 10 | **Starcharge** | V2G charging station | `ws://purcell.local:8105/<station-id>` |
 
 Each station has its own endpoint on the CitrineOS CSMS (venue LAN). The station ID ends the URL and
 is also the Basic Auth user name. Every port speaks OCPP 2.1, 2.0.1 and 1.6 (Security Profile 1),
@@ -202,7 +202,7 @@ prices through open standards on every link.
 
 | **Demonstration** | **CSMS under test** |
 |---|---|
-| CSIP-AUS envelope and OpenADR 3.1 prices → OCPP 2.1 bidirectional profile, live, Friday afternoon. | CitrineOS on the Green, Security Profile 1 on the venue LAN, [one endpoint per station](#the-charging-stations) (`ws://purcell.local:8084` to `8089`). [Six vendor slots](#the-charging-stations): OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
+| CSIP-AUS envelope and OpenADR 3.1 prices → OCPP 2.1 bidirectional profile, live, Friday afternoon. | CitrineOS on the Green, Security Profile 1 on the venue LAN, [one endpoint per station](#the-charging-stations) (`ws://purcell.local:8100` to `8105`). [Six vendor slots](#the-charging-stations): OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
 | [Demo script](demo/DEMO.md) · [Infographic](infographic/plugfest-infographic.pdf) | [Runbook](plugfest-lab/RUNBOOK.md) · [Lab records](plugfest-lab/README.md) · [Acceptance plan](plugfest-lab/ACCEPTANCE.md) · [Setup](plugfest-lab/SETUP.md) |
 
 ---
