@@ -55,3 +55,23 @@ off, `lab_bridge_rating` 0, `lab_v2g_export` on (target 25 kW).
 Server `command_real_stations_enabled: false`, station `SIM-EV-EVEREST-V2G-03`;
 MicroOCPP rebound to `ws://172.30.32.1:19002` (HA native OCPP); prefix empty,
 `lab_bridge_charge_only` off, `lab_bridge_rating` 0.
+
+## Per-station port (citrineos_server 0.7.2, purcell-lab/ha-addons#90)
+
+The V2G simulator was moved to Starcharge's endpoint, port 8105, to check that
+the bridge reaches a station whatever port it connects on.
+
+| Time | Event |
+|---|---|
+| 19:54:14 | Connected on 8105 (OCPP 2.1, Security Profile 1), BootNotification Accepted |
+| 19:54:25 | Bridge TxProfile reached the station on 8105; Rejected only because it named the transaction lost when the simulator was rebound |
+| 19:56 | Stale transaction closed by the server's transaction reconcile (station: not ongoing) |
+| 19:59:04 | New transaction open |
+| 19:59:06 | Bridge TxProfile Accepted |
+| 19:59:34 | Measured -950 W, the bridge's export-mode setpoint |
+| 20:00:31 | Simulator back on 8083 (transaction ended cleanly first); new session 20:01:37 |
+
+Finding: moving a station to another port with `archive_and_rebind` loses its
+open transaction. CitrineOS keeps it active until the reconcile runs, and the
+HA Start button stays unavailable meanwhile. End the transaction (unplug)
+before moving a station.
