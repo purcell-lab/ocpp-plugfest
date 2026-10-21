@@ -1,0 +1,1243 @@
+{
+ "run": 76002,
+ "procedure": "ALT-ALL-29",
+ "csipAusVersion": "v1.2",
+ "statusSummary": "1/1 steps complete.",
+ "criteria": [
+  {
+   "success": true,
+   "type": "all-steps-complete",
+   "details": ""
+  },
+  {
+   "success": true,
+   "type": "readings-site-active-power",
+   "details": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading 0514EF158854B78B8AF7710300065434 at /mup/3 has 9 Readings.\nAll 36 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 4 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  },
+  {
+   "success": true,
+   "type": "readings-der-active-power",
+   "details": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading B1DC7C5CB152A8C3C1DBD54900065434 at /mup/2 has 9 Readings.\nAll 9 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 4 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  }
+ ],
+ "preconditionChecks": [
+  {
+   "success": true,
+   "type": "end-device-contents",
+   "details": ""
+  },
+  {
+   "success": true,
+   "type": "der-settings-contents",
+   "details": ""
+  }
+ ],
+ "warnings": [],
+ "timestampStart": "2026-10-21T10:51:56.912401Z",
+ "timestampStatus": "2026-10-21T11:01:57.731063Z",
+ "setMaxW": 35000,
+ "readings": [
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792579980,
+   "value": 14858
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792579980,
+   "value": -13750
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792579980,
+   "value": 950
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792579980,
+   "value": -23950
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792579980,
+   "value": 24980
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792579980,
+   "value": 23
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792580040,
+   "value": 24940
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792580040,
+   "value": -23950
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792580040,
+   "value": -23950
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792580040,
+   "value": -23950
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792580040,
+   "value": 24975
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792580040,
+   "value": 24913
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792580100,
+   "value": -17014
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792580100,
+   "value": 17986
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792580100,
+   "value": -16450
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792580100,
+   "value": -23950
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792580100,
+   "value": 24974
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792580100,
+   "value": 17380
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792580160,
+   "value": 17484
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792580160,
+   "value": -16450
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792580160,
+   "value": -16450
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792580160,
+   "value": 17535
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792580160,
+   "value": -16450
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792580160,
+   "value": 17415
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792580220,
+   "value": -13561
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792580220,
+   "value": 14567
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792580220,
+   "value": -12950
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792580220,
+   "value": -16450
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792580220,
+   "value": 17504
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792580220,
+   "value": 13916
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792580280,
+   "value": -12950
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792580280,
+   "value": 13953
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792580280,
+   "value": -12950
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792580280,
+   "value": -12950
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792580280,
+   "value": 13995
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792580280,
+   "value": 13907
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792580340,
+   "value": -10076
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792580340,
+   "value": 11088
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792580340,
+   "value": -9450
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792580340,
+   "value": -12950
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792580340,
+   "value": 13972
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792580340,
+   "value": 10446
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792580400,
+   "value": 10467
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792580400,
+   "value": -9450
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792580400,
+   "value": -9450
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792580400,
+   "value": -9450
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792580400,
+   "value": 10503
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792580400,
+   "value": 10443
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792580460,
+   "value": -914
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792580460,
+   "value": 1889
+  },
+  {
+   "desc": "DER Maximum Real Power (W) - Net",
+   "start": 1792580460,
+   "value": 950
+  },
+  {
+   "desc": "DER Minimum Real Power (W) - Net",
+   "start": 1792580460,
+   "value": -9450
+  },
+  {
+   "desc": "Site Max Real Power (W) - Net",
+   "start": 1792580460,
+   "value": 10499
+  },
+  {
+   "desc": "Site Min Real Power (W) - Net",
+   "start": 1792580460,
+   "value": 55
+  }
+ ],
+ "dataStreams": [
+  {
+   "label": "Site Power",
+   "data": [
+    {
+     "watts": null,
+     "offset": "start"
+    },
+    {
+     "watts": null,
+     "offset": "20s"
+    },
+    {
+     "watts": null,
+     "offset": "40s"
+    },
+    {
+     "watts": 29716,
+     "offset": "1m"
+    },
+    {
+     "watts": 29716,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 29716,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 49880,
+     "offset": "2m"
+    },
+    {
+     "watts": 49880,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 49880,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 35971,
+     "offset": "3m"
+    },
+    {
+     "watts": 35971,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 35971,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 34968,
+     "offset": "4m"
+    },
+    {
+     "watts": 34968,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 34968,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 29135,
+     "offset": "5m"
+    },
+    {
+     "watts": 29135,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 29135,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 27906,
+     "offset": "6m"
+    },
+    {
+     "watts": 27906,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 27906,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 22177,
+     "offset": "7m"
+    },
+    {
+     "watts": 22177,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 22177,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 20934,
+     "offset": "8m"
+    },
+    {
+     "watts": 20934,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 20934,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 3779,
+     "offset": "9m"
+    },
+    {
+     "watts": 3779,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 3779,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 3779,
+     "offset": "10m"
+    },
+    {
+     "watts": null,
+     "offset": "10m20s"
+    },
+    {
+     "watts": null,
+     "offset": "10m40s"
+    },
+    {
+     "watts": null,
+     "offset": "11m"
+    },
+    {
+     "watts": null,
+     "offset": "11m20s"
+    },
+    {
+     "watts": null,
+     "offset": "11m40s"
+    },
+    {
+     "watts": null,
+     "offset": "12m"
+    }
+   ],
+   "stepped": false,
+   "dashed": false
+  },
+  {
+   "label": "Device Power",
+   "data": [
+    {
+     "watts": null,
+     "offset": "start"
+    },
+    {
+     "watts": null,
+     "offset": "20s"
+    },
+    {
+     "watts": null,
+     "offset": "40s"
+    },
+    {
+     "watts": -13750,
+     "offset": "1m"
+    },
+    {
+     "watts": -13750,
+     "offset": "1m20s"
+    },
+    {
+     "watts": -13750,
+     "offset": "1m40s"
+    },
+    {
+     "watts": -23950,
+     "offset": "2m"
+    },
+    {
+     "watts": -23950,
+     "offset": "2m20s"
+    },
+    {
+     "watts": -23950,
+     "offset": "2m40s"
+    },
+    {
+     "watts": -17014,
+     "offset": "3m"
+    },
+    {
+     "watts": -17014,
+     "offset": "3m20s"
+    },
+    {
+     "watts": -17014,
+     "offset": "3m40s"
+    },
+    {
+     "watts": -16450,
+     "offset": "4m"
+    },
+    {
+     "watts": -16450,
+     "offset": "4m20s"
+    },
+    {
+     "watts": -16450,
+     "offset": "4m40s"
+    },
+    {
+     "watts": -13561,
+     "offset": "5m"
+    },
+    {
+     "watts": -13561,
+     "offset": "5m20s"
+    },
+    {
+     "watts": -13561,
+     "offset": "5m40s"
+    },
+    {
+     "watts": -12950,
+     "offset": "6m"
+    },
+    {
+     "watts": -12950,
+     "offset": "6m20s"
+    },
+    {
+     "watts": -12950,
+     "offset": "6m40s"
+    },
+    {
+     "watts": -10076,
+     "offset": "7m"
+    },
+    {
+     "watts": -10076,
+     "offset": "7m20s"
+    },
+    {
+     "watts": -10076,
+     "offset": "7m40s"
+    },
+    {
+     "watts": -9450,
+     "offset": "8m"
+    },
+    {
+     "watts": -9450,
+     "offset": "8m20s"
+    },
+    {
+     "watts": -9450,
+     "offset": "8m40s"
+    },
+    {
+     "watts": -914,
+     "offset": "9m"
+    },
+    {
+     "watts": -914,
+     "offset": "9m20s"
+    },
+    {
+     "watts": -914,
+     "offset": "9m40s"
+    },
+    {
+     "watts": -914,
+     "offset": "10m"
+    },
+    {
+     "watts": null,
+     "offset": "10m20s"
+    },
+    {
+     "watts": null,
+     "offset": "10m40s"
+    },
+    {
+     "watts": null,
+     "offset": "11m"
+    },
+    {
+     "watts": null,
+     "offset": "11m20s"
+    },
+    {
+     "watts": null,
+     "offset": "11m40s"
+    },
+    {
+     "watts": null,
+     "offset": "12m"
+    }
+   ],
+   "stepped": false,
+   "dashed": false
+  },
+  {
+   "label": "/derp/1 opModImpLimW",
+   "data": [
+    {
+     "watts": 70000,
+     "offset": "start"
+    },
+    {
+     "watts": 70000,
+     "offset": "20s"
+    },
+    {
+     "watts": 70000,
+     "offset": "40s"
+    },
+    {
+     "watts": 70000,
+     "offset": "1m"
+    },
+    {
+     "watts": 70000,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 70000,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 17500,
+     "offset": "2m"
+    },
+    {
+     "watts": 17500,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 17500,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 17500,
+     "offset": "3m"
+    },
+    {
+     "watts": 17500,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 17500,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 14000,
+     "offset": "4m"
+    },
+    {
+     "watts": 14000,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 14000,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 14000,
+     "offset": "5m"
+    },
+    {
+     "watts": 14000,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 14000,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 10500,
+     "offset": "6m"
+    },
+    {
+     "watts": 10500,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 10500,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 10500,
+     "offset": "7m"
+    },
+    {
+     "watts": 10500,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 10500,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m"
+    },
+    {
+     "watts": 0,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m"
+    },
+    {
+     "watts": 0,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m"
+    },
+    {
+     "watts": null,
+     "offset": "10m20s"
+    },
+    {
+     "watts": null,
+     "offset": "10m40s"
+    },
+    {
+     "watts": null,
+     "offset": "11m"
+    },
+    {
+     "watts": null,
+     "offset": "11m20s"
+    },
+    {
+     "watts": null,
+     "offset": "11m40s"
+    },
+    {
+     "watts": null,
+     "offset": "12m"
+    }
+   ],
+   "stepped": true,
+   "dashed": false
+  },
+  {
+   "label": "/derp/1 opModExpLimW",
+   "data": [
+    {
+     "watts": -70000,
+     "offset": "start"
+    },
+    {
+     "watts": -70000,
+     "offset": "20s"
+    },
+    {
+     "watts": -70000,
+     "offset": "40s"
+    },
+    {
+     "watts": -70000,
+     "offset": "1m"
+    },
+    {
+     "watts": -70000,
+     "offset": "1m20s"
+    },
+    {
+     "watts": -70000,
+     "offset": "1m40s"
+    },
+    {
+     "watts": -17500,
+     "offset": "2m"
+    },
+    {
+     "watts": -17500,
+     "offset": "2m20s"
+    },
+    {
+     "watts": -17500,
+     "offset": "2m40s"
+    },
+    {
+     "watts": -17500,
+     "offset": "3m"
+    },
+    {
+     "watts": -17500,
+     "offset": "3m20s"
+    },
+    {
+     "watts": -17500,
+     "offset": "3m40s"
+    },
+    {
+     "watts": -14000,
+     "offset": "4m"
+    },
+    {
+     "watts": -14000,
+     "offset": "4m20s"
+    },
+    {
+     "watts": -14000,
+     "offset": "4m40s"
+    },
+    {
+     "watts": -14000,
+     "offset": "5m"
+    },
+    {
+     "watts": -14000,
+     "offset": "5m20s"
+    },
+    {
+     "watts": -14000,
+     "offset": "5m40s"
+    },
+    {
+     "watts": -10500,
+     "offset": "6m"
+    },
+    {
+     "watts": -10500,
+     "offset": "6m20s"
+    },
+    {
+     "watts": -10500,
+     "offset": "6m40s"
+    },
+    {
+     "watts": -10500,
+     "offset": "7m"
+    },
+    {
+     "watts": -10500,
+     "offset": "7m20s"
+    },
+    {
+     "watts": -10500,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m"
+    },
+    {
+     "watts": 0,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m"
+    },
+    {
+     "watts": 0,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m"
+    },
+    {
+     "watts": null,
+     "offset": "10m20s"
+    },
+    {
+     "watts": null,
+     "offset": "10m40s"
+    },
+    {
+     "watts": null,
+     "offset": "11m"
+    },
+    {
+     "watts": null,
+     "offset": "11m20s"
+    },
+    {
+     "watts": null,
+     "offset": "11m40s"
+    },
+    {
+     "watts": null,
+     "offset": "12m"
+    }
+   ],
+   "stepped": true,
+   "dashed": false
+  },
+  {
+   "label": "Default opModImpLimW",
+   "data": [
+    {
+     "watts": 0,
+     "offset": "start"
+    },
+    {
+     "watts": 0,
+     "offset": "20s"
+    },
+    {
+     "watts": 0,
+     "offset": "40s"
+    },
+    {
+     "watts": 0,
+     "offset": "1m"
+    },
+    {
+     "watts": 0,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "2m"
+    },
+    {
+     "watts": 0,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "3m"
+    },
+    {
+     "watts": 0,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "4m"
+    },
+    {
+     "watts": 0,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "5m"
+    },
+    {
+     "watts": 0,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "6m"
+    },
+    {
+     "watts": 0,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "7m"
+    },
+    {
+     "watts": 0,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m"
+    },
+    {
+     "watts": 0,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m"
+    },
+    {
+     "watts": 0,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m"
+    },
+    {
+     "watts": 0,
+     "offset": "10m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "11m"
+    },
+    {
+     "watts": 0,
+     "offset": "11m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "11m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "12m"
+    }
+   ],
+   "stepped": true,
+   "dashed": true
+  },
+  {
+   "label": "Default opModExpLimW",
+   "data": [
+    {
+     "watts": 0,
+     "offset": "start"
+    },
+    {
+     "watts": 0,
+     "offset": "20s"
+    },
+    {
+     "watts": 0,
+     "offset": "40s"
+    },
+    {
+     "watts": 0,
+     "offset": "1m"
+    },
+    {
+     "watts": 0,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "2m"
+    },
+    {
+     "watts": 0,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "3m"
+    },
+    {
+     "watts": 0,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "4m"
+    },
+    {
+     "watts": 0,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "5m"
+    },
+    {
+     "watts": 0,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "6m"
+    },
+    {
+     "watts": 0,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "7m"
+    },
+    {
+     "watts": 0,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m"
+    },
+    {
+     "watts": 0,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m"
+    },
+    {
+     "watts": 0,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m"
+    },
+    {
+     "watts": 0,
+     "offset": "10m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "11m"
+    },
+    {
+     "watts": 0,
+     "offset": "11m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "11m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "12m"
+    }
+   ],
+   "stepped": true,
+   "dashed": true
+  }
+ ]
+}

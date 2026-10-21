@@ -148,7 +148,8 @@ house load the EV also supplies. The site exported 17.95 kW, inside the limit.
 | **ALL-28** (response to changing ramp rates: step, `rampTms`, `setGradW`) | EVerest DC V2G + solar | **15 / 15 steps, no warnings** (run 75360) | [ALL-28](results/2026-10-20-cactus-all28/README.md) |
 | **ALL-23** (communication loss: cached schedule, then poll on restore) | EVerest DC V2G + solar | **5 / 5 steps, no warnings** (run 75381, ODE App 0.1.5; run 75362 failed on 0.1.4) | [ALL-23](results/2026-10-20-cactus-all23/README.md) |
 | **LOA-10** (primacy validation, loads) | EVerest DC V2G, charging mode | **46 / 46 steps, no warnings** (run 75995); the higher-priority program won every overlap, and the EV covered the house load under 0 W import | [LOA-10](results/2026-10-21-cactus-loa10/README.md) |
-| ALL-22, ALT-ALL-29, ALT-LOA-13 (export, readings, load) | EVerest DC V2G | Run this week; findings being fixed before reruns | [Cactus records](cactus/README.md) |
+| **ALT-ALL-29** (operating telemetry, EVSE alternate) | EVerest DC V2G, charging mode | **All 3 criteria, no warnings** (run 76002): 9 site and 9 DER readings; the EV followed each import step within 30 s | [ALT-ALL-29](results/2026-10-21-cactus-alt-all29/README.md) |
+| ALL-22, ALT-LOA-13 (export, load) | EVerest DC V2G | Run this week; findings being fixed before reruns | [Cactus records](cactus/README.md) |
 
 ---
 
