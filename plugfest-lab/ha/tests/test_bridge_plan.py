@@ -498,3 +498,32 @@ class PhysicalV2G(unittest.TestCase):
         tpl = yaml.safe_load(READINGS.read_text())["actions"][0]["variables"]["rating"]
         st = {"input_text.lab_bridge_station_prefix": "citrineos_lab_starcharge_v2g", "input_number.lab_bridge_rating": "11000"}
         self.assertEqual(int(_env(st, {}, NOW, {}).from_string(tpl).render().strip()), 11000)
+
+
+class LabHold(unittest.TestCase):
+    """22 October: a stopped Cactus run's schedule kept running in ODE; the hold uses fixed lab limits instead."""
+
+    HOLD = {"input_boolean.lab_bridge_hold": "on", "input_number.lab_bridge_hold_import": "25000",
+            "input_number.lab_bridge_hold_export": "5000"}
+
+    def test_hold_ignores_a_zero_import_control(self):
+        plan = render(zero_import(), dict(site(solar=0), **self.HOLD))
+        self.assertEqual(rows(plan), [(0, 23950, 23950, 0)])
+        self.assertTrue(plan["hold"])
+        self.assertTrue(plan["sig"].startswith("H|"))
+
+    def test_hold_ignores_ode_schedules_and_learns_nothing(self):
+        plan = render(payload(), dict(site(solar=0), **self.HOLD))
+        self.assertEqual(len(plan["periods"]), 1)
+        self.assertFalse(plan["learn"])
+        self.assertFalse(plan["learn_x"])
+
+    def test_hold_test_step_discharges_within_the_hold_export_limit(self):
+        # 5,000 W export + 0.95 x 1,000 W house load = 5,950 W of discharge headroom.
+        plan = render(zero_import(), dict(site(solar=0), **self.HOLD), test_steps=f"{int(NOW) - 1}|60|-20000")
+        self.assertEqual(rows(plan)[0], (0, -5950, 23950, -5950))
+
+    def test_hold_off_follows_ode(self):
+        plan = render(zero_import(), dict(site(solar=0), **{"input_boolean.lab_bridge_hold": "off"}))
+        self.assertEqual(rows(plan)[0], (0, -950, 0, -950))
+        self.assertFalse(plan["hold"])
