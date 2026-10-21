@@ -163,6 +163,42 @@ class ImportMode(unittest.TestCase):
         self.assertTrue(a.startswith("h-10|"))
 
 
+def zero_import(export_w=0):
+    """LOA-10 DERC2-like: 0 W import limit (and an export limit) for the next 600 s."""
+    return {"limit": {"opModImpLimW": 0, "opModExpLimW": export_w, "opModConnect": True, "opModEnergize": True},
+            "schedules": {"opModImpLimW": [control("opModImpLimW", -60, 3000, 0)],
+                          "opModExpLimW": [control("opModExpLimW", -60, 3000, export_w)]}}
+
+
+class ImportModeCoversHouseLoad(unittest.TestCase):
+    def test_zero_import_and_export_discharges_the_house_load(self):
+        # Shortfall 1.05 x 1,000 = 1,050 W; export-safe headroom 0 + 0.95 x 1,000 = 950 W wins.
+        self.assertEqual(rows(render(zero_import(), site(solar=0)))[0], (0, -950, 0, -950))
+
+    def test_export_headroom_lets_the_whole_shortfall_be_covered(self):
+        self.assertEqual(rows(render(zero_import(4500), site(solar=0)))[0], (0, -1050, 0, -1050))
+
+    def test_solar_reduces_the_shortfall(self):
+        # Need 1,050 - 0.95 x 500 = 575 -> 570; headroom 0.95 x 1,000 - 1.05 x 500 = 425 -> 420.
+        self.assertEqual(rows(render(zero_import(), site(solar=500)))[0], (0, -420, 0, -420))
+
+    def test_positive_headroom_still_charges(self):
+        self.assertEqual(rows(render(payload(), site(solar=0)))[0], (0, 3450, 3450, 0))
+
+    def test_reconnect_holds_discharge_for_60_s(self):
+        plan = render(zero_import(), site(solar=0), energized_since=NOW - 30)
+        self.assertEqual(rows(plan)[0], (0, 0, 0, 0))
+
+    def test_disconnected_is_zero(self):
+        p = zero_import()
+        p["limit"]["opModConnect"] = False
+        self.assertEqual(rows(render(p, site(solar=0)))[0], (0, 0, 0, 0))
+
+    def test_charging_only_station_never_discharges(self):
+        states = dict(site(solar=0), **{"input_boolean.lab_bridge_charge_only": "on"})
+        self.assertEqual(render(zero_import(), states)["periods"][0], {"startPeriod": 0, "limit": 0})
+
+
 class ExportMode(unittest.TestCase):
     def test_night_discharge_at_export_ceiling_plus_house_load(self):
         # No solar: 4,500 + 0.95 x 1,000 = 5,450 W, below the 7 kW target.
