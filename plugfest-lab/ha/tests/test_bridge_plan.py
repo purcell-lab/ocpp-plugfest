@@ -211,7 +211,32 @@ class ImportModeCoversHouseLoad(unittest.TestCase):
         self.assertEqual(render(zero_import(), states)["periods"][0], {"startPeriod": 0, "limit": 0})
 
 
-class ExportMode(unittest.TestCase):
+
+class DischargeRefused(unittest.TestCase):
+    """ALL-06: a station that refused a discharge setpoint gets no discharge for that transaction."""
+
+    TX = {"sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_current_transaction": "tx-1"}
+
+    def test_refused_transaction_stops_instead_of_covering(self):
+        states = dict(site(solar=0), **self.TX, **{"input_text.lab_bridge_discharge_refused": "tx-1"})
+        plan = render(zero_import(), states)
+        self.assertEqual(rows(plan)[0], (0, 0, 0, 0))
+        self.assertTrue(plan["refused"])
+        self.assertTrue(plan["sig"].startswith("r|"))
+
+    def test_another_transaction_still_covers(self):
+        states = dict(site(solar=0), **self.TX, **{"input_text.lab_bridge_discharge_refused": "tx-0"})
+        plan = render(zero_import(), states)
+        self.assertEqual(rows(plan)[0], (0, -950, 0, -950))
+        self.assertFalse(plan["refused"])
+
+    def test_unknown_transaction_never_matches(self):
+        plan = render(zero_import(), dict(site(solar=0), **{"input_text.lab_bridge_discharge_refused": "unknown"}))
+        self.assertEqual(rows(plan)[0], (0, -950, 0, -950))
+
+    def test_refused_still_charges_at_the_headroom(self):
+        states = dict(site(solar=0), **self.TX, **{"input_text.lab_bridge_discharge_refused": "tx-1"})
+        self.assertEqual(rows(render(payload(), states))[0], (0, 3450, 3450, 0))
     def test_night_discharge_at_export_ceiling_plus_house_load(self):
         # No solar: 4,500 + 0.95 x 1,000 = 5,450 W, below the 7 kW target.
         plan = render(payload(), site(solar=0, export_mode=True, target=7000))
