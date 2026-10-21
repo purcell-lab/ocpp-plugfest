@@ -11,30 +11,35 @@ triggers:
   topic: limits/csipAus
   trigger: mqtt
 conditions:
-- condition: not
-  conditions:
-  - condition: state
-    entity_id: sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_current_transaction
-    state:
-    - unknown
-    - unavailable
-    - ''
-  note: The lab schedule needs an active transaction on the lab command station (SIM-EV-EVEREST-V2G-03).
+- condition: template
+  value_template: >-
+    {%- set px = states('input_text.lab_bridge_station_prefix') | trim -%}
+    {%- set px = px if px not in ('', 'unknown', 'unavailable') else 'citrineos_everest_v2g_lab_sim_ev_everest_v2g_03' -%}
+    {{ states('sensor.' ~ px ~ '_current_transaction') not in ('unknown', 'unavailable', '') }}
+  note: The lab schedule needs an active transaction on the lab command station, whose entities start sensor.<input_text.lab_bridge_station_prefix> (default the V2G simulator SIM-EV-EVEREST-V2G-03; for a physical charger citrineos_lab_<station id>).
 actions:
 - note: Turn ODE's CSIP-AUS limit and schedules into TxProfile periods.
   variables:
     plan: |-
       {%- set m = trigger.payload_json if trigger.payload_json is mapping else {} -%}
       {%- set nowts = now().timestamp() -%}
+      {%- set px = states('input_text.lab_bridge_station_prefix') | trim -%}
+      {%- set px = px if px not in ('', 'unknown', 'unavailable') else 'citrineos_everest_v2g_lab_sim_ev_everest_v2g_03' -%}
+      {#- input_boolean.lab_bridge_physical off (default): the DC V2G simulator, CentralSetpoint periods with export mode. On: a physical (AC or charge-only) charger, charging-only limit periods, import mode only, no discharge. -#}
+      {%- set v2x = not is_state('input_boolean.lab_bridge_physical', 'on') -%}
       {#- Charger ratings from CitrineOS (citrine_ha max discharge / charge power: the EV's ChargingNeeds limit, else the EVSE.Power rating from the device model, else 25 kW), so another charger at the Plugfest is rated by what it reports. Below 1 kW or unavailable: 25 kW. cap_c bounds charging, cap_d discharge and the soft-start ramp. -#}
-      {%- set cap_d = states('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_discharge_power') | float(0) * (1000 if state_attr('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_discharge_power', 'unit_of_measurement') == 'kW' else 1) -%}
+      {%- set cap_d = states(('sensor.' ~ px ~ '_max_discharge_power')) | float(0) * (1000 if state_attr(('sensor.' ~ px ~ '_max_discharge_power'), 'unit_of_measurement') == 'kW' else 1) -%}
       {%- set cap_d = ([cap_d, 500000] | min / 10) | round(0, 'floor') | int * 10 if cap_d >= 1000 else 25000 -%}
-      {%- set cap_c = states('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_charge_power') | float(0) * (1000 if state_attr('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_charge_power', 'unit_of_measurement') == 'kW' else 1) -%}
+      {%- set cap_c = states(('sensor.' ~ px ~ '_max_charge_power')) | float(0) * (1000 if state_attr(('sensor.' ~ px ~ '_max_charge_power'), 'unit_of_measurement') == 'kW' else 1) -%}
       {%- set cap_c = ([cap_c, 500000] | min / 10) | round(0, 'floor') | int * 10 if cap_c >= 1000 else 25000 -%}
+      {#- input_number.lab_bridge_charge_cap (W, 0 = off): the physical charger's rating, an upper bound when CitrineOS reports none (the 25 kW fallback is too high for most AC chargers). Charge-only chargers have no discharge. -#}
+      {%- set man = states('input_number.lab_bridge_charge_cap') | float(0) -%}
+      {%- set cap_c = ([cap_c, man] | min) if man >= 1000 else cap_c -%}
+      {%- set cap_d = cap_d if v2x else 0 -%}
       {#- Export ceilings are not clipped to the charger's rating: the solar share comes off the real ceiling first (a 70 kW ceiling with 4 kW of solar still leaves the full 25 kW), and the discharge is capped after. -#}
       {%- set xcap = 100000 -%}
       {#- Export mode (input_boolean.lab_v2g_export) discharges the V2G EV at the lab target, clipped by the discharge headroom (ODE's export ceiling, opModExpLimW/opModGenLimW, less the solar export). Off: import mode, charging at the site headroom. -#}
-      {%- set xmode = is_state('input_boolean.lab_v2g_export', 'on') -%}
+      {%- set xmode = v2x and is_state('input_boolean.lab_v2g_export', 'on') -%}
       {%- set target = ((states('input_number.lab_v2g_discharge_target') | float(0) / 10) | round(0) | int * 10) if xmode else 0 -%}
       {#- TxProfile test (input_text.lab_v2g_test_steps = "start_ts|step_s|W,W,..."): the requested setpoints (+ charge, - discharge) become profile periods, each clamped to the site headroom. Empty: no test, the mapping below is unchanged. -#}
       {%- set tst = states('input_text.lab_v2g_test_steps').split('|') -%}
@@ -134,7 +139,9 @@ actions:
         {%- set rc = (((([nowts + p.startPeriod - 1 - fin.on - 60, 0] | max) * wgra) / 10) | round(0, 'floor') | int * 10) if fin.on is not none else 0 -%}
         {%- set fin.rc0 = (rc if rc < dis else cap_d) if fin.rc0 is none else fin.rc0 -%}
         {%- set dis = [dis, rc] | min -%}
-        {%- if p.r is not none -%}
+        {%- if not v2x -%}
+          {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg}] -%}
+        {%- elif p.r is not none -%}
           {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': chg, 'dischargeLimit': 0 - dis, 'setpoint': [[p.r, 0 - dis] | max, chg] | min, 'operationMode': 'CentralSetpoint'}] -%}
         {%- elif xmode -%}
           {%- set fin.p = fin.p + [{'startPeriod': p.startPeriod, 'limit': p.limit, 'dischargeLimit': 0 - dis, 'setpoint': 0 - ([target, dis] | min), 'operationMode': 'CentralSetpoint'}] -%}
@@ -143,7 +150,7 @@ actions:
         {%- endif -%}
       {%- endfor -%}
       {%- set sig = (('s' ~ (fin.rc0 / 500) | int ~ '|') if fin.rc0 < cap_d else '') ~ (('x' ~ target ~ 'h' ~ (sol_x / 100) | round(0) | int ~ '|') if xmode else ('h' ~ ((pv_lo - house * 1.05) / 100) | round(0) | int ~ '|')) ~ (('t' ~ (r0 if r0 is not none else '-') ~ '|') if tlive else '') ~ (out.sig | join(',')) -%}
-      {{ {'cur': cur, 'cur_x': cur_x, 'xmode': xmode, 'discharge': [0 - fin.p[0].setpoint, 0] | max if xmode else 0, 'active_now': active_now, 'learn': learn, 'learn_x': learn_x, 'periods': fin.p, 'test': tlive, 'soft_start': fin.rc0 if fin.rc0 < cap_d else none, 'sig': sig[:255]} }}
+      {{ {'cur': cur, 'cur_x': cur_x, 'xmode': xmode, 'discharge': [0 - fin.p[0].setpoint, 0] | max if xmode else 0, 'active_now': active_now, 'learn': learn, 'learn_x': learn_x, 'periods': fin.p, 'v2x': v2x, 'test': tlive, 'soft_start': fin.rc0 if fin.rc0 < cap_d else none, 'sig': sig[:255]} }}
 - if:
   - condition: template
     value_template: '{{ plan.learn and states(''input_number.lab_ac_default_limit'') | float(-1) != plan.cur }}'
@@ -180,14 +187,26 @@ actions:
 - condition: template
   note: Change detection; rises at most every 5 s, everything else at once.
   value_template: '{{ send }}'
-- action: citrine_ha.lab_schedule
-  data:
-    duration: 600
-    entry_id: 01M51W1XF0B0JJP3H2VVTNKPZ1
-    immediate: true
-    periods: '{{ plan.periods }}'
-    price_entity: sensor.openadr3_vtn_openleadr_vtn_au_fly_dev_au_nsw1_essential_blnt3al_price
-  note: One TxProfile with the current limit and the scheduled steps, carrying the OpenADR NSW1 Essential import price schedule (OCPP 2.1 absolutePriceSchedule; information only, power bounds unchanged).
+- if:
+  - condition: template
+    value_template: '{{ plan.v2x }}'
+  then:
+  - action: citrine_ha.lab_schedule
+    data:
+      duration: 600
+      entry_id: 01M51W1XF0B0JJP3H2VVTNKPZ1
+      immediate: true
+      periods: '{{ plan.periods }}'
+      price_entity: sensor.openadr3_vtn_openleadr_vtn_au_fly_dev_au_nsw1_essential_blnt3al_price
+    note: V2G simulator. One TxProfile with the current limit and the scheduled steps, carrying the OpenADR NSW1 Essential import price schedule (OCPP 2.1 absolutePriceSchedule; information only, power bounds unchanged).
+  else:
+  - action: citrine_ha.lab_schedule
+    data:
+      duration: 600
+      entry_id: 01M51W1XF0B0JJP3H2VVTNKPZ1
+      immediate: true
+      periods: '{{ plan.periods }}'
+    note: Physical charger. Charging-only limit periods (W) on whatever OCPP version it speaks (1.6, 2.0.1 or 2.1); no price schedule.
 - action: input_number.set_value
   data:
     value: '{{ plan.cur }}'

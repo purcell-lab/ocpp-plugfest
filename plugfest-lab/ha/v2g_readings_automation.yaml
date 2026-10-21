@@ -16,14 +16,19 @@ actions:
 - note: 'Simulated EV power in W: + charging (import), - discharging (export).'
   variables:
     ev: |-
-      {%- set s = 'sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_measured_ev_power' -%}
+      {%- set px = states('input_text.lab_bridge_station_prefix') | trim -%}
+      {%- set px = px if px not in ('', 'unknown', 'unavailable') else 'citrineos_everest_v2g_lab_sim_ev_everest_v2g_03' -%}
+      {%- set s = 'sensor.' ~ px ~ '_measured_ev_power' -%}
       {{ (states(s) | float(0)) if state_attr(s, 'meter_fresh') == true and state_attr(s, 'transaction_closed') == false else 0 }}
     load: '{{ states(''input_number.lab_test_load'') | float(0) }}'
     rating: |-
+      {%- set px = states('input_text.lab_bridge_station_prefix') | trim -%}
+      {%- set px = px if px not in ('', 'unknown', 'unavailable') else 'citrineos_everest_v2g_lab_sim_ev_everest_v2g_03' -%}
+      {#- A physical charge-only charger (input_boolean.lab_bridge_physical on) is a load, not a DER: rating 0 and inverters/4 at 0 W; its power is still in lab/site. -#}
       {#- The charger's discharge rating from CitrineOS (citrine_ha max discharge power: the EV's ChargingNeeds limit, else EVSE.Power, else 25 kW); 25 kW below 1 kW or unavailable. -#}
-      {%- set r = states('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_discharge_power') | float(0) * (1000 if state_attr('sensor.citrineos_everest_v2g_lab_sim_ev_everest_v2g_03_max_discharge_power', 'unit_of_measurement') == 'kW' else 1) -%}
+      {%- set r = states(('sensor.' ~ px ~ '_max_discharge_power')) | float(0) * (1000 if state_attr(('sensor.' ~ px ~ '_max_discharge_power'), 'unit_of_measurement') == 'kW' else 1) -%}
       {%- set r = ([r, 500000] | min / 10) | round(0, 'floor') | int * 10 if r >= 1000 else 25000 -%}
-      {{ r }}
+      {{ 0 if is_state('input_boolean.lab_bridge_physical', 'on') else r }}
 - action: mqtt.publish
   data:
     evaluate_payload: false
@@ -45,7 +50,7 @@ actions:
     payload: |-
       {%- set m = trigger.payload_json -%}
       {%- set v = m.get('voltage', {}) -%}
-      {{ {'inverter': {'realPower': (0 - ev) | round(1), 'reactivePower': 0, 'voltagePhaseA': v.get('phaseA'), 'voltagePhaseB': v.get('phaseB'), 'voltagePhaseC': v.get('phaseC'), 'frequency': m.get('frequency', 50)}, 'nameplate': {'type': 82, 'maxW': rating | int, 'maxVA': rating | int, 'maxVar': 0}, 'settings': {'maxW': rating | int, 'maxVA': rating | int, 'maxVar': 0}, 'status': {'operationalModeStatus': 2, 'genConnectStatus': 7}} | to_json }}
+      {{ {'inverter': {'realPower': ((0 - ev) if rating | int > 0 else 0) | round(1), 'reactivePower': 0, 'voltagePhaseA': v.get('phaseA'), 'voltagePhaseB': v.get('phaseB'), 'voltagePhaseC': v.get('phaseC'), 'frequency': m.get('frequency', 50)}, 'nameplate': {'type': 82, 'maxW': rating | int, 'maxVA': rating | int, 'maxVar': 0}, 'settings': {'maxW': rating | int, 'maxVA': rating | int, 'maxVar': 0}, 'status': {'operationalModeStatus': 2, 'genConnectStatus': 7}} | to_json }}
     qos: 0
     retain: true
     topic: inverters/4

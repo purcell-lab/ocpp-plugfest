@@ -6,6 +6,10 @@
 #           lab_v2g_test_steps ("start_ts|step_s|W,W,..." while script.lab_v2g_txprofile_test runs; empty otherwise).
 # Written by "Lab: ODE limits to lab helpers": lab_ode_import/export/generation_limit (W, -1 = no limit),
 #           lab_ode_energized (off while opModConnect or opModEnergize is false).
+# Bridge target: lab_bridge_station_prefix (entity prefix of the command station; empty = the V2G simulator,
+#           for a physical charger citrineos_lab_<station id slug>), lab_bridge_physical (on for a physical
+#           charge-only charger: charging-only limit periods, no export), lab_bridge_charge_cap (W, the charger's
+#           rating when CitrineOS reports none; 0 = off).
 # Bridge state: lab_ac_default_limit, lab_v2g_default_export_limit (learned defaults), lab_ac_limit_sent,
 #           lab_v2g_discharge_sent, lab_ac_limit_sent_at, lab_ac_schedule_sent (change detection).
 input_number:
@@ -86,7 +90,18 @@ input_number:
     step: 10
     mode: box
     unit_of_measurement: W
+  lab_bridge_charge_cap:
+    name: Lab bridge charge cap
+    min: 0
+    max: 350000
+    step: 100
+    mode: box
+    unit_of_measurement: W
+    icon: mdi:ev-station
 input_boolean:
+  lab_bridge_physical:
+    name: Lab bridge physical charger
+    icon: mdi:ev-station
   lab_ode_energized:
     name: Lab ODE energized
     icon: mdi:power-plug
@@ -94,6 +109,12 @@ input_boolean:
     name: Lab V2G export
     icon: mdi:transmission-tower-export
 input_text:
+  lab_bridge_station_prefix:
+    name: Lab bridge station prefix
+    icon: mdi:ev-plug-type2
+    min: 0
+    max: 100
+    mode: text
   lab_v2g_test_steps:
     name: Lab V2G test steps
     icon: mdi:stairs

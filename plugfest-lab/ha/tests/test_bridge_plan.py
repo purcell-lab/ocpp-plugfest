@@ -341,3 +341,60 @@ class ReadingsNameplate(unittest.TestCase):
 
     def test_nameplate_falls_back_to_25_kw(self):
         self.assertEqual(self.rating(*rated("unavailable", "unavailable")), 25000)
+
+
+PHYS = "citrineos_lab_evx_cp01"
+
+
+def physical(solar=0, house=1000, export_mode=False, cap=None, prefix=PHYS):
+    states = dict(site(solar=solar, house=house, export_mode=export_mode, target=7000),
+                  **{"input_boolean.lab_bridge_physical": "on", "input_text.lab_bridge_station_prefix": prefix})
+    if cap is not None:
+        states["input_number.lab_bridge_charge_cap"] = str(cap)
+    return states
+
+
+class PhysicalCharger(unittest.TestCase):
+    """input_boolean.lab_bridge_physical on: a physical charge-only charger takes charging-only limit periods."""
+
+    def test_charging_only_periods(self):
+        plan = render(payload(), physical())
+        self.assertEqual(plan["periods"][0], {"startPeriod": 0, "limit": 3450})
+        self.assertTrue(all(set(p) == {"startPeriod", "limit"} for p in plan["periods"]))
+        self.assertFalse(plan["v2x"])
+
+    def test_export_mode_is_ignored(self):
+        # A charge-only charger never discharges, whatever input_boolean.lab_v2g_export says.
+        plan = render(payload(), physical(export_mode=True))
+        self.assertFalse(plan["xmode"])
+        self.assertEqual(plan["discharge"], 0)
+        self.assertEqual(plan["periods"][0], {"startPeriod": 0, "limit": 3450})
+
+    def test_manual_cap_bounds_the_fallback(self):
+        # No rating from CitrineOS: the 25 kW fallback, capped at the charger's 7.4 kW.
+        plan = render(BIG, physical(house=0, cap=7400))
+        self.assertEqual(plan["periods"][0]["limit"], 7400)
+
+    def test_reported_rating_under_the_physical_prefix(self):
+        states = physical(house=0)
+        states.update({f"sensor.{PHYS}_max_charge_power": "11000"})
+        attrs = {f"sensor.{PHYS}_max_charge_power": {"unit_of_measurement": "W"}}
+        self.assertEqual(render(BIG, states, attrs=attrs)["periods"][0]["limit"], 11000)
+
+    def test_simulator_rating_is_not_used_for_a_physical_charger(self):
+        states = physical(house=0, cap=7400)
+        sim_states, sim_attrs = rated(25000, 25000)
+        states.update(sim_states)
+        self.assertEqual(render(BIG, states, attrs=sim_attrs)["periods"][0]["limit"], 7400)
+
+    def test_default_is_the_v2g_simulator(self):
+        plan = render(payload(), site(solar=0))
+        self.assertTrue(plan["v2x"])
+        self.assertEqual(plan["periods"][0]["operationMode"], "CentralSetpoint")
+
+
+class ReadingsPhysical(unittest.TestCase):
+    def test_physical_charger_is_not_a_der(self):
+        tpl = yaml.safe_load(READINGS.read_text())["actions"][0]["variables"]["rating"]
+        states = {"input_boolean.lab_bridge_physical": "on", "input_text.lab_bridge_station_prefix": PHYS}
+        self.assertEqual(int(_env(states, {}, NOW, {}).from_string(tpl).render().strip()), 0)

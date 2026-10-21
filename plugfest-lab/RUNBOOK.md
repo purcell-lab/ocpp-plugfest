@@ -62,6 +62,48 @@ plugged into the venue LAN. Stations connect with Security Profile 1
    App. Remove the vendor's entry from `plugfest_stations` if it will not
    return; on restart its password is revoked in the database.
 
+## ODE controlling a vendor's charger (with the vendor's agreement)
+
+The demonstration: Open Dynamic Export's CSIP-AUS limits drive the vendor's physical charger through
+CitrineOS. The bridge sends one TxProfile with charging-only `limit` periods (W) on the station's OCPP
+version (1.6, 2.0.1 or 2.1). It's bounded by the server: one command station, an active transaction,
+600 s, 10 periods, 25 kW.
+
+1. **Agree with the vendor first.** Their charger, their EV, and an import limit we'll vary. Ask:
+   - **Rate unit:** does the station accept charging profiles in **W**? (2.x: `SmartChargingCtrlr.RateUnit`;
+     1.6: `ChargingScheduleAllowedChargingRateUnit`.) The lab command path only sends W; an A-only
+     station will reject the profile.
+   - **Rating:** the charger's rating in W.
+2. **Server options** (citrineos_server):
+   - `command_control_enabled: true`, with its `command_token`;
+   - `command_real_stations_enabled: true`;
+   - `command_station_id: <vendor station id>`.
+
+   Restart the server App, then reload the CitrineOS-HA integration.
+3. **Home Assistant helpers:**
+   - `input_text.lab_bridge_station_prefix` = `citrineos_lab_<station id, lower case, with every
+     character other than a-z and 0-9 replaced by _>`. Check that
+     `sensor.<prefix>_current_transaction` exists.
+   - `input_boolean.lab_bridge_physical` **on**. This means charging-only periods, no export, and
+     `inverters/4` at 0 W. The charger's power still counts in `lab/site`.
+   - `input_number.lab_bridge_charge_cap` = the charger's rating in W, unless CitrineOS reports one.
+   - `input_boolean.lab_v2g_export` doesn't matter: it's ignored for a physical charger.
+4. **Start a transaction:** the vendor starts it with its own ID token, or press
+   `button.<prefix>_start_charging`. The bridge acts only while the transaction is open.
+5. **Change the limit.**
+   - **With internet:** run a Cactus import test, for example LOA-11.
+   - **Without internet:** ODE gets no CSIP-AUS controls. Change `setpoints.csipAus.fixedDefaults.importLimitWatts`
+     in ODE's config and restart ODE. Rehearse this first: it assumes ODE publishes the fixed default on
+     `limits/csipAus` when it can't reach the server. The `lab_ode_*` helpers can't be used as a knob,
+     because they are written from ODE's output.
+
+   Record the TxProfile status and the charger's measured power against the limit.
+6. **After the slot:**
+   - `input_boolean.lab_bridge_physical` **off** and `input_text.lab_bridge_station_prefix` empty, so the
+     bridge targets the V2G simulator again;
+   - `command_station_id` back to `SIM-EV-EVEREST-V2G-03` and `command_real_stations_enabled: false`;
+     restart the server and reload the integration.
+
 ## After the event
 
 1. Set `plugfest_enabled: false`, clear `plugfest_stations` and the host
@@ -76,5 +118,5 @@ plugged into the venue LAN. Stations connect with Security Profile 1
 - Security Profile 2/3 (TLS, client certificates). OCTT test cases may need
   them; agree the scope with DNV beforehand.
 - Internet-facing access for the online slot.
-- Control of real stations through the Home Assistant command path, which
-  stays limited to `SIM-EV-` simulators.
+- Control of more than one real station at a time: the command path has one command station,
+  chosen in the server options (see "ODE controlling a vendor's charger").
