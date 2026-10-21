@@ -127,11 +127,12 @@ def payload(energised=True):
                           "opModExpLimW": [control("opModExpLimW", -3600, 197, 45, 2), control("opModExpLimW", 197, 3000, 15, 2)]}}
 
 
-def site(solar, house=1000, export_mode=False, target=0):
+def site(solar, house=1000, export_mode=False, target=0, test_load=0):
     return {"input_boolean.lab_v2g_export": "on" if export_mode else "off",
             "input_number.lab_v2g_discharge_target": str(target),
             "input_number.lab_ac_default_limit": "4500", "input_number.lab_v2g_default_export_limit": "4500",
-            "input_number.lab_house_load": str(house), "input_number.lab_ode_generation_limit": "-1",
+            "input_number.lab_house_load": str(house), "input_number.lab_test_load": str(test_load),
+            "input_number.lab_ode_generation_limit": "-1",
             "sensor.home_power_production_now": str(solar), "input_boolean.lab_ode_energized": "on"}
 
 
@@ -161,6 +162,17 @@ class ImportMode(unittest.TestCase):
         b = render(payload(), site(solar=0, house=1200))["sig"]
         self.assertNotEqual(a, b)
         self.assertTrue(a.startswith("h-10|"))
+
+
+class TestLoad(unittest.TestCase):
+    """ALT-LOA-13: the Cactus test load is site load too, so the EV charges at the headroom left after it."""
+
+    def test_test_load_reduces_the_charge(self):
+        # 4,500 - 1.05 x (1,000 + 2,000) = 1,350 W.
+        self.assertEqual(rows(render(payload(), site(solar=0, test_load=2000)))[0], (0, 1350, 1350, 0))
+
+    def test_no_test_load_is_unchanged(self):
+        self.assertEqual(rows(render(payload(), site(solar=0, test_load=0)))[0], (0, 3450, 3450, 0))
 
 
 def zero_import(export_w=0):
