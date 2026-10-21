@@ -4,7 +4,7 @@ OCA Plugfest & Conference Australia, **21–23 October 2026, Canberra**.
 Two roles: **CSMS under test** (vendor slots, see [`plugfest-lab/RUNBOOK.md`](plugfest-lab/RUNBOOK.md))
 and the **CSIP-AUS → OCPP 2.1 demonstration** (see [`demo/DEMO.md`](demo/DEMO.md)).
 
-Status at **21 October 2026, 20:20 AEDT**, checked on the Green.
+Status at **21 October 2026, 20:48 AEDT**, checked on the Green.
 
 ## Station endpoint (decided 21 October)
 
@@ -25,11 +25,12 @@ vendor slots: any station ID connects without a password. Ask each vendor for a 
       ([record](results/2026-10-21-physical-path-rehearsal/README.md)).
 - [x] Full backup before the event: `9e83a612`, 21 October 20:15 AEDT (config and Apps, no database).
 - [x] Operator UI enabled with commands (`operator_ui_enabled`, `operator_commands_enabled`).
-- [ ] **Station ratings tonight**: merge and deploy citrineos_server **0.7.3** and
-      everest_v2g_simulator **0.1.13** ([ha-addons#91](https://github.com/purcell-lab/ha-addons/pull/91))
-      and CitrineOS-HA **0.6.2**
-      ([CitrineOS-HA-Integration#12](https://github.com/purcell-lab/CitrineOS-HA-Integration/pull/12)),
-      then check `sensor.<station>_max_charge_power` / `_max_discharge_power` for the V2G simulator.
+- [x] **Station ratings**: citrineos_server **0.7.3** and everest_v2g_simulator **0.1.13**
+      ([ha-addons#91](https://github.com/purcell-lab/ha-addons/pull/91)) and CitrineOS-HA **0.6.2**
+      ([CitrineOS-HA-Integration#12](https://github.com/purcell-lab/CitrineOS-HA-Integration/pull/12))
+      on the Green, 20:41 AEDT. The V2G simulator reports 25 kW charge and discharge from its device
+      model (`source: evse_rating`); the bridge followed again at 20:46 (-950 W). A vendor station that
+      reports no rating falls back to 25 kW: set `input_number.lab_bridge_rating` for it.
 - [ ] **OCPP 2.1 EMS checks in each vendor slot**: follow
       [`plugfest-lab/OCPP21-EMS-CHECKLIST.md`](plugfest-lab/OCPP21-EMS-CHECKLIST.md) and fill in its
       results table. Lab follow-ups: [ha-addons#87](https://github.com/purcell-lab/ha-addons/issues/87),
