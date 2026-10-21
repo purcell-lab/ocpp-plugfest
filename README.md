@@ -78,20 +78,28 @@ one AC and one DC V2G with ISO 15118-20 DC_BPT, proved the whole chain end to en
 [Proven this week](#proven-this-week) is on EVerest. **At the Plugfest, the same CitrineOS CSMS
 meets real vendor stations**, one slot each.
 
-| Stage | Charging station | Type | Connection |
+| Stage | Charging station | Type | CSMS endpoint |
 |---|---|---|---|
 | **Pre‑Plugfest** | **EVerest AC** simulator | OCPP 2.1 (2.0.1 fallback), AC charging | Home lab |
 | **Pre‑Plugfest** | **EVerest DC V2G** simulator | OCPP 2.1, ISO 15118-20 DC_BPT, ±25 kW | Home lab |
-| Slot 1 | **OCTT (DNV)** | OCPP conformance test tool acting as a station | Venue LAN |
-| Slot 2 | **EVX Australia** | Charging station | Venue LAN |
-| Slot 5 | **EVSE** | Charging station | Venue LAN |
-| Slot 6 | **Trialog** | Charging station | Venue LAN |
-| Slot 7 | **AS Jade** | Charging station (online) | Remote: connection path to be agreed |
-| Slot 10 | **Starcharge** | Charging station | Venue LAN |
+| Slot 1 | **OCTT (DNV)** | OCPP conformance test tool acting as a station | `ws://purcell.local:8084/<station-id>` |
+| Slot 2 | **EVX Australia** | Charging station | `ws://purcell.local:8085/<station-id>` |
+| Slot 5 | **EVSE** | Charging station | `ws://purcell.local:8086/<station-id>` |
+| Slot 6 | **Trialog** | Charging station | `ws://purcell.local:8087/<station-id>` |
+| Slot 7 | **AS Jade** | Charging station (online) | `ws://purcell.local:8088/<station-id>` on the venue LAN; remote path to be agreed |
+| Slot 10 | **Starcharge** | V2G charging station | `ws://purcell.local:8089/<station-id>` |
 
-In each slot the station connects to CitrineOS (OCPP 2.1, 2.0.1 or 1.6, Security Profile 1, its own
-password). We run boot, authorisation, transactions and meter values, then the OCPP 2.1 charging
-profiles the demonstration sends, and record what each station supports.
+Each station has its own endpoint on the CitrineOS CSMS (venue LAN). The station ID ends the URL and
+is also the Basic Auth user name. Every port speaks OCPP 2.1, 2.0.1 and 1.6 (Security Profile 1),
+and the shared port 8083 still works. If a station can't resolve `purcell.local` (mDNS), use the
+Green's venue LAN address with the same port.
+
+In each slot we run boot, authorisation, transactions and meter values, then the OCPP 2.1 charging
+profiles the demonstration sends, and record what each station supports. For a vendor who agrees,
+the same chain then controls their charger: **Cactus → Open Dynamic Export → Home Assistant bridge →
+CitrineOS → charger**, as V2G setpoints on a bidirectional station (Starcharge) or as charging-only
+watt limits on any other. Both paths were rehearsed on the Green with simulators standing in
+([rehearsal record](results/2026-10-21-physical-path-rehearsal/README.md)).
 → [Slot runbook](plugfest-lab/RUNBOOK.md) · [Acceptance plan](plugfest-lab/ACCEPTANCE.md)
 
 ---
@@ -194,7 +202,7 @@ prices through open standards on every link.
 
 | **Demonstration** | **CSMS under test** |
 |---|---|
-| CSIP-AUS envelope and OpenADR 3.1 prices → OCPP 2.1 bidirectional profile, live, Friday afternoon. | CitrineOS on the Green, Security Profile 1 on the venue LAN, one provisioned password per station. [Six vendor slots](#the-charging-stations): OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
+| CSIP-AUS envelope and OpenADR 3.1 prices → OCPP 2.1 bidirectional profile, live, Friday afternoon. | CitrineOS on the Green, Security Profile 1 on the venue LAN, [one endpoint per station](#the-charging-stations) (`ws://purcell.local:8084` to `8089`). [Six vendor slots](#the-charging-stations): OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
 | [Demo script](demo/DEMO.md) · [Infographic](infographic/plugfest-infographic.pdf) | [Runbook](plugfest-lab/RUNBOOK.md) · [Lab records](plugfest-lab/README.md) · [Acceptance plan](plugfest-lab/ACCEPTANCE.md) · [Setup](plugfest-lab/SETUP.md) |
 
 ---
