@@ -40,6 +40,19 @@ Before that, ask the vendor to send it.
       EVerest 2025.10 simulator reports it empty (libocpp lists 2.1 use case K27, "Smart Charging with EMS
       and LocalGeneration", as not implemented).
 
+- [ ] **What the station reports back about its limits** (OCPP 2.0.1 and 2.1), during a transaction with a
+      bridge `TxProfile` applied. Send both from the Operator UI (commands enabled) or its `/core/` path:
+      - `GetCompositeSchedule` (`evseId` 1, `duration` 600, `chargingRateUnit` `W`). CitrineOS stores the reply
+        in `CompositeSchedules`. Record whether the station converts units (an AC station may run in A),
+        how it rounds, and the limit it falls back to after the profile ends (its own rating).
+      - `GetChargingProfiles` (`requestId`, `evseId` 1, purpose `TxProfile`). The station answers with
+        `ReportChargingProfiles`, stored in `OCPPMessages`. Record the `chargingLimitSource` it reports and
+        whether the periods match what the bridge sent.
+      - Reference (22 October, lab AC simulator SIM-EV-EVEREST-G1, OCPP 2.1): both Accepted. The composite
+        schedule came back in W, following the bridge's steps, then 22,080 W (32 A, 3 phases) after the
+        profile; `ReportChargingProfiles` returned TxProfile 9001 with `chargingLimitSource` `CSO` and
+        `numberPhases` 3. No `NotifyChargingLimit`: expected, as the limit came from the CSMS.
+
 ## B. External (EMS) limits reported by the station
 
 - [ ] **Local EMS input:** does the station have one? Record the interface (Modbus, EEBus, a vendor API,
