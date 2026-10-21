@@ -1,0 +1,344 @@
+{
+ "run": 76003,
+ "procedure": "ALT-LOA-13",
+ "csipAusVersion": "v1.2",
+ "statusSummary": "1/1 steps complete.",
+ "criteria": [
+  {
+   "success": true,
+   "type": "all-steps-complete",
+   "details": ""
+  }
+ ],
+ "checkResults": {
+  "all-steps-complete": {
+   "passed": true,
+   "description": null
+  },
+  "all-requests-xsd-valid": {
+   "passed": true,
+   "description": "No XSD errors detected in any requests."
+  }
+ },
+ "preconditionChecks": [
+  {
+   "success": true,
+   "type": "end-device-contents",
+   "details": ""
+  },
+  {
+   "success": true,
+   "type": "der-settings-contents",
+   "details": ""
+  }
+ ],
+ "warnings": [],
+ "timestampStart": "2026-10-21T11:09:39.393618Z",
+ "timestampStatus": "2026-10-21T11:18:04.377915Z",
+ "timeline": {
+  "start": "2026-10-21T11:09:39.393618Z",
+  "intervalSeconds": 20,
+  "dataStreams": [
+   {
+    "label": "Site Power",
+    "offsetWattValues": [
+     null,
+     96,
+     96,
+     96,
+     9373,
+     9373,
+     9373,
+     32432,
+     32432,
+     32432,
+     41916,
+     41916,
+     41916,
+     30995,
+     30995,
+     30995,
+     27472,
+     27472,
+     27472,
+     26444,
+     26444,
+     26444,
+     27928,
+     27928,
+     27928,
+     25879
+    ],
+    "stepped": false,
+    "dashed": false
+   },
+   {
+    "label": "Device Power",
+    "offsetWattValues": [
+     null,
+     942,
+     942,
+     942,
+     -3669,
+     -3669,
+     -3669,
+     -12950,
+     -12950,
+     -12950,
+     -12950,
+     -12950,
+     -12950,
+     -8641,
+     -8641,
+     -8641,
+     -9270,
+     -9270,
+     -9270,
+     -9842,
+     -9842,
+     -9842,
+     -12950,
+     -12950,
+     -12950,
+     -11960
+    ],
+    "stepped": false,
+    "dashed": false
+   },
+   {
+    "label": "/derp/1 opModImpLimW",
+    "offsetWattValues": [
+     70000,
+     70000,
+     70000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     14000,
+     null
+    ],
+    "stepped": true,
+    "dashed": false
+   },
+   {
+    "label": "Default opModImpLimW",
+    "offsetWattValues": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "stepped": true,
+    "dashed": true
+   },
+   {
+    "label": "Default opModExpLimW",
+    "offsetWattValues": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "stepped": true,
+    "dashed": true
+   }
+  ]
+ },
+ "readings": [
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581000.0,
+   "seconds": 60,
+   "value": 942
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581060.0,
+   "seconds": 60,
+   "value": -3669
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581120.0,
+   "seconds": 60,
+   "value": -12950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581180.0,
+   "seconds": 60,
+   "value": -12950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581240.0,
+   "seconds": 60,
+   "value": -8641
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581300.0,
+   "seconds": 60,
+   "value": -9270
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581360.0,
+   "seconds": 60,
+   "value": -9842
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581420.0,
+   "seconds": 60,
+   "value": -12950
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792581480.0,
+   "seconds": 60,
+   "value": -11960
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581000.0,
+   "seconds": 60,
+   "value": 48
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581060.0,
+   "seconds": 60,
+   "value": 4687
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581120.0,
+   "seconds": 60,
+   "value": 16216
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581180.0,
+   "seconds": 60,
+   "value": 20958
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581240.0,
+   "seconds": 60,
+   "value": 15497
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581300.0,
+   "seconds": 60,
+   "value": 13736
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581360.0,
+   "seconds": 60,
+   "value": 13222
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581420.0,
+   "seconds": 60,
+   "value": 13964
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792581480.0,
+   "seconds": 60,
+   "value": 12939
+  }
+ ],
+ "testLoad": {
+  "source": "input_number.lab_test_load (script.lab_alt_loa13_test_load)",
+  "steps": [
+   {
+    "at": "2026-10-21T11:09:39Z",
+    "watts": 0
+   },
+   {
+    "at": "2026-10-21T11:11:39Z",
+    "watts": 7000
+   },
+   {
+    "at": "2026-10-21T11:13:39Z",
+    "watts": 3500
+   },
+   {
+    "at": "2026-10-21T11:15:39Z",
+    "watts": 0
+   }
+  ]
+ },
+ "bridgeFix": {
+  "deployedAt": "2026-10-21T11:13:06Z",
+  "commit": "abf2e89"
+ }
+}
