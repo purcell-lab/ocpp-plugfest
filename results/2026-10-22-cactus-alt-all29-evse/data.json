@@ -1,0 +1,1638 @@
+{
+ "run": 76307,
+ "procedure": "ALT-ALL-29",
+ "csipAusVersion": "v1.2",
+ "statusSummary": "1/1 steps complete.",
+ "criteria": [
+  {
+   "success": true,
+   "type": "all-steps-complete",
+   "details": ""
+  },
+  {
+   "success": true,
+   "type": "readings-site-active-power",
+   "details": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading 0514EF158854B78B8AF7710300065434 at /mup/3 has 11 Readings.\nAll 41 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 4 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  },
+  {
+   "success": true,
+   "type": "readings-der-active-power",
+   "details": "All readings have a valid time_period_seconds set\nAll readings have a time_period_seconds matching the configured post rate\nMirrorMeterReading B1DC7C5CB152A8C3C1DBD54900065434 at /mup/2 has 11 Readings.\nAll 11 reading(s) align on minute boundaries from 1 MirrorUsagePoint(s) and 4 MirrorMeterReading(s).\nAll MRIDS and group MRIDS for the site readings types match the supplied Private Enterprise Number (PEN)."
+  }
+ ],
+ "preconditionChecks": [
+  {
+   "success": true,
+   "type": "end-device-contents",
+   "details": ""
+  },
+  {
+   "success": true,
+   "type": "der-settings-contents",
+   "details": ""
+  }
+ ],
+ "warnings": [],
+ "timestampStart": "2026-10-22T06:25:54.717196Z",
+ "timestampStatus": "2026-10-22T06:36:00.647969Z",
+ "setMaxW": 10000,
+ "readings": [
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650360,
+   "value": 1768
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650420,
+   "value": 1842
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650480,
+   "value": 1841
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650540,
+   "value": 1834
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650600,
+   "value": 1821
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650660,
+   "value": 1555
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650720,
+   "value": 1511
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650780,
+   "value": 1493
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650840,
+   "value": 1492
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650900,
+   "value": 1541
+  },
+  {
+   "desc": "DER Average Real Power (W) - Net",
+   "start": 1792650960,
+   "value": 1517
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650360,
+   "value": -172
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650420,
+   "value": -180
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650480,
+   "value": -184
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650540,
+   "value": -184
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650600,
+   "value": -180
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650660,
+   "value": -158
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650720,
+   "value": -150
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650780,
+   "value": -153
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650840,
+   "value": -150
+  },
+  {
+   "desc": "DER Avg Reactive Power (VAR)",
+   "start": 1792650900,
+   "value": -154
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650360,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650420,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650480,
+   "value": 233
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650540,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650600,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650660,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650720,
+   "value": 229
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650780,
+   "value": 227
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650840,
+   "value": 231
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase AN",
+   "start": 1792650900,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650360,
+   "value": 234
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650420,
+   "value": 229
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650480,
+   "value": 228
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650540,
+   "value": 228
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650600,
+   "value": 228
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650660,
+   "value": 231
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650720,
+   "value": 229
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650780,
+   "value": 227
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650840,
+   "value": 232
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase BN",
+   "start": 1792650900,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650360,
+   "value": 233
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650420,
+   "value": 223
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650480,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650540,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650600,
+   "value": 230
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650660,
+   "value": 228
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650720,
+   "value": 227
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650780,
+   "value": 227
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650840,
+   "value": 229
+  },
+  {
+   "desc": "DER Avg Voltage (V) - Phase CN",
+   "start": 1792650900,
+   "value": 229
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650360,
+   "value": 1075
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650420,
+   "value": 1154
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650480,
+   "value": 1121
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650540,
+   "value": 1194
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650600,
+   "value": 1214
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650660,
+   "value": 1460
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650720,
+   "value": 1429
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650780,
+   "value": 1620
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650840,
+   "value": 1516
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650900,
+   "value": 1392
+  },
+  {
+   "desc": "Site Avg Real Power (W) - Net",
+   "start": 1792650960,
+   "value": 1434
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650360,
+   "value": 355
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650420,
+   "value": 387
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650480,
+   "value": 374
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650540,
+   "value": 395
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650600,
+   "value": 406
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650660,
+   "value": 488
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650720,
+   "value": 479
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650780,
+   "value": 546
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650840,
+   "value": 499
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650900,
+   "value": 459
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase A",
+   "start": 1792650960,
+   "value": 473
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650360,
+   "value": 348
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650420,
+   "value": 383
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650480,
+   "value": 376
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650540,
+   "value": 397
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650600,
+   "value": 401
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650660,
+   "value": 480
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650720,
+   "value": 480
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650780,
+   "value": 539
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650840,
+   "value": 505
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase B",
+   "start": 1792650900,
+   "value": 470
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650360,
+   "value": 372
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650420,
+   "value": 384
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650480,
+   "value": 371
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650540,
+   "value": 402
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650600,
+   "value": 407
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650660,
+   "value": 493
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650720,
+   "value": 470
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650780,
+   "value": 535
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650840,
+   "value": 513
+  },
+  {
+   "desc": "Site Avg Real Pwr (W) - Phase C",
+   "start": 1792650900,
+   "value": 463
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650360,
+   "value": 1105
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650420,
+   "value": 1145
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650480,
+   "value": 1161
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650540,
+   "value": 1171
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650600,
+   "value": 1178
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650660,
+   "value": 1165
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650720,
+   "value": 1112
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650780,
+   "value": 1150
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650840,
+   "value": 1149
+  },
+  {
+   "desc": "Site Avg Reactive Power (VAR)",
+   "start": 1792650900,
+   "value": 1121
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650360,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650420,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650480,
+   "value": 233
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650540,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650600,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650660,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650720,
+   "value": 229
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650780,
+   "value": 227
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650840,
+   "value": 231
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase AN",
+   "start": 1792650900,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650360,
+   "value": 234
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650420,
+   "value": 229
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650480,
+   "value": 228
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650540,
+   "value": 228
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650600,
+   "value": 228
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650660,
+   "value": 231
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650720,
+   "value": 229
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650780,
+   "value": 227
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650840,
+   "value": 232
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase BN",
+   "start": 1792650900,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650360,
+   "value": 233
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650420,
+   "value": 223
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650480,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650540,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650600,
+   "value": 230
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650660,
+   "value": 228
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650720,
+   "value": 227
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650780,
+   "value": 227
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650840,
+   "value": 229
+  },
+  {
+   "desc": "Site Avg Voltage (V) - Phase CN",
+   "start": 1792650900,
+   "value": 229
+  }
+ ],
+ "dataStreams": [
+  {
+   "label": "Site Power",
+   "data": [
+    {
+     "watts": 2150,
+     "offset": "start"
+    },
+    {
+     "watts": 2150,
+     "offset": "20s"
+    },
+    {
+     "watts": 2150,
+     "offset": "40s"
+    },
+    {
+     "watts": 2308,
+     "offset": "1m"
+    },
+    {
+     "watts": 2308,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 2308,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 2242,
+     "offset": "2m"
+    },
+    {
+     "watts": 2242,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 2242,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 2388,
+     "offset": "3m"
+    },
+    {
+     "watts": 2388,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 2388,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 2428,
+     "offset": "4m"
+    },
+    {
+     "watts": 2428,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 2428,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 2921,
+     "offset": "5m"
+    },
+    {
+     "watts": 2921,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 2921,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 2858,
+     "offset": "6m"
+    },
+    {
+     "watts": 2858,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 2858,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 3240,
+     "offset": "7m"
+    },
+    {
+     "watts": 3240,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 3240,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 3033,
+     "offset": "8m"
+    },
+    {
+     "watts": 3033,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 3033,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 2784,
+     "offset": "9m"
+    },
+    {
+     "watts": 2784,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 2784,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 2826,
+     "offset": "10m"
+    },
+    {
+     "watts": 1434,
+     "offset": "10m20s"
+    },
+    {
+     "watts": 1434,
+     "offset": "10m40s"
+    },
+    {
+     "watts": 1434,
+     "offset": "11m"
+    },
+    {
+     "watts": null,
+     "offset": "11m20s"
+    },
+    {
+     "watts": null,
+     "offset": "11m40s"
+    },
+    {
+     "watts": null,
+     "offset": "12m"
+    }
+   ],
+   "stepped": false,
+   "dashed": false
+  },
+  {
+   "label": "Device Power",
+   "data": [
+    {
+     "watts": 1768,
+     "offset": "start"
+    },
+    {
+     "watts": 1768,
+     "offset": "20s"
+    },
+    {
+     "watts": 1768,
+     "offset": "40s"
+    },
+    {
+     "watts": 1842,
+     "offset": "1m"
+    },
+    {
+     "watts": 1842,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 1842,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 1841,
+     "offset": "2m"
+    },
+    {
+     "watts": 1841,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 1841,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 1834,
+     "offset": "3m"
+    },
+    {
+     "watts": 1834,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 1834,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 1821,
+     "offset": "4m"
+    },
+    {
+     "watts": 1821,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 1821,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 1555,
+     "offset": "5m"
+    },
+    {
+     "watts": 1555,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 1555,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 1511,
+     "offset": "6m"
+    },
+    {
+     "watts": 1511,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 1511,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 1493,
+     "offset": "7m"
+    },
+    {
+     "watts": 1493,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 1493,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 1492,
+     "offset": "8m"
+    },
+    {
+     "watts": 1492,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 1492,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 1541,
+     "offset": "9m"
+    },
+    {
+     "watts": 1541,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 1541,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 1517,
+     "offset": "10m"
+    },
+    {
+     "watts": 1517,
+     "offset": "10m20s"
+    },
+    {
+     "watts": 1517,
+     "offset": "10m40s"
+    },
+    {
+     "watts": 1517,
+     "offset": "11m"
+    },
+    {
+     "watts": null,
+     "offset": "11m20s"
+    },
+    {
+     "watts": null,
+     "offset": "11m40s"
+    },
+    {
+     "watts": null,
+     "offset": "12m"
+    }
+   ],
+   "stepped": false,
+   "dashed": false
+  },
+  {
+   "label": "/derp/1 opModImpLimW",
+   "data": [
+    {
+     "watts": 20000,
+     "offset": "start"
+    },
+    {
+     "watts": 20000,
+     "offset": "20s"
+    },
+    {
+     "watts": 20000,
+     "offset": "40s"
+    },
+    {
+     "watts": 20000,
+     "offset": "1m"
+    },
+    {
+     "watts": 20000,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 20000,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 5000,
+     "offset": "2m"
+    },
+    {
+     "watts": 5000,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 5000,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 5000,
+     "offset": "3m"
+    },
+    {
+     "watts": 5000,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 5000,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 4000,
+     "offset": "4m"
+    },
+    {
+     "watts": 4000,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 4000,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 4000,
+     "offset": "5m"
+    },
+    {
+     "watts": 4000,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 4000,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 3000,
+     "offset": "6m"
+    },
+    {
+     "watts": 3000,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 3000,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 3000,
+     "offset": "7m"
+    },
+    {
+     "watts": 3000,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 3000,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m"
+    },
+    {
+     "watts": 0,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m"
+    },
+    {
+     "watts": 0,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m"
+    },
+    {
+     "watts": null,
+     "offset": "10m20s"
+    },
+    {
+     "watts": null,
+     "offset": "10m40s"
+    },
+    {
+     "watts": null,
+     "offset": "11m"
+    },
+    {
+     "watts": null,
+     "offset": "11m20s"
+    },
+    {
+     "watts": null,
+     "offset": "11m40s"
+    },
+    {
+     "watts": null,
+     "offset": "12m"
+    }
+   ],
+   "stepped": true,
+   "dashed": false
+  },
+  {
+   "label": "/derp/1 opModExpLimW",
+   "data": [
+    {
+     "watts": -20000,
+     "offset": "start"
+    },
+    {
+     "watts": -20000,
+     "offset": "20s"
+    },
+    {
+     "watts": -20000,
+     "offset": "40s"
+    },
+    {
+     "watts": -20000,
+     "offset": "1m"
+    },
+    {
+     "watts": -20000,
+     "offset": "1m20s"
+    },
+    {
+     "watts": -20000,
+     "offset": "1m40s"
+    },
+    {
+     "watts": -5000,
+     "offset": "2m"
+    },
+    {
+     "watts": -5000,
+     "offset": "2m20s"
+    },
+    {
+     "watts": -5000,
+     "offset": "2m40s"
+    },
+    {
+     "watts": -5000,
+     "offset": "3m"
+    },
+    {
+     "watts": -5000,
+     "offset": "3m20s"
+    },
+    {
+     "watts": -5000,
+     "offset": "3m40s"
+    },
+    {
+     "watts": -4000,
+     "offset": "4m"
+    },
+    {
+     "watts": -4000,
+     "offset": "4m20s"
+    },
+    {
+     "watts": -4000,
+     "offset": "4m40s"
+    },
+    {
+     "watts": -4000,
+     "offset": "5m"
+    },
+    {
+     "watts": -4000,
+     "offset": "5m20s"
+    },
+    {
+     "watts": -4000,
+     "offset": "5m40s"
+    },
+    {
+     "watts": -3000,
+     "offset": "6m"
+    },
+    {
+     "watts": -3000,
+     "offset": "6m20s"
+    },
+    {
+     "watts": -3000,
+     "offset": "6m40s"
+    },
+    {
+     "watts": -3000,
+     "offset": "7m"
+    },
+    {
+     "watts": -3000,
+     "offset": "7m20s"
+    },
+    {
+     "watts": -3000,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m"
+    },
+    {
+     "watts": 0,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m"
+    },
+    {
+     "watts": 0,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m"
+    },
+    {
+     "watts": null,
+     "offset": "10m20s"
+    },
+    {
+     "watts": null,
+     "offset": "10m40s"
+    },
+    {
+     "watts": null,
+     "offset": "11m"
+    },
+    {
+     "watts": null,
+     "offset": "11m20s"
+    },
+    {
+     "watts": null,
+     "offset": "11m40s"
+    },
+    {
+     "watts": null,
+     "offset": "12m"
+    }
+   ],
+   "stepped": true,
+   "dashed": false
+  },
+  {
+   "label": "Default opModImpLimW",
+   "data": [
+    {
+     "watts": 0,
+     "offset": "start"
+    },
+    {
+     "watts": 0,
+     "offset": "20s"
+    },
+    {
+     "watts": 0,
+     "offset": "40s"
+    },
+    {
+     "watts": 0,
+     "offset": "1m"
+    },
+    {
+     "watts": 0,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "2m"
+    },
+    {
+     "watts": 0,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "3m"
+    },
+    {
+     "watts": 0,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "4m"
+    },
+    {
+     "watts": 0,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "5m"
+    },
+    {
+     "watts": 0,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "6m"
+    },
+    {
+     "watts": 0,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "7m"
+    },
+    {
+     "watts": 0,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m"
+    },
+    {
+     "watts": 0,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m"
+    },
+    {
+     "watts": 0,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m"
+    },
+    {
+     "watts": 0,
+     "offset": "10m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "11m"
+    },
+    {
+     "watts": 0,
+     "offset": "11m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "11m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "12m"
+    }
+   ],
+   "stepped": true,
+   "dashed": true
+  },
+  {
+   "label": "Default opModExpLimW",
+   "data": [
+    {
+     "watts": 0,
+     "offset": "start"
+    },
+    {
+     "watts": 0,
+     "offset": "20s"
+    },
+    {
+     "watts": 0,
+     "offset": "40s"
+    },
+    {
+     "watts": 0,
+     "offset": "1m"
+    },
+    {
+     "watts": 0,
+     "offset": "1m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "1m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "2m"
+    },
+    {
+     "watts": 0,
+     "offset": "2m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "2m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "3m"
+    },
+    {
+     "watts": 0,
+     "offset": "3m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "3m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "4m"
+    },
+    {
+     "watts": 0,
+     "offset": "4m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "4m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "5m"
+    },
+    {
+     "watts": 0,
+     "offset": "5m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "5m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "6m"
+    },
+    {
+     "watts": 0,
+     "offset": "6m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "6m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "7m"
+    },
+    {
+     "watts": 0,
+     "offset": "7m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "7m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m"
+    },
+    {
+     "watts": 0,
+     "offset": "8m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "8m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m"
+    },
+    {
+     "watts": 0,
+     "offset": "9m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "9m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m"
+    },
+    {
+     "watts": 0,
+     "offset": "10m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "10m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "11m"
+    },
+    {
+     "watts": 0,
+     "offset": "11m20s"
+    },
+    {
+     "watts": 0,
+     "offset": "11m40s"
+    },
+    {
+     "watts": 0,
+     "offset": "12m"
+    }
+   ],
+   "stepped": true,
+   "dashed": true
+  }
+ ]
+}
