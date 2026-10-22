@@ -9,7 +9,7 @@ plugged into the venue LAN. Stations connect with Security Profile 1
 
 | Slot | Charging station | Notes |
 |---|---|---|
-| 1 | OCTT (DNV) | Conformance tool acting as a station; ask which security profile its test cases need |
+| 1 | OCTT (DNV) | Conformance tool acting as a station; ask which security profile its test cases need. If OCTT runs in the cloud, see the [Cloudflare Tunnel handover](CLOUDFLARE-TUNNEL.md) |
 | 2 | EVX Australia | Venue LAN |
 | 5 | EVSE | Venue LAN |
 | 6 | Trialog | Venue LAN |
