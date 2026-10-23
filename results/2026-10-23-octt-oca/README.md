@@ -32,7 +32,7 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 |---|---|---|---|
 | 1 | **Lab GetTransactionStatus check closes running transactions** | Lab (CitrineOS App) | A single `ongoingIndicator: false` reply closed `6518777a` while OCTT kept running it. Stopped for this session by moving the command station; an option to switch the check off, and a less trusting close, are needed ([details](#issue-the-labs-gettransactionstatus-check-interferes-with-the-station-under-test)) |
 | 2 | **`ongoingIndicator` missing or wrong in OCTT's replies** | OCA | Replies for a named `transactionId` often omitted `ongoingIndicator`. At 11:53:36 OCTT reported `false` for a transaction it was still running |
-| 3 | **TxProfile acceptance looks scripted** | OCA + lab | The 6 A Relative TxProfile was rejected twice when addressed to the current transaction, and accepted once when addressed to a stale one, then GetChargingProfiles → NoProfiles. Rerun inside a K-section (Smart Charging) test case and compare with the expected profile (purpose, kind, unit, `transactionId`) |
+| 3 | **TxProfile acceptance looks scripted** | OCA + lab | The 6 A Relative TxProfile was rejected twice when addressed to the current transaction (11:51, 11:55) and accepted when addressed to a stale one (11:53). After the GetTransactionStatus check stopped, it was **accepted for the current transaction** (12:02:47). Every acceptance was followed by GetChargingProfiles → NoProfiles, so OCTT doesn't report the installed profile. Rerun inside a K-section (Smart Charging) test case and compare with the expected profile (purpose, kind, unit, `transactionId`) |
 | 4 | **Basic Auth credentials** | OCA + lab | Two refusals with the provisioned `OCTT_OCA_21_1` and its password (stored value verified). CitrineOS logs no detail. Confirm what OCTT sends (username = station ID?); lab: log the username and password length of refused attempts |
 | 5 | **Station ID changed between attempts** | OCA | OCTT dialled `OCTT_OCA_21_1`, then connected as `OCTT_OCA_21_2`. Agree one ID per run so it can be provisioned with a password and open admission can be turned off |
 | 6 | **Transactions superseded without `Ended`** | OCA | Several loop transactions (`0ddf4a7a`, `2a97ab44`, `28090acb`, `acbae304`) were replaced by the next one without an `Ended` event |
@@ -160,6 +160,10 @@ Updated as testing continues. Times AEDT.
 | about 11:58 | **Lab GetTransactionStatus stopped for OCTT.** Command station moved back to `SIM-EV-EVEREST-V2G-03` (CitrineOS restart), so the gateway's transaction check no longer targets `OCTT_OCA_21_2`. Operator UI commands (SetChargingProfile and so on) still reach `OCTT_OCA_21_2`. Last GetTransactionStatus to OCTT: 11:55:07 |
 | 11:57:24 | `OCTT_OCA_21_2` disconnected by the restart. As of 12:02 it hadn't reconnected; OCTT doesn't reconnect by itself after a server-side close |
 | 12:02 | Report sent to the OCA |
+| 12:01:36 | **OCTT reconnected** as `OCTT_OCA_21_2`: BootNotification Accepted; EVSE 1 and EVSE 2 Available. Lab GetBaseReport → Rejected |
+| 12:02:07–12:02:10 | Transaction **`b9d82116`**: Authorize `C17E0001` Accepted → Started → Occupied → CablePluggedIn → **Charging** |
+| **12:02:47** | **SetChargingProfile 9604** (TxProfile, stack 1, Relative, 300 s, 6 A) to the **current** transaction `b9d82116` → **Accepted**. Follow-up GetChargingProfiles (CSO) → NoProfiles |
+| 12:01–12:03 | **No GetTransactionStatus sent to OCTT** after the command-station change, confirming the fix for item 1. `b9d82116` stays active in CitrineOS |
 
 ## Open items
 
