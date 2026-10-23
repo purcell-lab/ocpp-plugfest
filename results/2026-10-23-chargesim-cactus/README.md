@@ -1,13 +1,83 @@
 # ChargeSim: Cactus ALT-ALL-29 and multi-station session (23 October 2026)
 
-**Status: in progress.** From about 15:46 AEDT, 23 October 2026. ChargeSim (ChargeSim SCDE) as the
+**Status: closed.** 23 October 2026, about 15:46–16:14 AEDT. ChargeSim (ChargeSim SCDE) as the
 lab command station for a Cactus (CSIP-AUS) **ALT-ALL-29** run, then a multi-station session with
 stations `charger1` to `charger11`, all OCPP 2.0.1. Follows the
 [ChargeSim functional session](../2026-10-23-chargesim/README.md). Times are AEDT.
 
 ## Executive summary
 
-To be written when the session closes.
+ChargeSim's simulated 150 kW stations were driven by the Purcell CitrineOS CSMS in two parts: a
+Cactus (CSIP-AUS) **ALT-ALL-29** run with `charger1` as the lab command station, then a
+**multi-station session with 11 stations** (`charger1` … `charger11`), all OCPP 2.0.1, in real
+time. The earlier single-station functional session has its own
+[report](../2026-10-23-chargesim/README.md).
+
+**Results**
+
+- **Smart charging works at scale.** All 11 stations booted, accepted the metering configuration
+  and remote starts, and every TxProfile that reached a station was **Accepted**: the bridge's
+  Cactus profiles on `charger1` (which then paused at 0 W as required) and stepped 50 → 0 kW
+  profiles on `charger2` … `charger10`.
+- **Power metering needed a lab change.** ChargeSim reports power only when the CSMS asks for it
+  over OCPP (SetVariables). The lab gateway allowed no SetVariables, so the first ALT-ALL-29 run
+  couldn't measure ChargeSim and Cactus saw the site without it. CitrineOS App **0.7.7** (Green
+  build) allows SetVariables for metering variables only; after it, all 11 stations sent
+  `Power.Active.Import` (kW) and energy every 10 s.
+- **ALT-ALL-29 wasn't completed as a valid run.** ODE had the correct import limits (12.5 / 10 /
+  7.5 / 0 kW) and the bridge delivered them, but reduced by 5.8 kW for the lab's synthetic 10 kW
+  house load, and without ChargeSim's power in the site reading. A rerun with metering on and the
+  house load set deliberately is needed.
+- **The Green lab went offline twice** (15:19–15:23, network; from about 16:10, cause not yet
+  known, with 11 stations reporting every 10 s), ending the session before the random TxProfile
+  test completed.
+
+**Findings for ChargeSim**
+
+1. Profiles set by the CSMS are reported with `chargingLimitSource: "Other"` instead of `CSO`, so
+   CitrineOS's automatic check after every SetChargingProfile returns NoProfiles.
+2. Power is reported in kW (`unitOfMeasure` kW), and periodic meter values are off by default
+   (TxUpdatedInterval 0, energy only).
+3. `charger11` accepted RequestStartTransaction (16:07:24) but started no transaction.
+4. Each station's own local token (`Local`, `1` … `11`) is Unknown in the lab CSMS.
+
+**Findings for the lab**
+
+1. Metering SetVariables were missing from the operator route (fixed in 0.7.7, verified on all 11
+   stations).
+2. The bridge controls and measures only one command station; a multi-station Cactus test needs a
+   group limit and the sum of all stations' power in the site reading.
+3. The synthetic house load (10 kW) silently reduces every Cactus limit sent to the charger; it
+   should be set per run and shown in the run record.
+4. Green stability under multi-station load (second outage at about 16:10) needs investigating.
+5. CitrineOS has no simulated clock: runs must be in real time while Cactus or the bridge is used.
+
+## What works
+
+| Area | Result |
+|---|---|
+| Admission | 11 stations admitted together through Plugfest open admission (`wss://ocpp.purcell.id.au`) |
+| Boot | BootNotification **Accepted** for all 11 (16:03:54–16:04:09), StatusNotification accepted |
+| Metering configuration | SetVariables (SampledDataCtrlr TxStarted/TxUpdated measurands, TxUpdatedInterval 10 s) **Accepted ×3 on all 11** (App 0.7.7) |
+| Power readings | `Power.Active.Import` and `Energy.Active.Import.Register` every 10 s (`MeterValuePeriodic`) on every charging station |
+| Remote start | RequestStartTransaction **Accepted by all 11**; 10 transactions Started and Charging (16:07:01–16:07:35) |
+| Bridge (Cactus) profiles | Absolute W TxProfiles following ODE's import limit and schedule, **Accepted** on `charger1`; GetCompositeSchedule matched; 0 W step → `SuspendedEVSE` |
+| Operator profiles | Stepped TxProfiles 9802–9810 **Accepted by all 9** stations they were sent to |
+| Transaction status | GetTransactionStatus answered with a correct `ongoingIndicator` (`true` while charging, `false` after a reboot, so a stale transaction was closed correctly) |
+| Stale profile | A profile for a closed transaction was **Rejected** (correct) |
+
+## Needs further investigation
+
+| # | Item | Owner | Detail |
+|---|---|---|---|
+| 1 | `chargingLimitSource` of CSMS profiles | ChargeSim | Reported as `Other`; expected `CSO` for a CSMS-set TxProfile |
+| 2 | `charger11` remote start | ChargeSim | Accepted at 16:07:24 but no TransactionEvent; retried at 16:10, outcome unknown (Green offline) |
+| 3 | Power unit | ChargeSim + lab | Power is sent in kW. Check the lab's CitrineOS integration converts kW to W while charging (only 0 W was observed on `charger1`) |
+| 4 | Local tokens | Lab | Register `Local` tokens `1` … `11` if ChargeSim's local-start tests need them |
+| 5 | ALT-ALL-29 rerun | Lab + ChargeSim | Rerun with metering on, house load chosen for the run (0 kW suggested), `charger1` as command station |
+| 6 | Multi-station Cactus | Lab | Group limit across stations and summed site power; not supported by the bridge today |
+| 7 | Green outage at about 16:10 | Lab | Check uptime, memory and the CitrineOS App log; see whether load from 11 stations plus the simulators caused it |
+| 8 | Random TxProfiles | Lab | 9901–9905 outcome unknown (HA-OCPP 502), 9906–9911 not sent; profiles saved for a rerun |
 
 ## Set-up
 
@@ -73,7 +143,7 @@ SetVariables, so CitrineOS App **0.7.7** allows SetVariables for metering variab
 | 15:57–15:58 | CitrineOS restarted twice during the 0.7.7 update (15:57:12, ready about 15:58). The lab's simulators reconnected; no ChargeSim station did |
 | 16:03 | **No ChargeSim station connected:** `charger1` offline since 15:55:08; `charger2` … `charger11` never seen by CitrineOS; no refused connection attempts in the CitrineOS log, so nothing from ChargeSim was reaching the lab. Endpoint check: `wss://ocpp.purcell.id.au` answers (HTTP 404 without a WebSocket upgrade, as expected). ChargeSim asked to confirm the URL: `wss://ocpp.purcell.id.au/chargerN` (internet) or `ws://purcell.local:8083/chargerN` (venue LAN) |
 
-## Lab state at 16:03
+## Lab state at 16:03 (before the outage)
 
 | | |
 |---|---|
