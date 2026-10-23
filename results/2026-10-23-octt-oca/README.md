@@ -187,6 +187,7 @@ Updated as testing continues. Times AEDT.
 | 12:16:43–12:16:44 | New transaction **`0ed5b6f0`** (`CablePluggedIn`, EVConnected) |
 | **12:16:49** | **Plug & Charge Authorize Accepted:** eMAID `AAAAAAAAAAAAAA` with ISO 15118 certificate hash data → `idTokenInfo` **Accepted**, `certificateStatus` **Accepted** (OCSP check against the OCTT test PKI, about 4.4 s) |
 | about 12:20 | **OCTT reports `allowedEnergyTransfer` missing** from the AuthorizeResponse. Confirmed in CitrineOS v2.0.1: the OCPP 2.1 Authorize handler never sets it, and per OCPP 2.1 an omitted `allowedEnergyTransfer` **defaults to charging only**. So no session authorised by this CSMS may use bidirectional transfer, which explains the rejected CentralSetpoint TxProfiles (new item 15) |
+| **12:18:58** | **SetChargingProfile 9608** (bidirectional CentralSetpoint +15 / −15 / +6 / −5 / 0 kW with the bridge's full 24 h price schedule) to the Plug & Charge transaction `0ed5b6f0` (authorised, EVConnected) → **Rejected**, no `statusInfo`; GetChargingProfiles → NoProfiles. Consistent with item 15: without `allowedEnergyTransfer` the session is charging-only, so negative setpoints aren't allowed |
 
 ## Open items
 
