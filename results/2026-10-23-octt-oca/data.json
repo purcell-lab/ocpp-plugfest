@@ -1,0 +1,49 @@
+{
+  "_note": "Message outcomes from the OCTT (OCA) session, 23 October 2026, times AEDT, taken from the CitrineOS message log. Outcome: accepted, rejected, or problem (reply missing a required field or with a wrong value).",
+  "versions": [
+    {"label": "App 0.7.4", "from": "11:20", "to": "12:22:44"},
+    {"label": "0.7.5", "from": "12:22:44", "to": "12:29:30"},
+    {"label": "0.7.6", "from": "12:29:30", "to": "12:42"}
+  ],
+  "markers": [
+    {"time": "11:58", "label": "Lab GetTransactionStatus stopped"}
+  ],
+  "lanes": {
+    "Connection": [
+      ["11:23:54", "rejected", "unknown station ID"], ["11:24:26", "rejected", "unknown station ID"],
+      ["11:31:14", "rejected", "Basic Auth"], ["11:35:17", "rejected", "Basic Auth"],
+      ["11:41:09", "accepted", "connected (open admission)"], ["12:01:36", "accepted", "reconnected"],
+      ["12:25:51", "accepted", "reconnected"], ["12:31:12", "accepted", "reconnected"]
+    ],
+    "Authorize (Plug & Charge)": [
+      ["12:06:43", "rejected", "eMAID unknown"], ["12:10:23", "rejected", "eMAID unknown"],
+      ["12:16:49", "accepted", "no allowedEnergyTransfer"], ["12:26:11", "accepted", ""],
+      ["12:31:41", "accepted", ""], ["12:39:20", "accepted", ""]
+    ],
+    "NotifyEVChargingNeeds": [
+      ["12:22:13", "rejected", "AC, V2X params"], ["12:26:15", "rejected", "AC_BPT"],
+      ["12:31:44", "accepted", "AC_BPT"], ["12:39:22", "accepted", "AC_BPT"]
+    ],
+    "SetChargingProfile": [
+      ["11:51:13", "rejected", "9601 6 A"], ["11:53:24", "accepted", "9602 6 A"], ["11:55:29", "rejected", "9603 6 A"],
+      ["12:02:47", "accepted", "9604 6 A"], ["12:06:32", "accepted", "9605 stepped A"],
+      ["12:08:22", "rejected", "9606 V2X"], ["12:11:07", "rejected", "9607 V2X + price"],
+      ["12:18:58", "rejected", "9608 V2X + price"], ["12:36:28", "rejected", "9609 6 A"],
+      ["12:37:47", "rejected", "9610 1 kW"], ["12:40:32", "rejected", "9608 V2X + price"]
+    ],
+    "GetTransactionStatus (lab)": [
+      ["11:48:37", "problem", "no ongoingIndicator"], ["11:51:06", "problem", "no ongoingIndicator"],
+      ["11:52:36", "problem", "no ongoingIndicator"], ["11:53:36", "problem", "false: CSMS closed tx"],
+      ["11:55:07", "problem", "no ongoingIndicator"]
+    ],
+    "GetBaseReport (lab)": [
+      ["11:41:16", "rejected", ""], ["11:45:07", "rejected", ""], ["12:01:36", "rejected", ""], ["12:31:23", "accepted", ""]
+    ]
+  },
+  "profiles": [
+    {"shape": "Charging limit, A (Relative)", "ids": "9601–9605, 9609", "accepted": 3, "rejected": 3},
+    {"shape": "Charging limit, W, ChargingOnly", "ids": "9610", "accepted": 0, "rejected": 1},
+    {"shape": "V2X CentralSetpoint", "ids": "9606", "accepted": 0, "rejected": 1},
+    {"shape": "V2X CentralSetpoint + 24 h price", "ids": "9607, 9608 ×2", "accepted": 0, "rejected": 3}
+  ]
+}

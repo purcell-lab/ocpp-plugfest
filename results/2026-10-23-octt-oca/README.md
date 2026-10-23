@@ -1,17 +1,66 @@
 # OCA OCTT against the Purcell CitrineOS CSMS (23 October 2026)
 
-**23 October 2026, about 11:14–11:56 AEDT.** the Open Charge Alliance's OCPP Compliance Test Tool (OCTT), run by the OCA, connected to the
-Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.purcell.id.au`), on
-**OCPP 2.1**, as station `OCTT_OCA_21_2`.
+**Status: closed.** 23 October 2026, 11:23–12:41 AEDT. The Open Charge Alliance's OCPP Compliance
+Test Tool (OCTT), run by the OCA (Milan Jansen), connected to the Purcell CitrineOS CSMS over the
+internet through the Cloudflare tunnel (`ocpp.purcell.id.au`), on **OCPP 2.1**, as station
+`OCTT_OCA_21_2`.
 
-- **Connection:** working after three fixes on our side: provisioning the station ID, then the
-  password, then open admission.
-- **Authorisation and transactions:** OCTT's transactions run normally with the lab token `C17E0001`.
-- **TxProfiles:** a Relative 6 A TxProfile was rejected twice and accepted once. The responses look
-  scripted by OCTT's test case.
-- **Main finding:** the lab's automatic **GetTransactionStatus** check sends unsolicited messages to
-  the station under test. On one reply (`ongoingIndicator: false`), CitrineOS **closed a transaction
-  the station was still running**.
+## Executive summary
+
+OCTT ran about 80 minutes of OCPP 2.1 sessions against the lab CSMS. Connection, authorisation
+(RFID and ISO 15118 Plug & Charge) and transaction handling work. Two CitrineOS v2.0.1 gaps for
+OCPP 2.1 bidirectional charging were found and fixed in the session (App 0.7.5 and 0.7.6, Green
+build only). Smart charging is only partly proven: OCTT accepted 3 of 6 simple A charging limits and
+none of the 5 W or bidirectional TxProfiles, always without a reason.
+
+**Results**
+
+- **Works:** internet transport (TLS through Cloudflare); BootNotification, Heartbeat,
+  StatusNotification and TransactionEvent; RFID Authorize; Plug & Charge Authorize with OCSP
+  certificate validation (after registering the eMAID); SetChargingProfile delivery and 2.1 schema
+  validation; GetBaseReport.
+- **Fixed on the day:**
+  - **`allowedEnergyTransfer`** was never set in AuthorizeResponse, so every session defaulted to
+    charging only. Fixed in **0.7.5**, verified 12:26:11.
+  - **OCPP 2.1 AC V2X charging needs** (AC_BPT with only `v2xChargingParameters`) were Rejected.
+    Fixed in **0.7.6**, verified 12:31:44. (0.7.4, from the Trialog slot the same day, fixed DC_BPT.)
+  - The lab's **automatic GetTransactionStatus check** closed a transaction OCTT was still running.
+    Stopped for OCTT at 11:58 by moving the command station. The lab's automatic **GetBaseReport**
+    was also switched off at the user's request (applies at the next restart).
+- **Not proven:** **bidirectional (V2X) TxProfiles.** Every CentralSetpoint profile, with or without
+  the 24 h price schedule, was Rejected, including after the fixes. OCTT's EV asked for AC_BPT in
+  ScheduledControl with a **0 W discharge limit**, so a discharge setpoint can't fit that session.
+  A DC_BPT or DynamicControl session that allows discharge is needed to test it.
+- **Not run:** the Cactus (CSIP-AUS) run with OCTT.
+
+**Findings for the OCA**
+
+1. `ongoingIndicator` missing from 4 of 5 GetTransactionStatusResponses, and `false` in 1 for a
+   running transaction.
+2. TxProfile responses look scripted: the same 6 A profile was accepted and rejected on different
+   transactions, and no rejection carried `statusInfo`.
+3. No MeterValues, so no profile's effect could be observed.
+4. Station ID changed between attempts (`_1` → `_2`); no automatic reconnect after a server-side
+   close; some transactions were replaced without an `Ended` event.
+
+**Next steps:** agree a V2X test case with the OCA (Q-section, DC_BPT or discharge-capable AC_BPT,
+DynamicControl) and rerun profile 9608. Then run Cactus with OCTT as the command station once the
+lab's GetTransactionStatus check can be switched off by an option. Upstream the 0.7.5 and 0.7.6
+patches to CitrineOS.
+
+### Charts
+
+![Every message outcome by type over the session, with the CitrineOS App version](octt-timeline.png)
+
+Every message by type. Green circles are accepted, red crosses rejected or refused, amber triangles
+GetTransactionStatus replies without a correct `ongoingIndicator`. The shaded bands show the
+CitrineOS App version in use. The Authorize and NotifyEVChargingNeeds rows turn green after the
+0.7.5 and 0.7.6 fixes; the SetChargingProfile row doesn't.
+
+![SetChargingProfile outcomes by profile shape](octt-profiles.png)
+
+SetChargingProfile outcomes by profile shape: only the A charging limits were ever accepted (3 of 6).
+Source data: [`data.json`](data.json); `python3 make_chart.py` renders both charts.
 
 ## What works
 
@@ -53,7 +102,7 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 | | |
 |---|---|
 | Test tool | OCTT (run by the OCA), BootNotification vendor `OCA`, model `2019`, firmware `Release_2026-09`, OCPP 2.1, 2 EVSEs |
-| CSMS | CitrineOS v2.0.1 in the CitrineOS server App 0.7.4, on a Home Assistant Green |
+| CSMS | CitrineOS v2.0.1 in the CitrineOS server App 0.7.4, then 0.7.5 (12:23) and 0.7.6 (12:29), Green build only, on a Home Assistant Green |
 | Endpoint | `wss://ocpp.purcell.id.au/<station-id>` (Cloudflare Tunnel to the Plugfest listener on 8083). `ws://` on port 80 is redirected to `https://` by the zone's Always Use HTTPS setting |
 | Admission | Provisioned stations with Basic Auth, then **open admission** from about 11:38 AEDT |
 | Command station | `OCTT_OCA_21_2` from 11:42 AEDT. The lab bridge (ODE → TxProfile) was **off** except for about 2 minutes (11:45–11:47); it sent nothing |
@@ -208,6 +257,20 @@ Updated as testing continues. Times AEDT.
 
 ## Open items
 
-- Open admission is **on** with the Cloudflare tunnel up. Turn it off, or stop the tunnel, once the
-  internet tests are done.
-- The TxProfile and Cactus runs with OCTT are pending a smart-charging test case from the OCA.
+- **Lab clean-up after the event:** turn open admission off, or stop the Cloudflare tunnel; turn the
+  ODE bridge automation back on when the lab is needed again; restart CitrineOS so
+  `device_model_reports: false` applies.
+- **Lab (CitrineOS App):** an option to switch off the GetTransactionStatus check, and don't close a
+  transaction on a single `ongoingIndicator: false`; log the username and password length of refused
+  Basic Auth attempts; upstream the 0.7.5 (`allowedEnergyTransfer`) and 0.7.6 (V2X charging needs)
+  patches.
+- **With the OCA:** a V2X test case for the bidirectional TxProfile, and a Cactus run with OCTT.
+
+## Files
+
+| File | What it is |
+|---|---|
+| `data.json` | Message outcomes behind the charts |
+| `make_chart.py` | Renders `octt-timeline` and `octt-profiles` (`.png`, `.svg`) |
+| `bridge-price-schedule.json` | The bridge's 24 h `absolutePriceSchedule` (OpenADR NSW1 import forecast) |
+| `bidirectional-txprofile-priced.json` | The bidirectional CentralSetpoint TxProfile (9608) with that schedule |
