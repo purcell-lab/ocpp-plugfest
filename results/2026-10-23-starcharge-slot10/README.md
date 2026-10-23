@@ -24,9 +24,9 @@ To be written when the session closes.
 
 | | |
 |---|---|
-| Station | Starcharge V2G charging station (station ID, model, firmware, OCPP version and EVSEs to be recorded from its BootNotification) |
+| Station | Starcharge V2G charging station, station ID **`STARCHARGE-01`**, **OCPP 2.1**, EVSE 1 / connector 1 (no BootNotification recorded yet) |
 | CSMS | CitrineOS v2.0.1 in the CitrineOS server App **0.7.7** (Green build only: OCPP 2.1 DC_BPT and V2X charging needs accepted, `allowedEnergyTransfer` in AuthorizeResponse, metering-only SetVariables) |
-| Endpoint | `ws://purcell.local:8083/<station-id>` on the venue LAN (Security Profile 1), or `wss://ocpp.purcell.id.au/<station-id>` over the internet |
+| Endpoint | Venue LAN, port 8083, Security Profile 1 (`ws://<green>:8083/STARCHARGE-01`) |
 | Admission | Plugfest **open admission on** (any station ID, no password) |
 | Command station | Carried over from the ChargeSim session: `charger1`. To drive Starcharge from the lab bridge it must become the command station (CitrineOS restart) |
 | Bridge | Carried over: automation on, prefix `citrineos_lab_charger1`, **charging-only**. For a V2G station: prefix `citrineos_lab_<station-id>`, charging-only **off** (CentralSetpoint periods), lab hold as needed, export mode for discharge tests |
@@ -62,6 +62,9 @@ Updated as testing continues. Times AEDT.
 | 16:22:17 | CitrineOS had restarted after the 16:10 network loss (startup in its log); the lab's simulators reconnected |
 | 16:28 | Starcharge trying the venue LAN listener on port 8083 |
 | **16:28:37** | **A station connected on OCPP 2.1 with an empty station ID** (`ocppConnectionName` ""), CitrineOS station 110, admitted by open admission. It sends Heartbeats and CitrineOS answers them, but every message fails to persist (`ocpp-message-persist failed`, dead-lettered), so no BootNotification or other message is recorded and no command can target it. The connection URL had no station ID in its path (`ws://<host>:8083/` instead of `ws://<host>:8083/<station-id>`) |
+| 16:30:18 | The empty-ID connection closed |
+| **16:30:19** | **Starcharge connected as `STARCHARGE-01`**, OCPP 2.1, venue LAN port 8083 (CitrineOS station 112) |
+| 16:30:24 | StatusNotification EVSE 1 / connector 1 **Unavailable** → accepted. No BootNotification recorded (vendor, model, serial and firmware unknown) |
 
 ## Plan
 
