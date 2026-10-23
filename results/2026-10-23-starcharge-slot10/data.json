@@ -1,0 +1,41 @@
+{
+  "_note": "OCPP messages between the Purcell CitrineOS CSMS and STARCHARGE-01, 23 October 2026, from the CitrineOS message log. Times AEDT. Each command: CSMS request time, station response time, result. NotifyReport (58 messages, 16:36:19-16:38:31) and Heartbeats summarised.",
+  "commands": [
+    ["TriggerMessage (BootNotification)", "16:31:21.750", "16:31:22.812", "Rejected"],
+    ["GetVariables (8 items)", "16:32:46.523", "16:32:46.616", "CALLERROR"],
+    ["GetVariables (4 items)", "16:32:58.761", "16:32:58.847", "Accepted"],
+    ["GetBaseReport (FullInventory)", "16:36:19.091", "16:36:19.292", "Accepted"],
+    ["ChangeAvailability (Operative)", "16:39:08.012", "16:39:08.110", "Accepted"],
+    ["SetChargingProfile 9620 (TxDefault, CentralSetpoint)", "16:40:11.637", "16:40:11.881", "Accepted"],
+    ["GetChargingProfiles (CSO)", "16:40:12.035", "16:40:12.098", "Accepted"],
+    ["GetCompositeSchedule (EVSE 1)", "16:41:11.066", "16:41:11.141", "Accepted"],
+    ["SetChargingProfile 9630 (ChargingStationMax)", "16:41:56.440", "16:41:56.675", "Accepted"],
+    ["GetChargingProfiles (CSO)", "16:41:56.753", "16:41:56.884", "Accepted"],
+    ["GetCompositeSchedule (EVSE 1)", "16:42:00.776", "16:42:01.053", "Accepted"],
+    ["GetCompositeSchedule (EVSE 0)", "16:42:02.174", "16:42:02.327", "Accepted"],
+    ["SetChargingProfile 9620 (resend)", "16:45:17.611", "16:45:18.249", "Accepted"],
+    ["GetChargingProfiles (CSO)", "16:45:23.299", "16:45:23.881", "Accepted"]
+  ],
+  "station": [
+    ["Connect (empty ID)", "16:28:37.193"],
+    ["Connect STARCHARGE-01", "16:30:19.310"],
+    ["StatusNotification Unavailable", "16:30:24.693"],
+    ["BootNotification (PowerUp) Accepted", "16:32:43.586"],
+    ["SecurityEventNotification ResetOrReboot", "16:32:43.813"],
+    ["NotifyEvent", "16:32:44.058"],
+    ["StatusNotification", "16:32:44.806"],
+    ["NotifyEvent", "16:32:55.399"],
+    ["StatusNotification Available", "16:39:10.195"],
+    ["ReportChargingProfiles", "16:40:12.174"],
+    ["ReportChargingProfiles", "16:41:56.906"],
+    ["ReportChargingProfiles", "16:41:57.060"],
+    ["ReportChargingProfiles", "16:45:23.882"],
+    ["ReportChargingProfiles", "16:45:31.508"]
+  ],
+  "heartbeats": ["16:33:58.265", "16:34:56.556", "16:35:54.723", "16:40:09.254", "16:42:59.802", "16:43:57.921", "16:44:56.052"],
+  "notify_report": ["16:36:19.668", "16:38:31.048", 58],
+  "events": [
+    ["CitrineOS crash (about)", "16:46:30"],
+    ["CitrineOS back", "16:47:34"]
+  ]
+}
