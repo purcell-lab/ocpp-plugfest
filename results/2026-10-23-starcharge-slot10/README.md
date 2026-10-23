@@ -19,8 +19,8 @@ To be written when the session closes.
 |---|---|---|---|
 | 1 | **Empty station ID admitted** | Lab (CitrineOS App) | Plugfest open admission accepted a WebSocket with no station ID in the path. CitrineOS then can't store its messages or address it. The listener should refuse an empty identity (HTTP 400/404) so the station sees a clear failure |
 | 3 | **Secrets in the device model report** | Starcharge | The base report returns `ConfigurationCtrlr.Password` (a password hash), `ConfigurationCtrlr.PinPassword` (a plain PIN), the local authorisation list and setup card token, and the SIM's IMSI and ICCID. Credentials should be WriteOnly and not reported. Values are not recorded here |
-| 4 | **Station clock** | Starcharge | `ClockCtrlr.DateTime` read 15:36:19**Z** at 05:36 UTC: local time labelled as UTC (time zone `Etc/GMT-10` / `UTC+10`; the venue is on AEDT, UTC+11). `TimeSource` is Heartbeat. If the clock really is 10 h off, Absolute profiles (the lab bridge's) would apply at the wrong time; Relative profiles are unaffected |
-| 5 | **No plug-in available** | Starcharge | Connector 1 `Available=false`, AvailabilityState Unavailable: no EV can be connected, so no transaction, TxProfile or Cactus session is possible today |
+| 4 | **Station clock** | Starcharge | `ClockCtrlr.DateTime` read 15:36:19**Z** at 05:36 UTC: local time labelled as UTC (time zone `Etc/GMT-10` / `UTC+10`; the venue is on AEDT, UTC+11). `TimeSource` is Heartbeat. The station's own message timestamps are correct UTC (StatusNotification 05:39:10Z at 16:39:10 AEDT), so only the reported `DateTime` value is mislabelled |
+| 5 | **No plug-in available** | Starcharge | No EV can be connected, so no transaction, TxProfile or Cactus session is possible today. The station was **Unavailable** until the CSMS sent ChangeAvailability Operative (16:39:08); then connector 1 became Available |
 | 2 | **Station ID missing from the connection URL** | Starcharge | The CSMS URL must end with the station ID: `ws://<host>:8083/<station-id>` (OCPP 2.x Security Profile 1) |
 
 ## Set-up
@@ -87,6 +87,8 @@ Updated as testing continues. Times AEDT.
 | 16:32:46 | GetVariables with 8 entries → CALLERROR `OccurrenceConstraintViolation`. Correct: the station's `ItemsPerMessage` for GetVariables is 4 (from the base report), so the CSMS request was too large |
 | **16:32:58** | GetVariables, ChargingStation VendorName / Model / SerialNumber / FirmwareVersion only → **Accepted ×4**: **StarCharge**, model **AD20074EU1923**, serial SN2604180222, firmware **v3.20.5-standard** |
 | **16:36:19** | **GetBaseReport `FullInventory` (requested by the operator) → Accepted**; NotifyReport streamed 4 variables per message (24+ messages by 16:37:13). Highlights below |
+| **16:39:08** | **ChangeAvailability `Operative`** (whole station) → **Accepted** |
+| 16:39:10 | StatusNotification EVSE 1 / connector 1 **Available** (message timestamp 05:39:10Z, correct UTC) |
 
 ## Plan
 
