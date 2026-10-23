@@ -201,6 +201,7 @@ Updated as testing continues. Times AEDT.
 | 12:31:41 | Plug & Charge Authorize (eMAID, certificate hash data) → **Accepted**, certificate Accepted, `allowedEnergyTransfer` DC / DC_BPT / AC_single_phase / AC_two_phase / AC_three_phase / AC_BPT; TransactionEvent `Authorized` Accepted |
 | 12:31:43–12:31:44 | **NotifyEVChargingNeeds** AC_BPT, `v2xChargingParameters` maxCharge 1,234 W, maxDischarge 0 W → **Accepted** (0.7.6). **Item 16 verified.** Transaction still `EVConnected`; with maxDischarge 0 W this AC session can't exercise discharge, so the bidirectional TxProfile needs a DC_BPT (or AC_BPT with discharge) session from OCTT |
 | about 12:40 | At the user's request, the lab's automatic GetBaseReport (option `device_model_reports`) is set **off**. It takes effect at the next CitrineOS restart. The GetBaseReport at 12:31 came from this lab feature, not from an operator |
+| **12:36:28** | **TxProfile, AC path:** SetChargingProfile 9609 (TxProfile, stack 1, Relative, 300 s, 6 A, same shape as the accepted 9604) to `89b44201` (AC_BPT, `EVConnected`) → **Rejected**, no `statusInfo`. Follow-up GetChargingProfiles (CSO) → NoProfiles |
 
 ## Open items
 
