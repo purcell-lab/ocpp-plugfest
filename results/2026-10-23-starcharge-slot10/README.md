@@ -65,6 +65,7 @@ Updated as testing continues. Times AEDT.
 | 16:30:18 | The empty-ID connection closed |
 | **16:30:19** | **Starcharge connected as `STARCHARGE-01`**, OCPP 2.1, venue LAN port 8083 (CitrineOS station 112) |
 | 16:30:24 | StatusNotification EVSE 1 / connector 1 **Unavailable** → accepted. No BootNotification recorded (vendor, model, serial and firmware unknown) |
+| 16:31:21 | TriggerMessage `BootNotification` → **Rejected**. Correct per OCPP 2.x (F06.FR.17): a station whose last BootNotification was Accepted rejects a triggered one, so Starcharge's boot was accepted earlier, most likely on the 16:28:37 empty-ID connection, whose messages CitrineOS couldn't store |
 
 ## Plan
 
