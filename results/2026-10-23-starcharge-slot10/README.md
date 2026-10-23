@@ -17,7 +17,8 @@ To be written when the session closes.
 
 | # | Item | Owner | Detail |
 |---|---|---|---|
-| | | | |
+| 1 | **Empty station ID admitted** | Lab (CitrineOS App) | Plugfest open admission accepted a WebSocket with no station ID in the path. CitrineOS then can't store its messages or address it. The listener should refuse an empty identity (HTTP 400/404) so the station sees a clear failure |
+| 2 | **Station ID missing from the connection URL** | Starcharge | The CSMS URL must end with the station ID: `ws://<host>:8083/<station-id>` (OCPP 2.x Security Profile 1) |
 
 ## Set-up
 
@@ -58,6 +59,9 @@ Updated as testing continues. Times AEDT.
 |---|---|
 | about 16:19 | Test record opened. The Green was still unreachable from outside: `wss://ocpp.purcell.id.au` → Cloudflare 530 (tunnel down) and HA-OCPP 502, since about 16:10 (see the [ChargeSim report](../2026-10-23-chargesim-cactus/README.md)). Starcharge on the venue LAN works only if the Green itself is up |
 | 16:26 | HA-OCPP reachable again; CitrineOS running (the lab's simulators online). **Starcharge not connected** (no new station since 16:10); ChargeSim's 11 stations offline. **Cloudflared App in `error` state**: it lost its Cloudflare edge connections at 16:10:2x (QUIC "no recent network activity", a venue network loss) and stopped, so `wss://ocpp.purcell.id.au` returns 530. The venue LAN endpoint `ws://purcell.local:8083` doesn't depend on it |
+| 16:22:17 | CitrineOS had restarted after the 16:10 network loss (startup in its log); the lab's simulators reconnected |
+| 16:28 | Starcharge trying the venue LAN listener on port 8083 |
+| **16:28:37** | **A station connected on OCPP 2.1 with an empty station ID** (`ocppConnectionName` ""), CitrineOS station 110, admitted by open admission. It sends Heartbeats and CitrineOS answers them, but every message fails to persist (`ocpp-message-persist failed`, dead-lettered), so no BootNotification or other message is recorded and no command can target it. The connection URL had no station ID in its path (`ws://<host>:8083/` instead of `ws://<host>:8083/<station-id>`) |
 
 ## Plan
 
