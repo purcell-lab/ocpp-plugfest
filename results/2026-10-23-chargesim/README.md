@@ -1,6 +1,6 @@
 # ChargeSim against the Purcell CitrineOS CSMS (23 October 2026)
 
-**Status: in progress.** Started about 15:14 AEDT, 23 October 2026. ChargeSim (ChargeSim SCDE
+**Status: closed.** 23 October 2026, about 15:14–15:44 AEDT. ChargeSim (ChargeSim SCDE
 station simulator, "150kW Single") against the Purcell CitrineOS CSMS, on **OCPP 2.0.1**, as station
 `charger1`. Times are AEDT.
 
@@ -13,6 +13,8 @@ reported the transaction Started and then Charging. It accepted an OCPP 2.0.1 **
 power and price** (5 power steps from 50 kW to 0 W, plus an ISO 15118-2 `salesTariff` built from the
 OpenADR NSW1 price). The station applies the profile: its composite schedule follows the power steps,
 counted from the transaction start, and falls back to its 157.9 kW maximum when the profile ends.
+The meter readings agree: charging suspended (`SuspendedEVSE`) for exactly the 0 W step and resumed
+when the profile ended. A remote stop ended the transaction at 15:44:04 with 4.815 kWh delivered.
 
 **Findings for ChargeSim**
 
@@ -31,6 +33,8 @@ counted from the transaction start, and falls back to its 157.9 kW maximum when 
 | Remote start | RequestStartTransaction (EVSE 1, `C17E0001` ISO14443, remoteStartId 2310231) → **Accepted**. TransactionEvent Started (`RemoteStart`, EVConnected) then Updated (`ChargingStateChanged` → Charging, 3 phases), all `idTokenInfo` Accepted |
 | TxProfile with power and price | SetChargingProfile 9701 (Relative TxProfile, W, 300 s, 50 / 25 / 11 / 5 / 0 kW in 60 s steps, `salesTariff` with 10 price levels) → **Accepted** |
 | Profile reporting | GetChargingProfiles by ID → Accepted; ReportChargingProfiles returns profile 9701 with all 5 periods (`numberPhases: 3`, `minChargingRate: 0` added) |
+| Profile effect | TransactionEvent meter values follow the profile: `SuspendedEVSE` at 15:41:39, the start of the 0 W step (15:41:40), with energy flat at 2.250 → 2.253 kWh; back to `Charging` at 15:42:41, when the profile ended (15:42:40); then 2.253 → 4.815 kWh in 82 s, about 113 kW average without a profile |
+| Remote stop | RequestStopTransaction → **Accepted**; TransactionEvent Ended (`RemoteStop`, stoppedReason `Remote`, Transaction.End 4.815 kWh); CitrineOS answered `totalCost: 0` |
 | Composite schedule | GetCompositeSchedule (300 s, W) → Accepted, with the profile's steps counted from the transaction start and the station maximum (157 894.7 W) after the profile ends |
 
 ## Needs further investigation
@@ -39,7 +43,7 @@ counted from the transaction start, and falls back to its 157.9 kW maximum when 
 |---|---|---|---|
 | 1 | `chargingLimitSource` of CSMS profiles | ChargeSim | Profile 9701 came from the CSMS but is reported with `chargingLimitSource: "Other"`. CitrineOS's automatic GetChargingProfiles after SetChargingProfile filters on `CSO` and got `NoProfiles` (15:38:29), so CitrineOS can't see the installed profile that way. A CSMS-set profile is expected to report `CSO` |
 | 2 | `salesTariff` not reported | ChargeSim | ReportChargingProfiles for 9701 omits the `salesTariff` that was sent and accepted. It isn't clear whether ChargeSim keeps the tariff and doesn't echo it, or drops it. An ISO 15118-2 EV session would show whether the tariff reaches the EV |
-| 3 | No MeterValues seen yet | ChargeSim / lab | The transaction's energy is still 0 kWh. Check whether ChargeSim sends periodic MeterValues while Charging, and whether delivered power follows the profile's steps |
+| 3 | Energy only, no power readings | ChargeSim | ChargeSim sent energy (`Energy.Active.Import.Register`) only on TransactionEvents, at state changes; no periodic MeterValues and no power measurand (SampledDataCtrlr TxUpdatedInterval is 0). The 0 W step is proven by the suspend; the 50 / 25 / 11 / 5 kW steps can't be checked without power readings. Set TxUpdatedInterval and add `Power.Active.Import` to TxUpdatedMeasurands for a rerun |
 | 4 | Local token `1` Unknown | Lab | ChargeSim's own Authorize (`1`, type `Local`) at 15:33:45 → Unknown, as the token isn't registered in CitrineOS. Register it if ChargeSim's local-start tests need it |
 | 5 | Price in OCPP 2.0.1 | Lab | The lab can only attach an absolute AUD price schedule (`absolutePriceSchedule`) on OCPP 2.1. On 2.0.1 the price went as a `salesTariff` (price level and relative cost). CostUpdated with the AUD price only reaches the lab's command station, not `charger1`. Rerun on OCPP 2.1 for a priced TxProfile in AUD |
 
@@ -74,6 +78,7 @@ counted from the transaction start, and falls back to its 157.9 kW maximum when 
 | 15:38:29 | GetChargingProfiles `chargingLimitSource: [CSO]` (CitrineOS automatic follow-up) | **NoProfiles** (item 1) |
 | 15:38:44 | GetCompositeSchedule, EVSE 1, 300 s, W | **Accepted**: 25 kW (0 s), 11 kW (56 s), 5 kW (116 s), 0 W (176 s), 157 894.7 W (237 s), schedule start 15:38:44 |
 | 15:38:49 | GetChargingProfiles, profile ID 9701 | **Accepted**; ReportChargingProfiles at 15:38:50 with all 5 periods, `chargingLimitSource: "Other"`, no `salesTariff` (items 1, 2) |
+| 15:44:04 | RequestStopTransaction `7a798266…` | **Accepted**; TransactionEvent Ended, 4.815 kWh |
 
 ### TxProfile 9701 (power and price)
 
@@ -127,7 +132,7 @@ to its own maximum.
 
 | Transaction | Started (AEDT) | How it ended |
 |---|---|---|
-| `7a798266e4ea48beb4ccf389932a6a47` (EVSE 1) | 15:37:40, RemoteStart, `C17E0001`; Charging from 15:37:41, 3 phases | Still active |
+| `7a798266e4ea48beb4ccf389932a6a47` (EVSE 1) | 15:37:40, RemoteStart, `C17E0001`; Charging from 15:37:41, 3 phases | 15:44:04, RequestStopTransaction → Ended, stoppedReason `Remote`, **4.815 kWh** |
 
 ## Progress log
 
@@ -145,12 +150,14 @@ Updated as testing continues. Times AEDT.
 | 15:37:40 | RequestStartTransaction Accepted; transaction `7a798266…` Started, then Charging |
 | 15:38:25 | **TxProfile 9701 with power and price Accepted** |
 | 15:38:29–15:38:50 | Profile checks: CSO-filtered GetChargingProfiles → NoProfiles; GetCompositeSchedule matches the profile; GetChargingProfiles by ID → profile reported with source `Other` and no `salesTariff` |
+| 15:41:39 | TransactionEvent Updated: `SuspendedEVSE` (0 W step), 2.250 kWh |
+| 15:42:41 | TransactionEvent Updated: back to `Charging` when the profile ends, 2.253 kWh |
+| **15:44:04** | **Session stopped:** RequestStopTransaction → Accepted; TransactionEvent Ended (`Remote`), **4.815 kWh**. ChargeSim stays connected |
 
 ## Open items
 
-- Check MeterValues and delivered power against the profile steps (item 3).
+- Rerun with power readings to check each power step (item 3).
 - Ask the ChargeSim team about items 1 and 2.
 - Rerun the priced TxProfile on OCPP 2.1 for an AUD `absolutePriceSchedule` (item 5).
 - Register local token `1` if ChargeSim's local-start tests need it (item 4).
 - Restart CitrineOS between test runs so the automatic GetBaseReport switch-off takes effect.
-- Stop transaction `7a798266…` when the test closes.
