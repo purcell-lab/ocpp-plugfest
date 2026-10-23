@@ -11,7 +11,10 @@ To be written when the session closes.
 
 | Area | Result |
 |---|---|
-| | |
+| Connection | OCPP 2.1 over the venue LAN (port 8083, Security Profile 1), open admission, Heartbeat |
+| Device model | GetVariables (4 per request) and GetBaseReport FullInventory Accepted, full NotifyReport |
+| Availability | ChangeAvailability Operative Accepted; connector Unavailable → Available |
+| V2X smart charging | OCPP 2.1 **CentralSetpoint TxDefaultProfile** with charge and discharge setpoints **Accepted**, and reported back under `chargingLimitSource` CSO |
 
 ## Needs further investigation
 
@@ -20,6 +23,7 @@ To be written when the session closes.
 | 1 | **Empty station ID admitted** | Lab (CitrineOS App) | Plugfest open admission accepted a WebSocket with no station ID in the path. CitrineOS then can't store its messages or address it. The listener should refuse an empty identity (HTTP 400/404) so the station sees a clear failure |
 | 3 | **Secrets in the device model report** | Starcharge | The base report returns `ConfigurationCtrlr.Password` (a password hash), `ConfigurationCtrlr.PinPassword` (a plain PIN), the local authorisation list and setup card token, and the SIM's IMSI and ICCID. Credentials should be WriteOnly and not reported. Values are not recorded here |
 | 4 | **Station clock** | Starcharge | `ClockCtrlr.DateTime` read 15:36:19**Z** at 05:36 UTC: local time labelled as UTC (time zone `Etc/GMT-10` / `UTC+10`; the venue is on AEDT, UTC+11). `TimeSource` is Heartbeat. The station's own message timestamps are correct UTC (StatusNotification 05:39:10Z at 16:39:10 AEDT), so only the reported `DateTime` value is mislabelled |
+| 6 | **Zero setpoint dropped in ReportChargingProfiles** | Starcharge | Period 5 of 9620 was sent with `setpoint: 0`; the report omits `setpoint`. Check whether the station stores 0 or "no setpoint" for that period |
 | 5 | **No plug-in available** | Starcharge | No EV can be connected, so no transaction, TxProfile or Cactus session is possible today. The station was **Unavailable** until the CSMS sent ChangeAvailability Operative (16:39:08); then connector 1 became Available |
 | 2 | **Station ID missing from the connection URL** | Starcharge | The CSMS URL must end with the station ID: `ws://<host>:8083/<station-id>` (OCPP 2.x Security Profile 1) |
 
@@ -89,6 +93,8 @@ Updated as testing continues. Times AEDT.
 | **16:36:19** | **GetBaseReport `FullInventory` (requested by the operator) → Accepted**; NotifyReport streamed 4 variables per message (24+ messages by 16:37:13). Highlights below |
 | **16:39:08** | **ChangeAvailability `Operative`** (whole station) → **Accepted** |
 | 16:39:10 | StatusNotification EVSE 1 / connector 1 **Available** (message timestamp 05:39:10Z, correct UTC) |
+| **16:40:11** | **SetChargingProfile 9620, TxDefaultProfile** (EVSE 1, stack 0, Relative, W, 300 s, **CentralSetpoint**: setpoints +7.4 / −7.4 / +3.0 / −2.5 / 0 kW in 60 s steps, limit 7.4 kW, dischargeLimit −7.4 kW) → **Accepted** |
+| 16:40:12 | CitrineOS's automatic GetChargingProfiles (`chargingLimitSource` CSO) → **Accepted**; ReportChargingProfiles returns 9620 with all 5 periods, so Starcharge files CSMS profiles under **CSO** (correct). The last period comes back **without its `setpoint: 0`** |
 
 ## Plan
 
