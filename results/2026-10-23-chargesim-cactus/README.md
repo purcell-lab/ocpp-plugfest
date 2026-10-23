@@ -57,6 +57,15 @@ SetVariables, so CitrineOS App **0.7.7** allows SetVariables for metering variab
 | 15:55 | **CitrineOS App 0.7.7 deployed** (metering SetVariables); the restart disconnected `charger1` at 15:55:08. Transaction `7cf741b1` still listed as active |
 | 16:00 | `charger1` hadn't reconnected; ChargeSim to reconnect |
 | about 16:02 | ChargeSim to connect **11 stations, `charger1` to `charger11`**, all OCPP 2.0.1. Only `charger1` (command station) follows the Cactus limits and counts in the site reading; the others are for a multi-station session |
+| **16:03:54–16:04:09** | **All 11 stations connected** (`charger1` … `charger11`, ChargeSim SCDE "150kW Single", OCPP 2.0.1): BootNotification **Accepted** for each, StatusNotification accepted |
+| 16:04:02 | Lab GetTransactionStatus for `charger1`'s old transaction `7cf741b1` → `ongoingIndicator: false` (ChargeSim had rebooted), so CitrineOS closed it: correct |
+| 16:04:10 | The bridge's TxProfile for the closed `7cf741b1` → **Rejected** by `charger1` (correct: no such transaction) |
+| 16:04:10–16:04:22 | Each station sends Authorize with its own local token (`Local`, `1` … `11`) → **Unknown** (not registered in CitrineOS) |
+| **16:04:52–16:05** | **Metering SetVariables (App 0.7.7) to all 11:** SampledDataCtrlr TxStartedMeasurands and TxUpdatedMeasurands `Energy.Active.Import.Register,Power.Active.Import`, TxUpdatedInterval 10 s → **Accepted ×3 on every station** |
+| **16:06:51–16:07:24** | **RequestStartTransaction to all 11** (`C17E0001`, remoteStartId 2310301 … 2310311) → **Accepted by all 11** |
+| 16:07:01–16:07:35 | Transactions Started and **Charging** on `charger1` … `charger10`; `charger11` accepted the start but had no TransactionEvent by 16:08 |
+| 16:07:18 | Bridge TxProfile 9001 for `charger1`'s new transaction `dbc58468` (0 W: ODE's current import limit) → **Accepted**; `charger1` → **SuspendedEVSE** at 16:07:46, power 0, as the profile requires |
+| from 16:07:10 | **Periodic meter values with power every 10 s** (`MeterValuePeriodic`): `Power.Active.Import` in **kW** (unitOfMeasure `kW`), e.g. 112.5 kW and 150 kW on the unlimited stations, energy rising accordingly. The lab's `charger1` power sensor now updates (0 W while suspended) |
 | 15:57–15:58 | CitrineOS restarted twice during the 0.7.7 update (15:57:12, ready about 15:58). The lab's simulators reconnected; no ChargeSim station did |
 | 16:03 | **No ChargeSim station connected:** `charger1` offline since 15:55:08; `charger2` … `charger11` never seen by CitrineOS; no refused connection attempts in the CitrineOS log, so nothing from ChargeSim was reaching the lab. Endpoint check: `wss://ocpp.purcell.id.au` answers (HTTP 404 without a WebSocket upgrade, as expected). ChargeSim asked to confirm the URL: `wss://ocpp.purcell.id.au/chargerN` (internet) or `ws://purcell.local:8083/chargerN` (venue LAN) |
 
