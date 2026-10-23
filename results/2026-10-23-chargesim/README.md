@@ -11,13 +11,18 @@ To be written when the session closes.
 
 | Area | Result |
 |---|---|
-| | |
+| Connection | OCPP 2.0.1, BootNotification Accepted, Heartbeat, StatusNotification |
+| Device model | GetBaseReport Accepted, full NotifyReport |
+| Remote start | RequestStartTransaction Accepted → TransactionEvent Started / Updated with meter values, idTokenInfo Accepted |
+| Smart charging | Stepped W TxProfile with a `salesTariff` (9701) **Accepted** |
 
 ## Needs further investigation
 
 | # | Item | Owner | Detail |
 |---|---|---|---|
-| | | | |
+| 1 | **GetChargingProfiles returns NoProfiles after an accepted TxProfile** | ChargeSim | 9701 Accepted at 15:38:25, GetChargingProfiles (CSO) at 15:38:29 → NoProfiles. Expected Accepted plus ReportChargingProfiles. (CitrineOS asks for `chargingLimitSource` CSO; check whether ChargeSim files TxProfiles under a different source) |
+| 2 | **Local token `1` Unknown** | Lab | ChargeSim's own Authorize (`Local`, `1`) at 15:33:45 → Unknown. Register it if ChargeSim's local-start tests need it |
+| 3 | **Lab automatic GetBaseReport still on** | Lab | Needs a CitrineOS restart for `device_model_reports: false` (drops ChargeSim's connection) |
 
 ## Set-up
 
@@ -41,13 +46,16 @@ To be written when the session closes.
 
 | Time (AEDT) | Command | ChargeSim response |
 |---|---|---|
-| | | |
+| 15:33:55 | GetBaseReport `FullInventory` (lab automatic) | Accepted, full NotifyReport |
+| 15:37:40 | RequestStartTransaction (EVSE 1, `C17E0001`) | Accepted; transaction started |
+| 15:38:25 | SetChargingProfile 9701 (TxProfile, W, stepped 50 → 0 kW, `salesTariff`) | **Accepted** |
+| 15:38:29 | GetChargingProfiles (CSO) | NoProfiles |
 
 ## Transactions
 
 | Transaction | Started (AEDT) | How it ended |
 |---|---|---|
-| | | |
+| `7a798266` | 15:37:40 (remote start, `C17E0001`) | Charging at 15:38 |
 
 ## Progress log
 
@@ -63,6 +71,9 @@ Updated as testing continues. Times AEDT.
 | 15:33:55 | Lab automatic GetBaseReport `FullInventory` → **Accepted**; NotifyReport streams the device model (SmartChargingCtrlr ProfileStackLevel 1000, AlignedDataCtrlr Interval 900 s, SampledDataCtrlr TxUpdatedInterval 0, SecurityCtrlr OrganizationName ChargeSim) |
 | 15:36 | Heartbeats answered |
 | **15:37:40** | **RequestStartTransaction** (EVSE 1, `C17E0001` ISO14443, remoteStartId 2310231) → **Accepted**; StatusNotification Occupied |
+| 15:37:46–15:37:55 | Transaction **`7a798266`** `Started` (idToken `C17E0001`, meter value Transaction.Begin 0) → idTokenInfo **Accepted**; `Updated` with meter values → Accepted. CitrineOS shows it **Charging** |
+| **15:38:25** | **SetChargingProfile 9701** (TxProfile, stack 1, Relative, 300 s, **W**: **50 → 25 → 11 → 5 → 0 kW** at 0 / 60 / 120 / 180 / 240 s, OCPP 2.0.1 `salesTariff` "OpenADR NSW1 0.3163 AUD/kWh", ePriceLevel 4 of 10) to `7a798266` → **Accepted** |
+| 15:38:29 | GetChargingProfiles (CSO, sent by CitrineOS after the set) → **NoProfiles**: ChargeSim doesn't report the TxProfile it just accepted |
 
 
 ## Open items
