@@ -24,12 +24,12 @@ station at the Plugfest to ask for **bidirectional DC (ISO 15118-20 `DC_BPT`)**.
      `Ended` event.
   2. **No power data.** The station reports only `Energy.Active.Import.Register`, every 300 s, so
      neither delivered nor discharged power could be measured.
-  3. **8 station reboots** during the slot, several straight after an error reply from the CSMS.
+  3. **At least 9 station reboots** during the slot, several straight after an error reply from the CSMS.
 
 | Check | Result |
 |---|---|
 | Connect (Security Profile 1, plain `ws://`, port 8083, open admission) | ✅ Connected, OCPP 2.1 (`ocpp2.1`) |
-| `BootNotification` | ✅ Accepted (interval 60 s). ⚠️ 8 `PowerUp` boots during the slot |
+| `BootNotification` | ✅ Accepted (interval 60 s). ⚠️ At least 9 `PowerUp` boots during the slot |
 | Device model | ✅ `GetBaseReport FullInventory` Accepted |
 | `ChargingStationMaxProfile` in W (EVSE 0) | ✅ Accepted (profile 9503, stack level 1, 7,000 then 3,500 W) |
 | OCPP 2.1 `LocalGeneration` profile | ⛔ Not sent: CitrineOS v2.0.1's 2.1 schema has no `LocalGeneration` purpose |
@@ -115,7 +115,7 @@ the 10 kW house load, about 9.1–9.5 kW.
 |---|---|
 | 10:58:06, 10:58:58 | `Authorize` `00054321` → Unknown; **station reboot** at 10:58:44; offline at 10:59:03 |
 | about 11:00 | Lab registers `00054321` (ISO14443, Accepted) in CitrineOS |
-| 11:01:23 | **Station reboot** (the 8th); connector Occupied |
+| 11:01:23 | **Station reboot** (the 9th); connector Occupied |
 | 11:01:52 | `RequestStartTransaction` Accepted, but the station attaches it to the **old** transaction ID `6e19e5ec` |
 | 11:02:24–25 | Connector Available → Occupied (re-plug) |
 | 11:02:26 | Transaction **`c6436d1b`** `Started` (`CablePluggedIn`) |
@@ -145,7 +145,7 @@ the 10 kW house load, about 9.1–9.5 kW.
    about 1–20 s after `Charging`, straight after the NotifyEVChargingSchedule CALLERRORs. The same
    happened to `5450c339` after a reboot. The CSMS can't tell why the session stopped or how much
    energy was transferred.
-3. **Repeated reboots.** 8 `PowerUp` boots in about 50 minutes: 10:12:24, 10:12:54, 10:19:12,
+3. **Repeated reboots.** At least 9 `PowerUp` boots in about 50 minutes: 10:12:24, 10:12:54, 10:19:12,
    10:49:45, 10:50:53, 10:51:54, 10:52:45, 10:58:44 and 11:01:23. Several came within seconds of a
    refused message (Authorize CALLERROR or Unknown, NotifyEVChargingNeeds Rejected).
 4. **Meter values too sparse to verify a profile.** Only `Energy.Active.Import.Register`, every
