@@ -121,7 +121,17 @@ it was still running. Worth checking whether that's scripted or a tool bug.
 - **OCTT's `CHILDTOKEN` (`KeyCode`)** got Unknown. CitrineOS has no group or parent tokens
   configured for OCTT's group-ID test cases.
 
-## Open at 11:56 AEDT
+## Progress log
+
+Updated as testing continues. Times AEDT.
+
+| Time | Change or result |
+|---|---|
+| about 11:58 | **Lab GetTransactionStatus stopped for OCTT.** Command station moved back to `SIM-EV-EVEREST-V2G-03` (CitrineOS restart), so the gateway's transaction check no longer targets `OCTT_OCA_21_2`. Operator UI commands (SetChargingProfile and so on) still reach `OCTT_OCA_21_2`. Last GetTransactionStatus to OCTT: 11:55:07 |
+| 11:57:24 | `OCTT_OCA_21_2` disconnected by the restart. As of 12:02 it hadn't reconnected; OCTT doesn't reconnect by itself after a server-side close |
+| 12:02 | Report sent to the OCA |
+
+## Open items
 
 - Open admission is **on** with the Cloudflare tunnel up. Turn it off, or stop the tunnel, once the
   internet tests are done.
