@@ -203,6 +203,8 @@ Updated as testing continues. Times AEDT.
 | about 12:40 | At the user's request, the lab's automatic GetBaseReport (option `device_model_reports`) is set **off**. It takes effect at the next CitrineOS restart. The GetBaseReport at 12:31 came from this lab feature, not from an operator |
 | **12:36:28** | **TxProfile, AC path:** SetChargingProfile 9609 (TxProfile, stack 1, Relative, 300 s, 6 A, same shape as the accepted 9604) to `89b44201` (AC_BPT, `EVConnected`) → **Rejected**, no `statusInfo`. Follow-up GetChargingProfiles (CSO) → NoProfiles |
 | **12:37:47** | SetChargingProfile **9610** (TxProfile, stack 1, Relative, 300 s, **W**, 1,000 W, `operationMode` ChargingOnly, inside the EV's 1,234 W maximum) to `89b44201` → **Rejected**, no `statusInfo`. GetChargingProfiles → NoProfiles. Neither the unit nor the operation mode changes OCTT's answer, which points to acceptance being set by OCTT's test case (item 3) |
+| 12:39:13–12:39:22 | OCTT restarted its bidirectional test case: `89b44201` Ended (EVCommunicationLost); new transaction **`53a27180`**; Plug & Charge Authorize → Accepted with `allowedEnergyTransfer`; NotifyEVChargingNeeds AC_BPT, **ScheduledControl**, maxCharge 1,234 W, maxDischarge 0 W → Accepted |
+| **12:40:32** | **Bidirectional TxProfile 9608 with power and price** (CentralSetpoint +15 / −15 / +6 / −5 / 0 kW, 60 s steps, ±15 kW limits, 24 h `absolutePriceSchedule` from the bridge) to `53a27180` → **Rejected**, no `statusInfo`. GetChargingProfiles → NoProfiles. OCTT's EV asked for ScheduledControl with 0 W discharge, and CentralSetpoint is a DynamicControl mode with discharge, so the profile doesn't fit the session OCTT set up (item 14) |
 
 ## Open items
 
