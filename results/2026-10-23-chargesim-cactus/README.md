@@ -51,7 +51,7 @@ SetVariables, so CitrineOS App **0.7.7** allows SetVariables for metering variab
 | 15:49:54 | First bridge TxProfile 9001 (Absolute, W, 600 s: 6.83 / 6.71 / 4.21 / 0 / 1.71 / 0 kW) → **Accepted**; resent on each change, all Accepted. CitrineOS's CSO-filtered GetChargingProfiles → NoProfiles each time (ChargeSim reports source `Other`) |
 | 15:50:14 | Lab GetTransactionStatus → `ongoingIndicator: true`, `messagesInQueue: false` (correct) |
 | about 15:51 | **ALT-ALL-29 running.** User reports the limits don't look right: the charger limits are the import limit less 5.8 kW (synthetic 10 kW house load), and ChargeSim's power isn't in the site reading |
-| 15:52:48 | Operator SetVariables (TxUpdatedMeasurands, TxUpdatedInterval) → refused by the gateway (403, "Operator route denied") |
+| about 15:52 | Operator SetVariables (TxUpdatedMeasurands, TxUpdatedInterval) → refused by the gateway (403, "Operator route denied") |
 | 15:53:06 | TriggerMessage MeterValues → Accepted; MeterValues energy only, 5.875 kWh (stamped 15:45:00) |
 | 15:53:16 | GetCompositeSchedule → 4.21 kW, 0 W (2 s), 1.71 kW, 0 W: the bridge's profile is installed |
 | 15:55 | **CitrineOS App 0.7.7 deployed** (metering SetVariables); the restart disconnected `charger1` at 15:55:08. Transaction `7cf741b1` still listed as active |
