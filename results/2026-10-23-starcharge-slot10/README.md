@@ -103,6 +103,7 @@ Updated as testing continues. Times AEDT.
 | **16:41:56** | **SetChargingProfile 9630, ChargingStationMaxProfile** (EVSE 0, stack 0, Absolute from 05:42:00Z, W, 900 s: **3.7 → 2.0 → 5.0 kW** at 0 / 300 / 600 s) → **Accepted**. CitrineOS's GetChargingProfiles (CSO) → Accepted; ReportChargingProfiles returns 9630 (EVSE 0) and 9620 (EVSE 1), both `chargingLimitSource` CSO |
 | 16:42:00 | GetCompositeSchedule **EVSE 1**, 900 s → Accepted, but again a single empty period: the station maximum profile is **not** reflected in the EVSE's composite schedule |
 | 16:42:02 | GetCompositeSchedule **EVSE 0** (station), 900 s → Accepted: **3.7 kW, 2.0 kW from 298 s, 5.0 kW from 598 s**, then an empty period from 898 s, which matches 9630 started at 05:42:00Z. Each period carries `operationMode` ChargingOnly and **`numberPhases: 0`, `phaseToUse: 0`** |
+| 16:45:17 | **TxDefaultProfile 9620 resent** (same profile: CentralSetpoint +7.4 / −7.4 / +3.0 / −2.5 / 0 kW, 60 s steps) → **Accepted** at 16:45:18; replaces the installed 9620 |
 
 ## Plan
 
