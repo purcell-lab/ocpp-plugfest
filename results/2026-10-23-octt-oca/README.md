@@ -13,6 +13,36 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
   the station under test. On one reply (`ongoingIndicator: false`), CitrineOS **closed a transaction
   the station was still running**.
 
+## What works
+
+| Area | Result |
+|---|---|
+| Transport | OCTT reaches the CSMS over the internet through the Cloudflare tunnel (`wss://ocpp.purcell.id.au/<station-id>`, publicly trusted certificate, TLS 1.2+) |
+| OCPP 2.1 session | Websocket upgrade with `ocpp2.1`; **BootNotification Accepted** (interval 60 s); StatusNotification for 2 EVSEs / 3 connectors accepted |
+| Heartbeat | Answered throughout |
+| Authorisation | `Authorize` with `C17E0001` (ISO14443) → **Accepted**; an unregistered token → Unknown, which is a correct result |
+| Transactions | Repeated `TransactionEvent` Started / Updated (CablePluggedIn, ChargingStateChanged, StopAuthorized) / Ended all accepted with `idTokenInfo` Accepted; charging states tracked in CitrineOS |
+| CSMS commands | SetChargingProfile (TxProfile, Relative, A), GetChargingProfiles, RequestStartTransaction and GetBaseReport all delivered and answered; CitrineOS validated each payload against the 2.1 schema |
+| Admission controls | Unknown station IDs and wrong Basic Auth passwords are refused as designed; open admission admits any ID |
+| Lab isolation | With the bridge off and the command station moved, the lab sends nothing to OCTT except operator-triggered commands |
+
+## Needs further investigation
+
+| # | Item | Owner | Detail |
+|---|---|---|---|
+| 1 | **Lab GetTransactionStatus check closes running transactions** | Lab (CitrineOS App) | A single `ongoingIndicator: false` reply closed `6518777a` while OCTT kept running it. Stopped for this session by moving the command station; an option to switch the check off, and a less trusting close, are needed ([details](#issue-the-labs-gettransactionstatus-check-interferes-with-the-station-under-test)) |
+| 2 | **`ongoingIndicator` missing or wrong in OCTT's replies** | OCA | Replies for a named `transactionId` often omitted `ongoingIndicator`. At 11:53:36 OCTT reported `false` for a transaction it was still running |
+| 3 | **TxProfile acceptance looks scripted** | OCA + lab | The 6 A Relative TxProfile was rejected twice when addressed to the current transaction, and accepted once when addressed to a stale one, then GetChargingProfiles → NoProfiles. Rerun inside a K-section (Smart Charging) test case and compare with the expected profile (purpose, kind, unit, `transactionId`) |
+| 4 | **Basic Auth credentials** | OCA + lab | Two refusals with the provisioned `OCTT_OCA_21_1` and its password (stored value verified). CitrineOS logs no detail. Confirm what OCTT sends (username = station ID?); lab: log the username and password length of refused attempts |
+| 5 | **Station ID changed between attempts** | OCA | OCTT dialled `OCTT_OCA_21_1`, then connected as `OCTT_OCA_21_2`. Agree one ID per run so it can be provisioned with a password and open admission can be turned off |
+| 6 | **Transactions superseded without `Ended`** | OCA | Several loop transactions (`0ddf4a7a`, `2a97ab44`, `28090acb`, `acbae304`) were replaced by the next one without an `Ended` event |
+| 7 | **No meter values** | OCA | No MeterValues or power measurands in any transaction, so profiles can't be checked against delivered power |
+| 8 | **Group tokens** | Lab | `CHILDTOKEN` (`KeyCode`) → Unknown. Group or parent tokens for OCTT's group-ID test cases aren't configured in CitrineOS |
+| 9 | **Profile 1 (`ws://`) over the internet** | Lab (Cloudflare) | Port 80 is redirected to `https://` by the zone's Always Use HTTPS setting; profile 1 needs that off for `ocpp.purcell.id.au`, or OCTT on the venue LAN |
+| 10 | **Reconnect after a CSMS restart** | OCA | OCTT doesn't reconnect by itself after the server closes the socket; each lab restart needs a manual reconnect |
+| 11 | **Operational** | Lab | Each `plugfest_stations` change needs a full CitrineOS restart (about 60 s); duplicate Plugfest passwords make startup fail with a generic message; every refusal through Cloudflare is a 502 |
+| 12 | **Pending tests** | OCA + lab | TxProfile test (stepped charge limits) and a Cactus (CSIP-AUS) run with OCTT as the command station |
+
 ## Set-up
 
 | | |
