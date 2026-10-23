@@ -57,6 +57,17 @@ SetVariables, so CitrineOS App **0.7.7** allows SetVariables for metering variab
 | 15:55 | **CitrineOS App 0.7.7 deployed** (metering SetVariables); the restart disconnected `charger1` at 15:55:08. Transaction `7cf741b1` still listed as active |
 | 16:00 | `charger1` hadn't reconnected; ChargeSim to reconnect |
 | about 16:02 | ChargeSim to connect **11 stations, `charger1` to `charger11`**, all OCPP 2.0.1. Only `charger1` (command station) follows the Cactus limits and counts in the site reading; the others are for a multi-station session |
+| 15:57–15:58 | CitrineOS restarted twice during the 0.7.7 update (15:57:12, ready about 15:58). The lab's simulators reconnected; no ChargeSim station did |
+| 16:03 | **No ChargeSim station connected:** `charger1` offline since 15:55:08; `charger2` … `charger11` never seen by CitrineOS; no refused connection attempts in the CitrineOS log, so nothing from ChargeSim was reaching the lab. Endpoint check: `wss://ocpp.purcell.id.au` answers (HTTP 404 without a WebSocket upgrade, as expected). ChargeSim asked to confirm the URL: `wss://ocpp.purcell.id.au/chargerN` (internet) or `ws://purcell.local:8083/chargerN` (venue LAN) |
+
+## Lab state at 16:03
+
+| | |
+|---|---|
+| CitrineOS | App 0.7.7, ready; open admission on; command station `charger1` (offline); transaction `7cf741b1` still listed as active from before the 15:55 restart |
+| Bridge | Automation **on**, prefix `citrineos_lab_charger1`, charging-only, hold off, house load 10 kW, rating cap 15 kW. It sends nothing while `charger1` is offline |
+| ODE | Running since 15:47:58 |
+| Other session | The "HA-OCPP connector check" Claude session stood down at 15:46 and sends nothing to the lab |
 
 ## Open items
 
