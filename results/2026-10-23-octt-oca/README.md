@@ -20,9 +20,10 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 | Transport | OCTT reaches the CSMS over the internet through the Cloudflare tunnel (`wss://ocpp.purcell.id.au/<station-id>`, publicly trusted certificate, TLS 1.2+) |
 | OCPP 2.1 session | Websocket upgrade with `ocpp2.1`; **BootNotification Accepted** (interval 60 s); StatusNotification for 2 EVSEs / 3 connectors accepted |
 | Heartbeat | Answered throughout |
-| Authorisation | `Authorize` with `C17E0001` (ISO14443) → **Accepted**; an unregistered token → Unknown, which is a correct result |
+| Authorisation | `Authorize` with `C17E0001` (ISO14443) → **Accepted**; an unregistered token → Unknown, which is a correct result. Plug & Charge (eMAID + certificate, OCSP) → **Accepted** with `allowedEnergyTransfer` (0.7.5) |
+| Charging needs | OCPP 2.1 NotifyEVChargingNeeds **AC_BPT** with `v2xChargingParameters` → **Accepted** (0.7.6), needs stored, no automatic profile |
 | Transactions | Repeated `TransactionEvent` Started / Updated (CablePluggedIn, ChargingStateChanged, StopAuthorized) / Ended all accepted with `idTokenInfo` Accepted; charging states tracked in CitrineOS |
-| CSMS commands | SetChargingProfile (TxProfile, Relative, A), GetChargingProfiles, RequestStartTransaction and GetBaseReport all delivered and answered; CitrineOS validated each payload against the 2.1 schema |
+| CSMS commands | SetChargingProfile (TxProfile, Relative, A), GetChargingProfiles, RequestStartTransaction and GetBaseReport all delivered and answered (GetBaseReport Accepted with a full NotifyReport at 12:31); CitrineOS validated each payload against the 2.1 schema |
 | Admission controls | Unknown station IDs and wrong Basic Auth passwords are refused as designed; open admission admits any ID |
 | Lab isolation | With the bridge off and the command station moved, the lab sends nothing to OCTT except operator-triggered commands |
 
@@ -43,7 +44,7 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 | 11 | **Operational** | Lab | Each `plugfest_stations` change needs a full CitrineOS restart (about 60 s); duplicate Plugfest passwords make startup fail with a generic message; every refusal through Cloudflare is a 502 |
 | 12 | **Pending tests** | OCA + lab | Stepped TxProfile accepted (12:06:32) but its effect isn't observable without meter values. A Cactus (CSIP-AUS) run needs OCTT as the command station, which turns the GetTransactionStatus check (item 1) back on |
 | 15 | **`allowedEnergyTransfer` missing from AuthorizeResponse** (fixed in 0.7.5, verified 12:26:11) | Lab (CitrineOS) | CitrineOS v2.0.1 doesn't set the OCPP 2.1 `allowedEnergyTransfer` field, so every authorised session defaults to charging only. Bidirectional (`DC_BPT`, `AC_BPT`) sessions and CentralSetpoint discharge can't be negotiated. Fix: a build-time patch that adds the lab's allowed modes to an Accepted AuthorizeResponse (and NotifyAllowedEnergyTransfer for an ongoing session) |
-| 16 | **AC V2X charging needs rejected** (fixed in 0.7.6, to verify) | Lab (CitrineOS) | OCPP 2.1 AC needs with `v2xChargingParameters` but no `acChargingParameters` (AC_BPT, and AC with V2X parameters) are Rejected: upstream requires `acChargingParameters` for AC, and the 0.7.4 patch covers only the DC modes. Fix: also accept needs that carry `v2xChargingParameters`, store them, no automatic profile |
+| 16 | **AC V2X charging needs rejected** (fixed in 0.7.6, verified 12:31:44) | Lab (CitrineOS) | OCPP 2.1 AC needs with `v2xChargingParameters` but no `acChargingParameters` (AC_BPT, and AC with V2X parameters) are Rejected: upstream requires `acChargingParameters` for AC, and the 0.7.4 patch covers only the DC modes. Fix: also accept needs that carry `v2xChargingParameters`, store them, no automatic profile |
 | 14 | **Bidirectional (V2X) TxProfile** | OCA | CentralSetpoint TxProfile Rejected without a reason. Which OCTT test case exercises OCPP 2.1 V2X (Q-section / `V2XChargingCtrlr`), and does OCTT need an authorised `DC_BPT` session (NotifyEVChargingNeeds) before it accepts one? |
 | 13 | **Plug & Charge (ISO 15118) authorisation** | Lab | eMAID with certificate hash data → Unknown / `ContractCancelled`. The certificate check itself passed (OCSP); the eMAID token wasn't registered. Registered at about 12:15. **Confirmed at 12:16:49:** Authorize → Accepted / certificate Accepted |
 
@@ -196,6 +197,9 @@ Updated as testing continues. Times AEDT.
 | 12:26:15 | **NotifyEVChargingNeeds** `requestedEnergyTransfer` **AC_BPT**, `availableEnergyTransfer` AC_single_phase / AC_two_phase / AC_three_phase / AC_BPT / AC_BPT_DER / AC_DER, `v2xChargingParameters` maxCharge 1,234 W, maxDischarge 0 W, no `acChargingParameters` → **Rejected** (item 16). OCTT's session is on the AC path, not DC |
 | about 12:29 | **CitrineOS 0.7.6 deployed (Green only)**: the charging needs patch also accepts any OCPP 2.1 needs with `v2xChargingParameters` (OCTT's AC_BPT), stores them and sends no automatic profile (item 16) |
 | 12:31:12 | OCTT back online as `OCTT_OCA_21_2` after the restart. No new transaction or charging needs yet; `8134ad15` still listed as active from before the restart |
+| 12:31:23 | New transaction **`89b44201`** (`CablePluggedIn`). Lab GetBaseReport → **Accepted**; NotifyReport streams the device model (SmartChargingCtrlr PeriodsPerSchedule 10, AlignedDataCtrlr Interval 10 s, TxStartedMeasurands Energy.Active.Import.Register) |
+| 12:31:41 | Plug & Charge Authorize (eMAID, certificate hash data) → **Accepted**, certificate Accepted, `allowedEnergyTransfer` DC / DC_BPT / AC_single_phase / AC_two_phase / AC_three_phase / AC_BPT; TransactionEvent `Authorized` Accepted |
+| 12:31:43–12:31:44 | **NotifyEVChargingNeeds** AC_BPT, `v2xChargingParameters` maxCharge 1,234 W, maxDischarge 0 W → **Accepted** (0.7.6). **Item 16 verified.** Transaction still `EVConnected`; with maxDischarge 0 W this AC session can't exercise discharge, so the bidirectional TxProfile needs a DC_BPT (or AC_BPT with discharge) session from OCTT |
 
 ## Open items
 
