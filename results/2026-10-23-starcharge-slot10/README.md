@@ -18,7 +18,9 @@ To be written when the session closes.
 | # | Item | Owner | Detail |
 |---|---|---|---|
 | 1 | **Empty station ID admitted** | Lab (CitrineOS App) | Plugfest open admission accepted a WebSocket with no station ID in the path. CitrineOS then can't store its messages or address it. The listener should refuse an empty identity (HTTP 400/404) so the station sees a clear failure |
-| 3 | **GetVariables with 8 entries → `OccurrenceConstraintViolation`** | Starcharge | 4 entries succeed. Possibly a low `DeviceDataCtrlr.ItemsPerMessage` (GetVariables), or one of the EVSE / V2X entries; OCPP expects per-item `attributeStatus` (e.g. UnknownComponent) rather than a CALLERROR for unsupported variables |
+| 3 | **Secrets in the device model report** | Starcharge | The base report returns `ConfigurationCtrlr.Password` (a password hash), `ConfigurationCtrlr.PinPassword` (a plain PIN), the local authorisation list and setup card token, and the SIM's IMSI and ICCID. Credentials should be WriteOnly and not reported. Values are not recorded here |
+| 4 | **Station clock** | Starcharge | `ClockCtrlr.DateTime` read 15:36:19**Z** at 05:36 UTC: local time labelled as UTC (time zone `Etc/GMT-10` / `UTC+10`; the venue is on AEDT, UTC+11). `TimeSource` is Heartbeat. If the clock really is 10 h off, Absolute profiles (the lab bridge's) would apply at the wrong time; Relative profiles are unaffected |
+| 5 | **No plug-in available** | Starcharge | Connector 1 `Available=false`, AvailabilityState Unavailable: no EV can be connected, so no transaction, TxProfile or Cactus session is possible today |
 | 2 | **Station ID missing from the connection URL** | Starcharge | The CSMS URL must end with the station ID: `ws://<host>:8083/<station-id>` (OCPP 2.x Security Profile 1) |
 
 ## Set-up
@@ -33,6 +35,21 @@ To be written when the session closes.
 | Bridge | Carried over: automation on, prefix `citrineos_lab_charger1`, **charging-only**. For a V2G station: prefix `citrineos_lab_<station-id>`, charging-only **off** (CentralSetpoint periods), lab hold as needed, export mode for discharge tests |
 | Tokens | `C17E0001`, `00054321` (ISO14443), eMAID `AAAAAAAAAAAAAA` (Plug & Charge), all Accepted |
 | Lab automatics | Automatic GetBaseReport off |
+
+## Device model (GetBaseReport, 16:36)
+
+| Area | Reported |
+|---|---|
+| Station | StarCharge AD20074EU1923, firmware v3.20.5-standard, 1 EVSE / 1 connector, **single phase**, 35 A max (charge and discharge), grid power 7.4 kW, grid code AUA, grid type TN, country AU |
+| V2X | `V2XChargingCtrlr` enabled; energy transfer **DC, DC_BPT**; operation modes **ChargingOnly, CentralSetpoint, LocalLoadBalancing** |
+| Smart charging | Rate unit **W**, ProfileStackLevel 99, PeriodsPerSchedule 1024, SetpointPriority CSMS, no profiles installed |
+| Metering | SampledDataCtrlr TxUpdatedInterval 10 s; AlignedDataCtrlr off (60 s interval) |
+| Grid (AS/NZS 4777.2) | Active power rise/fall and reconnect rate 16.67 %/min, reconnect wait 60 s, voltage limits 0.89–1.10 pu, frequency 47.5–50.15 Hz, anti-islanding on |
+| Local controls | LocalLoadBalancing and PeakShifting enabled; PV and DLC off; external GCP meter (EM112) configured but off |
+| Availability | Connector 1 `Available=false`, EVSE and station AvailabilityState **Unavailable** |
+| Device data limits | ItemsPerMessage 4 for GetVariables, SetVariables and GetReport (BytesPerMessage 5000) |
+| Security | SecurityProfile 0, Basic Auth password unset, 3 certificates installed |
+| Clock | Time zone `Etc/GMT-10`, NTP manual, time source Heartbeat |
 
 ## Connection
 
@@ -67,8 +84,9 @@ Updated as testing continues. Times AEDT.
 | **16:30:19** | **Starcharge connected as `STARCHARGE-01`**, OCPP 2.1, venue LAN port 8083 (CitrineOS station 112) |
 | 16:30:24 | StatusNotification EVSE 1 / connector 1 **Unavailable** → accepted. No BootNotification recorded (vendor, model, serial and firmware unknown) |
 | 16:31:21 | TriggerMessage `BootNotification` → **Rejected**. Correct per OCPP 2.x (F06.FR.17): a station whose last BootNotification was Accepted rejects a triggered one, so Starcharge's boot was accepted earlier, most likely on the 16:28:37 empty-ID connection, whose messages CitrineOS couldn't store |
-| 16:32:46 | GetVariables with 8 entries (ChargingStation identity, EVSE 1 Power MaxSet and AvailabilityState, V2XChargingCtrlr SupportedOperationModes, SmartChargingCtrlr RateUnit) → **CALLERROR `OccurrenceConstraintViolation`** (no description) |
+| 16:32:46 | GetVariables with 8 entries → CALLERROR `OccurrenceConstraintViolation`. Correct: the station's `ItemsPerMessage` for GetVariables is 4 (from the base report), so the CSMS request was too large |
 | **16:32:58** | GetVariables, ChargingStation VendorName / Model / SerialNumber / FirmwareVersion only → **Accepted ×4**: **StarCharge**, model **AD20074EU1923**, serial SN2604180222, firmware **v3.20.5-standard** |
+| **16:36:19** | **GetBaseReport `FullInventory` (requested by the operator) → Accepted**; NotifyReport streamed 4 variables per message (24+ messages by 16:37:13). Highlights below |
 
 ## Plan
 
