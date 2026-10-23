@@ -31,7 +31,7 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 | # | Item | Owner | Detail |
 |---|---|---|---|
 | 1 | **Lab GetTransactionStatus check closes running transactions** | Lab (CitrineOS App) | A single `ongoingIndicator: false` reply closed `6518777a` while OCTT kept running it. Stopped for this session by moving the command station; an option to switch the check off, and a less trusting close, are needed ([details](#issue-the-labs-gettransactionstatus-check-interferes-with-the-station-under-test)) |
-| 2 | **`ongoingIndicator` missing or wrong in OCTT's replies** | OCA | Replies for a named `transactionId` often omitted `ongoingIndicator`. At 11:53:36 OCTT reported `false` for a transaction it was still running |
+| 2 | **`ongoingIndicator` missing or wrong in OCTT's replies** | OCA | `ongoingIndicator` is expected in GetTransactionStatusResponse when a `transactionId` is given. 4 of OCTT's 5 replies left it out, and 1 reported `false` for a transaction it was still running ([details](#issue-the-labs-gettransactionstatus-check-interferes-with-the-station-under-test)) |
 | 3 | **TxProfile acceptance looks scripted** | OCA + lab | The 6 A Relative TxProfile was rejected twice when addressed to the current transaction (11:51, 11:55) and accepted when addressed to a stale one (11:53). After the GetTransactionStatus check stopped, it was **accepted for the current transaction** (12:02:47). Every acceptance was followed by GetChargingProfiles → NoProfiles, so OCTT doesn't report the installed profile. Rerun inside a K-section (Smart Charging) test case and compare with the expected profile (purpose, kind, unit, `transactionId`) |
 | 4 | **Basic Auth credentials** | OCA + lab | Two refusals with the provisioned `OCTT_OCA_21_1` and its password (stored value verified). CitrineOS logs no detail. Confirm what OCTT sends (username = station ID?); lab: log the username and password length of refused attempts |
 | 5 | **Station ID changed between attempts** | OCA | OCTT dialled `OCTT_OCA_21_1`, then connected as `OCTT_OCA_21_2`. Agree one ID per run so it can be provisioned with a password and open admission can be turned off |
@@ -129,9 +129,18 @@ lock-outs). It isn't part of any OCPP test case.
    `Ended` event" should be read with that in mind: the station's reply was the trigger, but the CSMS
    asked the question.
 
-**For OCTT / the OCA.** OCPP 2.x expects `ongoingIndicator` in the reply when the request names a
-`transactionId`. Several replies omitted it, and at 11:53:36 OCTT reported `false` for a transaction
-it was still running. Worth checking whether that's scripted or a tool bug.
+**For OCTT / the OCA.** `ongoingIndicator` is **expected** in a GetTransactionStatusResponse when
+the request names a `transactionId` (OCPP 2.x use case E14, Check Transaction Status: the station
+reports whether that transaction is still ongoing; the field is left out only when the request has no
+`transactionId`). OCTT's replies didn't meet that:
+
+| Transaction | OCTT reply | Expected |
+|---|---|---|
+| `0ddf4a7a` (11:48:37), `28090acb` (11:51:06), `acbae304` (11:52:36), `4383bf1d` (11:55:07) | `messagesInQueue: true`, **`ongoingIndicator` missing** | `ongoingIndicator: true` (all four were running) |
+| `6518777a` (11:53:36) | `messagesInQueue: false`, **`ongoingIndicator: false`** | `ongoingIndicator: true`: OCTT kept the transaction running until its `Ended` at 11:54:53 |
+
+So four replies left out a required field, and one gave the wrong value. The wrong value is what made
+CitrineOS close the transaction early.
 
 **For the lab (CitrineOS server App).**
 1. Add an option to turn the GetTransactionStatus check off, and turn it off for conformance-tool and
