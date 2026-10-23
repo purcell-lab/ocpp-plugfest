@@ -82,7 +82,8 @@ meets real vendor stations**, one slot each.
 |---|---|---|---|
 | **Pre‑Plugfest** | **EVerest AC** simulator | OCPP 2.1 (2.0.1 fallback), AC charging | Home lab |
 | **Pre‑Plugfest** | **EVerest DC V2G** simulator | OCPP 2.1, ISO 15118-20 DC_BPT, ±25 kW | Home lab |
-| Slot 1 | **OCTT (DNV)** | OCPP conformance test tool acting as a station ([23 Oct report](results/2026-10-23-octt-dnv/README.md)) | `ws://purcell.local:8083/<station-id>` |
+| Slot 1 | **OCTT (DNV)** | OCPP conformance test tool acting as a station | `ws://purcell.local:8083/<station-id>` |
+| Extra | **OCTT (OCA)** | OCPP 2.1 conformance test tool run by the Open Charge Alliance, over the internet ([23 Oct report](results/2026-10-23-octt-oca/README.md)) | `wss://ocpp.purcell.id.au/<station-id>` |
 | Slot 2 | **EVX Australia** | AC charging station, OCPP 2.0.1 and 1.6J ([slot report](results/2026-10-22-evx-slot2/README.md)) | `ws://purcell.local:8083/<station-id>` |
 | Slot 5 | **EVSE** | Charging station | `ws://purcell.local:8083/<station-id>` |
 | Slot 6 | **Trialog** | DC V2G charging station, OCPP 2.1 ([slot report](results/2026-10-23-trialog-slot6/README.md)) | `ws://purcell.local:8083/<station-id>` |

@@ -1,6 +1,6 @@
-# DNV OCTT against the Purcell CitrineOS CSMS (23 October 2026)
+# OCA OCTT against the Purcell CitrineOS CSMS (23 October 2026)
 
-**23 October 2026, about 11:14–11:56 AEDT.** DNV's OCPP Compliance Test Tool (OCTT) connected to the
+**23 October 2026, about 11:14–11:56 AEDT.** the Open Charge Alliance's OCPP Compliance Test Tool (OCTT), run by the OCA, connected to the
 Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.purcell.id.au`), on
 **OCPP 2.1**, as station `OCTT_OCA_21_2`.
 
@@ -17,7 +17,7 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 
 | | |
 |---|---|
-| Test tool | DNV OCTT, BootNotification vendor `OCA`, model `2019`, firmware `Release_2026-09`, OCPP 2.1, 2 EVSEs |
+| Test tool | OCTT (run by the OCA), BootNotification vendor `OCA`, model `2019`, firmware `Release_2026-09`, OCPP 2.1, 2 EVSEs |
 | CSMS | CitrineOS v2.0.1 in the CitrineOS server App 0.7.4, on a Home Assistant Green |
 | Endpoint | `wss://ocpp.purcell.id.au/<station-id>` (Cloudflare Tunnel to the Plugfest listener on 8083). `ws://` on port 80 is redirected to `https://` by the zone's Always Use HTTPS setting |
 | Admission | Provisioned stations with Basic Auth, then **open admission** from about 11:38 AEDT |
@@ -99,7 +99,7 @@ lock-outs). It isn't part of any OCPP test case.
    `Ended` event" should be read with that in mind: the station's reply was the trigger, but the CSMS
    asked the question.
 
-**For OCTT / DNV.** OCPP 2.x expects `ongoingIndicator` in the reply when the request names a
+**For OCTT / the OCA.** OCPP 2.x expects `ongoingIndicator` in the reply when the request names a
 `transactionId`. Several replies omitted it, and at 11:53:36 OCTT reported `false` for a transaction
 it was still running. Worth checking whether that's scripted or a tool bug.
 
@@ -125,4 +125,4 @@ it was still running. Worth checking whether that's scripted or a tool bug.
 
 - Open admission is **on** with the Cloudflare tunnel up. Turn it off, or stop the tunnel, once the
   internet tests are done.
-- The TxProfile and Cactus runs with OCTT are pending a smart-charging test case from DNV.
+- The TxProfile and Cactus runs with OCTT are pending a smart-charging test case from the OCA.

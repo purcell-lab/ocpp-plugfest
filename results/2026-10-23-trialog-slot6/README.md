@@ -129,7 +129,7 @@ the 10 kW house load, about 9.1–9.5 kW.
 > **Note (added 23 October, after the OCTT session):** the `GetTransactionStatus` calls at 10:54:02
 > and 11:02:32 were sent by the lab gateway's automatic transaction check, not by an operator.
 > CitrineOS closed the transactions because of the `ongoingIndicator: false` replies. See
-> [the OCTT report](../2026-10-23-octt-dnv/README.md#issue-the-labs-gettransactionstatus-check-interferes-with-the-station-under-test).
+> [the OCA OCTT report](../2026-10-23-octt-oca/README.md#issue-the-labs-gettransactionstatus-check-interferes-with-the-station-under-test).
 
 ## Issues for Trialog
 
