@@ -43,7 +43,7 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 | 11 | **Operational** | Lab | Each `plugfest_stations` change needs a full CitrineOS restart (about 60 s); duplicate Plugfest passwords make startup fail with a generic message; every refusal through Cloudflare is a 502 |
 | 12 | **Pending tests** | OCA + lab | Stepped TxProfile accepted (12:06:32) but its effect isn't observable without meter values. A Cactus (CSIP-AUS) run needs OCTT as the command station, which turns the GetTransactionStatus check (item 1) back on |
 | 14 | **Bidirectional (V2X) TxProfile** | OCA | CentralSetpoint TxProfile Rejected without a reason. Which OCTT test case exercises OCPP 2.1 V2X (Q-section / `V2XChargingCtrlr`), and does OCTT need an authorised `DC_BPT` session (NotifyEVChargingNeeds) before it accepts one? |
-| 13 | **Plug & Charge (ISO 15118) authorisation** | Lab | eMAID with certificate hash data → Unknown / `ContractCancelled`. The lab CSMS has no contract-certificate validation (OCSP to the OCTT test PKI) or eMAID tokens configured |
+| 13 | **Plug & Charge (ISO 15118) authorisation** | Lab | eMAID with certificate hash data → Unknown / `ContractCancelled`. The certificate check itself passed (OCSP); the eMAID token wasn't registered. Registered at about 12:15; to confirm on OCTT's next Plug & Charge Authorize |
 
 ## Set-up
 
@@ -181,6 +181,8 @@ Updated as testing continues. Times AEDT.
 | **12:08:22** | **Bidirectional TxProfile:** SetChargingProfile 9606 (TxProfile, stack 1, Relative, W, 300 s, OCPP 2.1 **CentralSetpoint**, `limit` 15 kW, `dischargeLimit` −15 kW, setpoints **+15 / −15 / +6 / −5 / 0 kW**, 60 s each) to `4ab751aa` → **Rejected**, no `statusInfo`. GetChargingProfiles → NoProfiles. `4ab751aa` was EVConnected and its Plug & Charge authorisation had been refused, so the rejection may reflect that, or that OCTT's station profile doesn't support V2X (new item 14) |
 | 12:10:17–12:10:23 | OCTT restarts its session: `4ab751aa` Ended (`EVDisconnected`); new transaction **`958d8179`** (`CablePluggedIn`, EVConnected); `Authorize` eMAID with certificate hash → Unknown / `ContractCancelled` (same Plug & Charge case) |
 | **12:11:07** | **Bidirectional TxProfile with price schedule:** SetChargingProfile 9607 (as 9606, plus `absolutePriceSchedule`: AUD, ISO 15118-20 Price Algorithm 1 (Power), one rule stack of 600 s at 0.318 AUD/kWh from 0 W, time anchor 12:10:00) to `958d8179` → **Rejected**, no `statusInfo`. GetChargingProfiles → NoProfiles. The transaction wasn't authorised (Plug & Charge refused) and no `DC_BPT` charging needs had been sent |
+| about 12:15 | **Plug & Charge enabled for OCTT.** CitrineOS already validated OCTT's contract certificate (OCSP to the OCTT test PKI) as Accepted; the `ContractCancelled` result came from OCPP C07.FR.13 because the eMAID wasn't a known token. Registered the eMAID `AAAAAAAAAAAAAA` (type `eMAID`, Accepted) in CitrineOS |
+| about 12:15 | Bridge price schedule captured: the full 24 h `absolutePriceSchedule` from the bridge's last TxProfile (11:02:28 AEDT, OpenADR NSW1 import forecast, 48 × 30 min stacks, 0.184–0.445 AUD/kWh): [`bridge-price-schedule.json`](bridge-price-schedule.json). The bidirectional CentralSetpoint TxProfile with that schedule: [`bidirectional-txprofile-priced.json`](bidirectional-txprofile-priced.json) |
 
 ## Open items
 

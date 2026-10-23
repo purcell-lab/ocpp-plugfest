@@ -1,0 +1,789 @@
+[
+  2,
+  "<message-id>",
+  "SetChargingProfile",
+  {
+    "evseId": 1,
+    "chargingProfile": {
+      "id": 9608,
+      "stackLevel": 1,
+      "chargingProfilePurpose": "TxProfile",
+      "chargingProfileKind": "Relative",
+      "transactionId": "<current transaction id>",
+      "chargingSchedule": [
+        {
+          "id": 9608,
+          "duration": 300,
+          "chargingRateUnit": "W",
+          "chargingSchedulePeriod": [
+            {
+              "startPeriod": 0,
+              "operationMode": "CentralSetpoint",
+              "limit": 15000,
+              "setpoint": 15000,
+              "dischargeLimit": -15000
+            },
+            {
+              "startPeriod": 60,
+              "operationMode": "CentralSetpoint",
+              "limit": 15000,
+              "setpoint": -15000,
+              "dischargeLimit": -15000
+            },
+            {
+              "startPeriod": 120,
+              "operationMode": "CentralSetpoint",
+              "limit": 15000,
+              "setpoint": 6000,
+              "dischargeLimit": -15000
+            },
+            {
+              "startPeriod": 180,
+              "operationMode": "CentralSetpoint",
+              "limit": 15000,
+              "setpoint": -5000,
+              "dischargeLimit": -15000
+            },
+            {
+              "startPeriod": 240,
+              "operationMode": "CentralSetpoint",
+              "limit": 15000,
+              "setpoint": 0,
+              "dischargeLimit": -15000
+            }
+          ],
+          "absolutePriceSchedule": {
+            "timeAnchor": "2026-10-23T00:00:00+00:00",
+            "priceScheduleID": 29878560,
+            "priceScheduleDescription": "OpenADR import forecast, AUD/kWh incl. GST",
+            "currency": "AUD",
+            "language": "en",
+            "priceAlgorithm": "urn:iso:std:iso:15118:-20:PriceAlgorithm:1-Power",
+            "priceRuleStacks": [
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 318,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 318,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 318,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 318,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 318,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 318,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 318,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 316,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 316,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 316,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 316,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 316,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 369,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 395,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 395,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 417,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 445,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 417,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 354,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 366,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 366,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 366,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 320,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 246,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 246,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 300,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 320,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 320,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 300,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 278,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 300,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 300,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 300,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 300,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 300,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 300,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 229,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 229,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 229,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 215,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 195,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 202,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 202,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 201,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 188,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 184,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 184,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "duration": 1800,
+                "priceRule": [
+                  {
+                    "energyFee": {
+                      "value": 185,
+                      "exponent": -3
+                    },
+                    "powerRangeStart": {
+                      "value": 0,
+                      "exponent": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+]
