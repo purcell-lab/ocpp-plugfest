@@ -42,6 +42,7 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 | 10 | **Reconnect after a CSMS restart** | OCA | OCTT doesn't reconnect by itself after the server closes the socket; each lab restart needs a manual reconnect |
 | 11 | **Operational** | Lab | Each `plugfest_stations` change needs a full CitrineOS restart (about 60 s); duplicate Plugfest passwords make startup fail with a generic message; every refusal through Cloudflare is a 502 |
 | 12 | **Pending tests** | OCA + lab | Stepped TxProfile accepted (12:06:32) but its effect isn't observable without meter values. A Cactus (CSIP-AUS) run needs OCTT as the command station, which turns the GetTransactionStatus check (item 1) back on |
+| 15 | **`allowedEnergyTransfer` missing from AuthorizeResponse** | Lab (CitrineOS) | CitrineOS v2.0.1 doesn't set the OCPP 2.1 `allowedEnergyTransfer` field, so every authorised session defaults to charging only. Bidirectional (`DC_BPT`, `AC_BPT`) sessions and CentralSetpoint discharge can't be negotiated. Fix: a build-time patch that adds the lab's allowed modes to an Accepted AuthorizeResponse (and NotifyAllowedEnergyTransfer for an ongoing session) |
 | 14 | **Bidirectional (V2X) TxProfile** | OCA | CentralSetpoint TxProfile Rejected without a reason. Which OCTT test case exercises OCPP 2.1 V2X (Q-section / `V2XChargingCtrlr`), and does OCTT need an authorised `DC_BPT` session (NotifyEVChargingNeeds) before it accepts one? |
 | 13 | **Plug & Charge (ISO 15118) authorisation** | Lab | eMAID with certificate hash data → Unknown / `ContractCancelled`. The certificate check itself passed (OCSP); the eMAID token wasn't registered. Registered at about 12:15. **Confirmed at 12:16:49:** Authorize → Accepted / certificate Accepted |
 
@@ -185,6 +186,7 @@ Updated as testing continues. Times AEDT.
 | about 12:15 | Bridge price schedule captured: the full 24 h `absolutePriceSchedule` from the bridge's last TxProfile (11:02:28 AEDT, OpenADR NSW1 import forecast, 48 × 30 min stacks, 0.184–0.445 AUD/kWh): [`bridge-price-schedule.json`](bridge-price-schedule.json). The bidirectional CentralSetpoint TxProfile with that schedule: [`bidirectional-txprofile-priced.json`](bidirectional-txprofile-priced.json) |
 | 12:16:43–12:16:44 | New transaction **`0ed5b6f0`** (`CablePluggedIn`, EVConnected) |
 | **12:16:49** | **Plug & Charge Authorize Accepted:** eMAID `AAAAAAAAAAAAAA` with ISO 15118 certificate hash data → `idTokenInfo` **Accepted**, `certificateStatus` **Accepted** (OCSP check against the OCTT test PKI, about 4.4 s) |
+| about 12:20 | **OCTT reports `allowedEnergyTransfer` missing** from the AuthorizeResponse. Confirmed in CitrineOS v2.0.1: the OCPP 2.1 Authorize handler never sets it, and per OCPP 2.1 an omitted `allowedEnergyTransfer` **defaults to charging only**. So no session authorised by this CSMS may use bidirectional transfer, which explains the rejected CentralSetpoint TxProfiles (new item 15) |
 
 ## Open items
 
