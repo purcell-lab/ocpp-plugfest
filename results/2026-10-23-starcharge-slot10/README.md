@@ -18,13 +18,14 @@ To be written when the session closes.
 | # | Item | Owner | Detail |
 |---|---|---|---|
 | 1 | **Empty station ID admitted** | Lab (CitrineOS App) | Plugfest open admission accepted a WebSocket with no station ID in the path. CitrineOS then can't store its messages or address it. The listener should refuse an empty identity (HTTP 400/404) so the station sees a clear failure |
+| 3 | **GetVariables with 8 entries → `OccurrenceConstraintViolation`** | Starcharge | 4 entries succeed. Possibly a low `DeviceDataCtrlr.ItemsPerMessage` (GetVariables), or one of the EVSE / V2X entries; OCPP expects per-item `attributeStatus` (e.g. UnknownComponent) rather than a CALLERROR for unsupported variables |
 | 2 | **Station ID missing from the connection URL** | Starcharge | The CSMS URL must end with the station ID: `ws://<host>:8083/<station-id>` (OCPP 2.x Security Profile 1) |
 
 ## Set-up
 
 | | |
 |---|---|
-| Station | Starcharge V2G charging station, station ID **`STARCHARGE-01`**, **OCPP 2.1**, EVSE 1 / connector 1 (no BootNotification recorded yet) |
+| Station | StarCharge **AD20074EU1923**, firmware **v3.20.5-standard**, serial SN2604180222 (from GetVariables; no BootNotification recorded). Station ID **`STARCHARGE-01`**, **OCPP 2.1**, EVSE 1 / connector 1 |
 | CSMS | CitrineOS v2.0.1 in the CitrineOS server App **0.7.7** (Green build only: OCPP 2.1 DC_BPT and V2X charging needs accepted, `allowedEnergyTransfer` in AuthorizeResponse, metering-only SetVariables) |
 | Endpoint | Venue LAN, port 8083, Security Profile 1 (`ws://<green>:8083/STARCHARGE-01`) |
 | Admission | Plugfest **open admission on** (any station ID, no password) |
@@ -66,6 +67,8 @@ Updated as testing continues. Times AEDT.
 | **16:30:19** | **Starcharge connected as `STARCHARGE-01`**, OCPP 2.1, venue LAN port 8083 (CitrineOS station 112) |
 | 16:30:24 | StatusNotification EVSE 1 / connector 1 **Unavailable** → accepted. No BootNotification recorded (vendor, model, serial and firmware unknown) |
 | 16:31:21 | TriggerMessage `BootNotification` → **Rejected**. Correct per OCPP 2.x (F06.FR.17): a station whose last BootNotification was Accepted rejects a triggered one, so Starcharge's boot was accepted earlier, most likely on the 16:28:37 empty-ID connection, whose messages CitrineOS couldn't store |
+| 16:32:46 | GetVariables with 8 entries (ChargingStation identity, EVSE 1 Power MaxSet and AvailabilityState, V2XChargingCtrlr SupportedOperationModes, SmartChargingCtrlr RateUnit) → **CALLERROR `OccurrenceConstraintViolation`** (no description) |
+| **16:32:58** | GetVariables, ChargingStation VendorName / Model / SerialNumber / FirmwareVersion only → **Accepted ×4**: **StarCharge**, model **AD20074EU1923**, serial SN2604180222, firmware **v3.20.5-standard** |
 
 ## Plan
 
