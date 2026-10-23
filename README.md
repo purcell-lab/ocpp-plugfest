@@ -224,6 +224,7 @@ prices through open standards on every link.
 | [`demo/`](demo/DEMO.md) | Demonstration script, scenarios and fall-backs |
 | [`design/`](design/dynamic-pricing.md) | Design notes: dynamic electricity prices over OCPP 2.1 |
 | [`results/`](results/) | Dated test results with raw data |
+| [`results/2026-10-23-retrospective/`](results/2026-10-23-retrospective/README.md) | Plugfest retrospective: what went well, recurring problems, what to change |
 | [`cactus/`](cactus/README.md) | Cactus CSIP-AUS test reports, charts and raw controls |
 | [`plugfest-lab/`](plugfest-lab/README.md) | CSMS-under-test runbook, setup, acceptance plan, lab records |
 | [`TODO.md`](TODO.md) | Plugfest to-do |
