@@ -42,6 +42,7 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 | 10 | **Reconnect after a CSMS restart** | OCA | OCTT doesn't reconnect by itself after the server closes the socket; each lab restart needs a manual reconnect |
 | 11 | **Operational** | Lab | Each `plugfest_stations` change needs a full CitrineOS restart (about 60 s); duplicate Plugfest passwords make startup fail with a generic message; every refusal through Cloudflare is a 502 |
 | 12 | **Pending tests** | OCA + lab | Stepped TxProfile accepted (12:06:32) but its effect isn't observable without meter values. A Cactus (CSIP-AUS) run needs OCTT as the command station, which turns the GetTransactionStatus check (item 1) back on |
+| 14 | **Bidirectional (V2X) TxProfile** | OCA | CentralSetpoint TxProfile Rejected without a reason. Which OCTT test case exercises OCPP 2.1 V2X (Q-section / `V2XChargingCtrlr`), and does OCTT need an authorised `DC_BPT` session (NotifyEVChargingNeeds) before it accepts one? |
 | 13 | **Plug & Charge (ISO 15118) authorisation** | Lab | eMAID with certificate hash data → Unknown / `ContractCancelled`. The lab CSMS has no contract-certificate validation (OCSP to the OCTT test PKI) or eMAID tokens configured |
 
 ## Set-up
@@ -177,6 +178,7 @@ Updated as testing continues. Times AEDT.
 | **12:06:32** | **TxProfile test, stepped:** SetChargingProfile 9605 (TxProfile, stack 1, Relative, A, 240 s: **16 A → 6 A (60 s) → 10 A (120 s) → 0 A (180 s)**) to `b9d82116` → **Accepted**. GetChargingProfiles (CSO) → **Accepted** this time, but no ReportChargingProfiles followed |
 | 12:06:30–12:06:34 | OCTT ended `b9d82116` as the profile arrived: StopAuthorized → EVConnected → Available → `Ended` (`EVCommunicationLost` / `EVDisconnected`). The step-by-step effect can't be observed (no meter values, transaction ended) |
 | 12:06:35–12:06:43 | OCTT starts a new case: transaction `4ab751aa` (`CablePluggedIn`), then `Authorize` with an **eMAID** (`AAAAAAAAAAAAAA`) and ISO 15118 certificate hash data → CitrineOS answers **Unknown**, `certificateStatus: ContractCancelled`. Plug & Charge contract certificates aren't set up in the lab CSMS (new item 13) |
+| **12:08:22** | **Bidirectional TxProfile:** SetChargingProfile 9606 (TxProfile, stack 1, Relative, W, 300 s, OCPP 2.1 **CentralSetpoint**, `limit` 15 kW, `dischargeLimit` −15 kW, setpoints **+15 / −15 / +6 / −5 / 0 kW**, 60 s each) to `4ab751aa` → **Rejected**, no `statusInfo`. GetChargingProfiles → NoProfiles. `4ab751aa` was EVConnected and its Plug & Charge authorisation had been refused, so the rejection may reflect that, or that OCTT's station profile doesn't support V2X (new item 14) |
 
 ## Open items
 
