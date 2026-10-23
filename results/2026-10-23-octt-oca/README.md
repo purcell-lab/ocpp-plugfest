@@ -41,7 +41,8 @@ Purcell CitrineOS CSMS over the internet through the Cloudflare tunnel (`ocpp.pu
 | 9 | **Profile 1 (`ws://`) over the internet** | Lab (Cloudflare) | Port 80 is redirected to `https://` by the zone's Always Use HTTPS setting; profile 1 needs that off for `ocpp.purcell.id.au`, or OCTT on the venue LAN |
 | 10 | **Reconnect after a CSMS restart** | OCA | OCTT doesn't reconnect by itself after the server closes the socket; each lab restart needs a manual reconnect |
 | 11 | **Operational** | Lab | Each `plugfest_stations` change needs a full CitrineOS restart (about 60 s); duplicate Plugfest passwords make startup fail with a generic message; every refusal through Cloudflare is a 502 |
-| 12 | **Pending tests** | OCA + lab | TxProfile test (stepped charge limits) and a Cactus (CSIP-AUS) run with OCTT as the command station |
+| 12 | **Pending tests** | OCA + lab | Stepped TxProfile accepted (12:06:32) but its effect isn't observable without meter values. A Cactus (CSIP-AUS) run needs OCTT as the command station, which turns the GetTransactionStatus check (item 1) back on |
+| 13 | **Plug & Charge (ISO 15118) authorisation** | Lab | eMAID with certificate hash data → Unknown / `ContractCancelled`. The lab CSMS has no contract-certificate validation (OCSP to the OCTT test PKI) or eMAID tokens configured |
 
 ## Set-up
 
@@ -173,6 +174,9 @@ Updated as testing continues. Times AEDT.
 | 12:02:07–12:02:10 | Transaction **`b9d82116`**: Authorize `C17E0001` Accepted → Started → Occupied → CablePluggedIn → **Charging** |
 | **12:02:47** | **SetChargingProfile 9604** (TxProfile, stack 1, Relative, 300 s, 6 A) to the **current** transaction `b9d82116` → **Accepted**. Follow-up GetChargingProfiles (CSO) → NoProfiles |
 | 12:01–12:03 | **No GetTransactionStatus sent to OCTT** after the command-station change, confirming the fix for item 1. `b9d82116` stays active in CitrineOS |
+| **12:06:32** | **TxProfile test, stepped:** SetChargingProfile 9605 (TxProfile, stack 1, Relative, A, 240 s: **16 A → 6 A (60 s) → 10 A (120 s) → 0 A (180 s)**) to `b9d82116` → **Accepted**. GetChargingProfiles (CSO) → **Accepted** this time, but no ReportChargingProfiles followed |
+| 12:06:30–12:06:34 | OCTT ended `b9d82116` as the profile arrived: StopAuthorized → EVConnected → Available → `Ended` (`EVCommunicationLost` / `EVDisconnected`). The step-by-step effect can't be observed (no meter values, transaction ended) |
+| 12:06:35–12:06:43 | OCTT starts a new case: transaction `4ab751aa` (`CablePluggedIn`), then `Authorize` with an **eMAID** (`AAAAAAAAAAAAAA`) and ISO 15118 certificate hash data → CitrineOS answers **Unknown**, `certificateStatus: ContractCancelled`. Plug & Charge contract certificates aren't set up in the lab CSMS (new item 13) |
 
 ## Open items
 
