@@ -59,6 +59,16 @@ Updated as testing continues. Times AEDT.
 | about 16:19 | Test record opened. The Green was still unreachable from outside: `wss://ocpp.purcell.id.au` → Cloudflare 530 (tunnel down) and HA-OCPP 502, since about 16:10 (see the [ChargeSim report](../2026-10-23-chargesim-cactus/README.md)). Starcharge on the venue LAN works only if the Green itself is up |
 | 16:26 | HA-OCPP reachable again; CitrineOS running (the lab's simulators online). **Starcharge not connected** (no new station since 16:10); ChargeSim's 11 stations offline. **Cloudflared App in `error` state**: it lost its Cloudflare edge connections at 16:10:2x (QUIC "no recent network activity", a venue network loss) and stopped, so `wss://ocpp.purcell.id.au` returns 530. The venue LAN endpoint `ws://purcell.local:8083` doesn't depend on it |
 
+## Plan
+
+1. **TxProfile test** once Starcharge connects: profiles sent through the operator route to its
+   station ID (no command-station change, no restart). First the station's details from
+   BootNotification, then a remote start or the station's own session, then TxProfiles.
+2. **Cactus run** after that: Starcharge becomes the command station (CitrineOS restart, so it
+   reconnects once), the bridge goes to `citrineos_lab_<station-id>` with charging-only **off**
+   (V2G CentralSetpoint periods), lab hold **off**, and the house load is set for the run.
+   Metering SetVariables (0.7.7) if Starcharge doesn't send power by default.
+
 ## Open items
 
 - Confirm the Green is back (tunnel, HA-OCPP), then check the CitrineOS App is running and
