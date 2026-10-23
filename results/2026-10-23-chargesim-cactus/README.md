@@ -66,6 +66,10 @@ SetVariables, so CitrineOS App **0.7.7** allows SetVariables for metering variab
 | 16:07:01–16:07:35 | Transactions Started and **Charging** on `charger1` … `charger10`; `charger11` accepted the start but had no TransactionEvent by 16:08 |
 | 16:07:18 | Bridge TxProfile 9001 for `charger1`'s new transaction `dbc58468` (0 W: ODE's current import limit) → **Accepted**; `charger1` → **SuspendedEVSE** at 16:07:46, power 0, as the profile requires |
 | from 16:07:10 | **Periodic meter values with power every 10 s** (`MeterValuePeriodic`): `Power.Active.Import` in **kW** (unitOfMeasure `kW`), e.g. 112.5 kW and 150 kW on the unlimited stations, energy rising accordingly. The lab's `charger1` power sensor now updates (0 W while suspended) |
+| 16:08:30–16:09:41 | **Stepped TxProfiles 9802–9810** (Relative, W, 600 s: 50 / 25 / 11 / 5 / 0 kW, 2 min each) to `charger2` … `charger10` → **Accepted by all 9**. `charger1` keeps the bridge's profile; `charger11` had no transaction |
+| 16:10 | RequestStartTransaction retried on `charger11` (remoteStartId 2310312); the first start at 16:07:24 was Accepted but no transaction followed |
+| 16:10:4x | **Random TxProfiles 9901–9911** (seeded, Relative, W, 600 s, 3–6 steps of 0–150 kW; `charger1` at stack level 2 over the bridge's profile): the sends to `charger1` … `charger5` failed with **502 from the HA-OCPP connection**, outcome unknown; `charger6` … `charger11` not sent |
+| **16:12:00** | **Green unreachable again:** `wss://ocpp.purcell.id.au` → Cloudflare 530 (tunnel down), Home Assistant Cloud remote access times out, HA-OCPP 502. All 11 ChargeSim stations will have lost the CSMS |
 | 15:57–15:58 | CitrineOS restarted twice during the 0.7.7 update (15:57:12, ready about 15:58). The lab's simulators reconnected; no ChargeSim station did |
 | 16:03 | **No ChargeSim station connected:** `charger1` offline since 15:55:08; `charger2` … `charger11` never seen by CitrineOS; no refused connection attempts in the CitrineOS log, so nothing from ChargeSim was reaching the lab. Endpoint check: `wss://ocpp.purcell.id.au` answers (HTTP 404 without a WebSocket upgrade, as expected). ChargeSim asked to confirm the URL: `wss://ocpp.purcell.id.au/chargerN` (internet) or `ws://purcell.local:8083/chargerN` (venue LAN) |
 
@@ -79,6 +83,9 @@ SetVariables, so CitrineOS App **0.7.7** allows SetVariables for metering variab
 | Other session | The "HA-OCPP connector check" Claude session stood down at 15:46 and sends nothing to the lab |
 
 ## Open items
+
+- Find why the Green went offline at about 16:10 (second time today, after 15:19), with 11 stations sending meter values every 10 s and the lab's simulators connected.
+- CitrineOS has no simulated clock; ChargeSim ran in real time. A fast-forward run would only suit Relative profiles without Cactus or the bridge.
 
 - When the stations connect: SetVariables on each (TxStarted/TxUpdated measurands
   `Energy.Active.Import.Register,Power.Active.Import`, TxUpdatedInterval 10 s), then start
