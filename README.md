@@ -22,7 +22,7 @@
 
 <div align="center">
 
-### [One-page infographic (PDF)](infographic/plugfest-infographic.pdf) · [Original proposal (PDF)](proposal/purcell_ocpp_plugfest_briefing.pdf) · [Demo script](demo/DEMO.md) · [To-do](TODO.md)
+### [One-page infographic (PDF)](infographic/plugfest-infographic.pdf) · [Original proposal (PDF)](proposal/purcell_ocpp_plugfest_briefing.pdf) · [Demo script](demo/DEMO.md) · [Closing retrospective](#closing-retrospective) · [To-do](TODO.md)
 
 <a href="infographic/plugfest-infographic.pdf"><img src="infographic/plugfest-infographic.png" alt="One-page infographic" width="420"></a>
 
@@ -212,6 +212,106 @@ prices through open standards on every link.
 |---|---|
 | CSIP-AUS envelope and OpenADR 3.1 prices → OCPP 2.1 bidirectional profile, live, Friday afternoon. | CitrineOS on the Green, Security Profile 1 on the venue LAN, one endpoint, `ws://purcell.local:8083/<station-id>`. [Six vendor slots](#the-charging-stations): OCTT (DNV), EVX Australia, EVSE, Trialog, AS Jade and Starcharge. |
 | [Demo script](demo/DEMO.md) · [Infographic](infographic/plugfest-infographic.pdf) | [Runbook](plugfest-lab/RUNBOOK.md) · [Lab records](plugfest-lab/README.md) · [Acceptance plan](plugfest-lab/ACCEPTANCE.md) · [Setup](plugfest-lab/SETUP.md) |
+
+---
+
+## Closing retrospective
+
+The Plugfest week (17–23 October 2026) and the follow-up work since, read together. The slot-by-slot
+detail, with every recurring problem, is in the
+[23 October retrospective](results/2026-10-23-retrospective/README.md). Times are AEDT.
+
+### What went well
+
+- **Every station connected and was accepted.** EVX (OCPP 2.0.1 and 1.6J), Trialog (2.1), the OCA's
+  OCTT (2.1, over the internet), 11 ChargeSim stations at once (2.0.1) and StarCharge (2.1) all
+  booted on one CitrineOS endpoint, with open admission on the venue LAN.
+- **Charging profiles were widely accepted.** Trialog accepted all 11 bidirectional CentralSetpoint
+  TxProfiles. ChargeSim accepted every profile on all 11 stations and followed a 0 W step. StarCharge
+  accepted a bidirectional TxDefaultProfile and a ChargingStationMaxProfile.
+- **The CSIP-AUS chain works with a vendor charger.** Cactus → Open Dynamic Export → Home Assistant →
+  CitrineOS → EVSE's Ocular charger passed ALT-ALL-29, and the EVerest stations passed the Cactus
+  procedures in [Proven this week](#proven-this-week).
+- **CSMS gaps were fixed on the day.** Four CitrineOS App releases (0.7.4 to 0.7.7) went out during
+  the slots, each with tests, and each unblocked a vendor (Trialog, OCTT twice, ChargeSim).
+- **Same-day evidence.** Each slot has a report with message-level logs, charts and spec references,
+  shared with the vendor, so every finding is specific and reproducible.
+
+### What we learnt
+
+1. **An accepted profile is not a followed profile.** Most vendor slots had no EV or load bank, and
+   several stations sent coarse or no meter values. Discharge was never measured on a vendor station.
+   The OCPP reply proves the station understood the profile; only metering proves it acted on it.
+2. **OCPP 2.1 support in the CSMS is the bottleneck for V2X.** Every bidirectional slot hit at least
+   one CSMS gap. The lab now runs CitrineOS v2.1.0 built from source with seven source patches:
+
+   | Patch | What it fixes |
+   |---|---|
+   | 0001 | OCPP 2.1 charging needs: `DC_BPT`, `DC_ACDP`, `DC_ACDP_BPT`, and needs with only `v2xChargingParameters` |
+   | 0002 | `allowedEnergyTransfer` in Accepted OCPP 2.1 AuthorizeResponses, so a bidirectional session can be negotiated |
+   | 0003 | OCPP 2.1 DER control: SetDERControl, GetDERControl, ClearDERControl and the station's DER reports |
+   | 0004 | Stores the station's `NotifyChargingLimit` and `ClearedChargingLimit` (local EMS limits) |
+   | 0005 | OCPP 2.1 routes validate against the 2.1 schemas (`LocalGeneration` and `PriorityCharging` were refused) |
+   | 0006 | Refuses a websocket upgrade with an empty station identity (seen with StarCharge) |
+   | 0007 | ISO 15118-20 charging needs sent before the transaction starts get `NoChargingProfile`, not `Rejected` |
+
+3. **Message order matters as much as message content.** After the event, with EVerest 2026.10, the
+   EV's ISO 15118-20 needs reach the CSMS before TransactionEvent `Started`, because the transaction
+   starts when the power path closes. Answering `Rejected` because there is no transaction yet ends
+   the session (K19.FR.16). Patch 0007 stores the needs, links them to the transaction when it
+   starts, and keeps the session running
+   ([ha-addons#106](https://github.com/purcell-lab/ha-addons/issues/106),
+   [ha-addons#108](https://github.com/purcell-lab/ha-addons/pull/108)).
+4. **The CSMS must stay quiet while a station is under test.** A transaction-status check closed live
+   transactions, automatic reports sent unrequested messages, and a synthetic house load shifted
+   every Cactus limit. A vendor slot needs a lab profile with all of these off.
+5. **Onboarding details cost more time than the protocol.** Station ID and password mismatches,
+   `purcell.local` not resolving and token formats each cost 10–30 minutes in a slot.
+6. **Standard reports can leak credentials.** One station's device model exposed a plain-text PIN,
+   a password hash and its local authorisation list, and the lab ran Security Profile 1 with open
+   admission. Security Profile 2 and 3 belong in the next event's plan from the start.
+
+### Since the event
+
+| Area | Change |
+|---|---|
+| CSMS | CitrineOS v2.1.0 from source (App 0.8.0), with the day's fixes as source patches; DER control (0.10.0); local EMS limits and `LocalGeneration` profiles (0.11.0); charging needs before the transaction (0.12.0) |
+| Reference charger | EVerest DC V2G on 2026.10.0-rc1, compiled from source, with Security Profile 2 (`wss://`), an EV model that states ISO 15118-20 needs (charge by a time, or allow discharge) and sends them in NotifyEVChargingNeeds |
+| Evidence | The V2G charger's integration test now runs a profile at a -5 kW setpoint while the EV's needs change: allow discharge (-5 kW), charge by (0 W), allow discharge (-5 kW). The same profile passed live on the Green on 26 October |
+
+### Follow-up opportunities with the OCPP community
+
+- **Open Charge Alliance**
+  - Propose a V2X test case for the next Plugfest and for OCTT: ISO 15118-20 Dynamic mode,
+    `DC_BPT`, NotifyEVChargingNeeds before TransactionEvent `Started` (TxStartPoints
+    `PowerPathClosed`), then a CentralSetpoint TxProfile that charges and discharges.
+  - Ask for guidance on the reply to charging needs that arrive before the transaction exists, and
+    on when a CSMS may close a transaction after `ongoingIndicator: false`.
+  - Share the evidence that profile acceptance is well supported but profile reporting is not
+    (`chargingLimitSource`, composite schedules that leave out the station maximum).
+- **CitrineOS**
+  - Offer patches 0001 to 0007 upstream, starting with the charging-needs and
+    `allowedEnergyTransfer` fixes that every bidirectional session needs. The project's own
+    contribution rules apply; the patches and their tests are in
+    [ha-addons `citrineos_server/patches`](https://github.com/purcell-lab/ha-addons/tree/main/citrineos_server/patches).
+- **EVerest**
+  - NotifyEVChargingNeeds from ISO 15118-20 leaves out `departureTime` and `targetSoC`, so a CSMS
+    cannot see when the EV must be ready. Raise it with the EVerest community.
+- **Station vendors**
+  - Bring an EV emulator or load bank, and send power and energy meter values every 10 s, so
+    following a profile can be measured.
+  - Keep credentials out of device model reports.
+  - Per-vendor findings are in each slot report: ChargeSim, StarCharge, Trialog, EVX and the OCA's
+    OCTT.
+- **Australian standards and networks**
+  - Offer the chain as an open reference for draft AS 5438's SEP2 → OCPP 2.1 path, with Cactus
+    evidence for CSIP-AUS and timing against the draft function map.
+  - Explore multi-station Cactus tests: one site limit shared across several chargers.
+- **Next Plugfest**
+  - Agree a pre-slot checklist with each vendor in advance: station ID, OCPP version, endpoint as an
+    IP address, security profile, token, EV or load available, measurands.
+  - Run a vendor-slot lab profile, change stations without restarting the CSMS, and log each run to
+    its report automatically.
 
 ---
 
