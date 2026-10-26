@@ -41,7 +41,7 @@ vendor slots: any station ID connects without a password. Ask each vendor for a 
 ## 2. Per slot
 
 - [ ] Note the station ID, OCPP version and, on 1.6, `ChargingScheduleAllowedChargingRateUnit`
-      (W only; an amps-only station rejects the bridge's profiles).
+      (W only; an amps-only station rejects the bridge's TxProfiles).
 - [ ] To control a vendor charger through the bridge (with the vendor's agreement):
       `command_station_id` = the station ID, `command_real_stations_enabled: true`, restart CitrineOS,
       reload the integration once CitrineOS is ready, then set `input_text.lab_bridge_station_prefix`,
