@@ -134,7 +134,7 @@ step exactly, and the site stayed inside both limits while the profile was in fo
 <img src="results/2026-10-19-v2g-night-house-load/v2g-night-chart.svg" alt="Requested, dispatched and measured EV power, and site grid power against the 18 kW CSIP-AUS limits" width="100%">
 
 The same request at night, under **18 kW import and 18 kW export** limits, sent by the ODE
-schedule bridge itself. A profile was in force from the transaction start to the stop, so there
+schedule bridge itself. The bridge's TxProfile was in force from the transaction start to the stop, so there
 was no 25 kW gap. The −20 kW step was clamped to **−18,950 W**: the export limit plus the 1 kW
 house load the EV also supplies. The site exported 17.95 kW, inside the limit.
 → [Full result and dispatch](results/2026-10-19-v2g-night-house-load/README.md)
